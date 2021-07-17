@@ -25,8 +25,8 @@ public:
 
 	ECODE DrawPixel(COORD x, COORD y, COLORREF c);
 	ECODE DrawLine(COORD x1, COORD y1, COORD x2, COORD y2, COLORREF c);
-	ECODE DrawTriangle();
-	ECODE DrawCircle();
+	ECODE DrawTriangle(COORD x1, COORD y1, COORD x2, COORD y2, COORD x3, COORD y3, COLORREF c);
+	ECODE DrawCircle(COORD x1, COORD y1, COORD r, COLORREF c);
 
 	ECODE Run();
 
