@@ -95,7 +95,10 @@ ECODE PrimitiveEngine::DrawPixel(COORD x, COORD y, COLORREF c)
 
 ECODE PrimitiveEngine::DrawLine(COORD x1, COORD y1, COORD x2, COORD y2, COLORREF c)
 {
-	DrawPixel(x1, y1, c);
+	if (DrawPixel(x1, y1, c))
+	{
+		return 1;
+	}
 
 	COORD dx = x2 - x1,
 		dy = y2 - y1,
@@ -107,8 +110,8 @@ ECODE PrimitiveEngine::DrawLine(COORD x1, COORD y1, COORD x2, COORD y2, COLORREF
 		{
 			std::swap(x1, x2);
 			std::swap(y1, y2);
-			dx = x2 - x1;
-			dy = y2 - y1;
+			dx = -dx;
+			dy = -dy;
 		}
 
 		COORD yi = 1;
@@ -130,7 +133,11 @@ ECODE PrimitiveEngine::DrawLine(COORD x1, COORD y1, COORD x2, COORD y2, COLORREF
 				p -= b;
 			}
 			p += a;
-			DrawPixel(x, y, c);
+
+			if (DrawPixel(x, y, c))
+			{
+				return 1;
+			}
 		}
 	}
 	else
@@ -139,8 +146,8 @@ ECODE PrimitiveEngine::DrawLine(COORD x1, COORD y1, COORD x2, COORD y2, COLORREF
 		{
 			std::swap(x1, x2);
 			std::swap(y1, y2);
-			dx = x2 - x1;
-			dy = y2 - y1;
+			dx = -dx;
+			dy = -dy;
 		}
 
 		COORD xi = 1;
@@ -162,7 +169,11 @@ ECODE PrimitiveEngine::DrawLine(COORD x1, COORD y1, COORD x2, COORD y2, COLORREF
 				p -= b;
 			}
 			p += a;
-			DrawPixel(x, y, c);
+
+			if (DrawPixel(x, y, c))
+			{
+				return 1;
+			}
 		}
 	}
 
@@ -171,9 +182,25 @@ ECODE PrimitiveEngine::DrawLine(COORD x1, COORD y1, COORD x2, COORD y2, COLORREF
 
 ECODE PrimitiveEngine::DrawTriangle(COORD x1, COORD y1, COORD x2, COORD y2, COORD x3, COORD y3, COLORREF c)
 {
-	DrawLine(x1, y1, x2, y2, c);
-	DrawLine(x2, y2, x3, y3, c);
-	DrawLine(x3, y3, x1, y1, c);
+	if (DrawLine(x1, y1, x2, y2, c) ||
+		DrawLine(x2, y2, x3, y3, c) ||
+		DrawLine(x3, y3, x1, y1, c))
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
+ECODE PrimitiveEngine::FillTriangle(COORD x1, COORD y1, COORD x2, COORD y2, COORD x3, COORD y3, COLORREF c)
+{
+	SortBottomTopTriangle(x1, y1, x2, y2, x3, y3);
+
+	if (FillBottomFlatTriangle(x1, y1, x2, y2, x3, y3, c) ||
+		FillTopFlatTriangle(x1, y1, x2, y2, x3, y3, c))
+	{
+		return 1;
+	}
 
 	return 0;
 }
@@ -181,4 +208,76 @@ ECODE PrimitiveEngine::DrawTriangle(COORD x1, COORD y1, COORD x2, COORD y2, COOR
 ECODE PrimitiveEngine::DrawCircle(COORD x1, COORD y1, COORD r, COLORREF c)
 {
 	return 0;
+}
+
+ECODE PrimitiveEngine::FillCircle(COORD x1, COORD y1, COORD r, COLORREF c)
+{
+	return 0;
+}
+
+ECODE PrimitiveEngine::FillBottomFlatTriangle(COORD x1, COORD y1, COORD x2, COORD y2, COORD x3, COORD y3, COLORREF c)
+{
+	COORD dx2 = x1 - x2,
+		dy2 = y1 - y2,
+		dx3 = x1 - x3,
+		dy3 = y1 - y3,
+		curX2 = x1,
+		curX3 = x1,
+		a, b, p;
+
+	for (COORD y = y1; y <= y2 || y <= y3; y++)
+	{
+		DrawLine(curX2, y, curX3, y, c);
+
+		if (abs(dx2) >= abs(dy2))
+		{
+			COORD xi = 1;
+			if (dx2 < 0)
+			{
+				xi = -1;
+				dx2 = -dx2;
+			}
+
+			a = 2 * dy2;
+			b = 2 * dx2;
+			p = a - dx2;
+		}
+		else
+		{
+			a = 2 * dx2;
+			b = 2 * dy2;
+			p = a - dy2;
+		}
+
+	}
+
+
+
+	return 0;
+}
+
+ECODE PrimitiveEngine::FillTopFlatTriangle(COORD x1, COORD y1, COORD x2, COORD y2, COORD x3, COORD y3, COLORREF c)
+{
+	return 0;
+}
+
+void PrimitiveEngine::SortBottomTopTriangle(COORD& x1, COORD& y1, COORD& x2, COORD& y2, COORD& x3, COORD& y3)
+{
+	if (y1 > y2 || (y1 == y2 && x1 > x2))
+	{
+		std::swap(x1, x2);
+		std::swap(y1, y2);
+	}
+
+	if (y1 > y3 || (y1 == y3 && x1 > x3))
+	{
+		std::swap(x1, x3);
+		std::swap(y1, y3);
+	}
+
+	if (y2 > y3 || (y2 == y3 && x2 > x3))
+	{
+		std::swap(x2, x3);
+		std::swap(y2, y3);
+	}
 }
