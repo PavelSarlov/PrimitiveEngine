@@ -33,9 +33,7 @@ public:
 	ECODE Run();
 
 private:
-	ECODE FillBottomFlatTriangle(COORD x1, COORD y1, COORD x2, COORD y2, COORD x3, COORD y3, COLORREF c);
-	ECODE FillTopFlatTriangle(COORD x1, COORD y1, COORD x2, COORD y2, COORD x3, COORD y3, COLORREF c);
-	void SortBottomTopTriangle(COORD& x1, COORD& y1, COORD& x2, COORD& y2, COORD& x3, COORD& y3);
+	void SortLeftRightTriangle(COORD& x1, COORD& y1, COORD& x2, COORD& y2, COORD& x3, COORD& y3);
 
 	static LRESULT CALLBACK ProcessMessages(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
