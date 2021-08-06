@@ -1,11 +1,17 @@
 #include <stdio.h>
 #include <iostream>
-#include "VectorMatrix.h"
-#include <Windows.h>
-#include "GameTest.h"
+#include "AppWindow.h"
 
 int main()
 {
-	GameTest game;
-	game.Run();
+	AppWindow app;
+	if(app.Init())
+	{
+		while(app.IsRunning())
+		{
+			app.Process();
+		}
+	}
+
+	return 0;
 }

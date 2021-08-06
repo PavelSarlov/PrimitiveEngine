@@ -1,99 +1,126 @@
 #include "PrimitiveEngine.h"
-#include <algorithm>
 
-PrimitiveEngine::PrimitiveEngine() : PrimitiveEngine(DEFAULT_WIDTH, DEFAULT_HEIGHT)
+PrimitiveEngine::PrimitiveEngine() : m_d3d_device(0), m_dxgi_adapter(0), m_dxgi_device(0), m_dxgi_factory(0), m_feature_level(), m_imm_context(0), m_imm_device_context(0)
+{}
+
+PrimitiveEngine::~PrimitiveEngine()
+{}
+
+bool PrimitiveEngine::Init()
 {
-
-}
-
-PrimitiveEngine::PrimitiveEngine(RES w, RES h)
-{
-	this->width = w;
-	this->height = h;
-	this->globalRunning = true;
-}
-
-ECODE PrimitiveEngine::Run()
-{
-	WNDCLASSEX wc{};
-	wc.lpszClassName = DEFAULT_WCLASS;
-	wc.hInstance = nullptr;
-	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	wc.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
-	wc.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
-	wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-	wc.style = NULL;
-	wc.cbClsExtra = NULL;
-	wc.cbWndExtra = NULL;
-	wc.cbSize = sizeof(wc);
-	wc.lpfnWndProc = PrimitiveEngine::ProcessMessages;
-
-	ATOM wClass = RegisterClassEx(&wc);
-	if(!wClass)
+	D3D_DRIVER_TYPE driver_types[] =
 	{
-		fprintf(stderr, "%ld\n", GetLastError());
-		fprintf(stderr, "%s\n", "Failed to create window class");
-		return 1;
-	}
+		D3D_DRIVER_TYPE_HARDWARE,
+		D3D_DRIVER_TYPE_WARP,
+		D3D_DRIVER_TYPE_REFERENCE
+	};
+	UINT num_driver_types = ARRAYSIZE(driver_types);
 
-	this->hwnd = CreateWindowEx(0, MAKEINTATOM(wClass), DEFAULT_WNAME,
-		WS_OVERLAPPED | WS_VISIBLE | WS_SYSMENU | WS_MINIMIZE | WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX,
-		CW_USEDEFAULT, CW_USEDEFAULT, width, height,
-		nullptr, nullptr, nullptr, nullptr);
-	if(!hwnd)
+	D3D_FEATURE_LEVEL feature_levels[] =
 	{
-		fprintf(stderr, "%ld\n", GetLastError());
-		fprintf(stderr, "%s\n", "Failed to create window");
-		return 2;
-	}
+		D3D_FEATURE_LEVEL_11_0
+	};
+	UINT num_feature_levels = ARRAYSIZE(feature_levels);
 
-	this->hdc = GetDC(hwnd);
+	HRESULT hrs = 0;
 
-	UserInit();
-
-	ShowWindow(hwnd, SW_SHOWNORMAL);
-
-	// window loop
-	MSG msg{};
-	while(globalRunning)
+	for(UINT driver_type_index = 0; driver_type_index < num_driver_types; ++driver_type_index)
 	{
-		if(PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE))
+		hrs = D3D11CreateDevice(nullptr, driver_types[driver_type_index], nullptr, NULL, feature_levels, num_feature_levels, D3D11_SDK_VERSION,
+			&this->m_d3d_device, &this->m_feature_level, &this->m_imm_context);
+
+		if(SUCCEEDED(hrs))
 		{
-			TranslateMessage(&msg);
-			DispatchMessageW(&msg);
+			break;
 		}
-
-		this->OnUserChange();
 	}
 
-	return 0;
-}
-
-LRESULT CALLBACK PrimitiveEngine::ProcessMessages(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-	switch(msg)
+	if(FAILED(hrs))
 	{
-	case WM_CLOSE:
-		DestroyWindow(hwnd);
-		return 0;
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		return 0;
-	default:
-		return DefWindowProc(hwnd, msg, wParam, lParam);
+		return false;
 	}
+
+	this->m_imm_device_context = new DeviceContext(this->m_imm_context);
+
+	this->m_d3d_device->QueryInterface(__uuidof(IDXGIDevice), (void **)&m_dxgi_device);
+	this->m_dxgi_device->GetParent(__uuidof(IDXGIAdapter), (void **)&m_dxgi_adapter);
+	this->m_dxgi_adapter->GetParent(__uuidof(IDXGIFactory), (void **)&m_dxgi_factory);
+
+	return true;
 }
 
-ECODE PrimitiveEngine::DrawPixel(COORD x, COORD y, COLORREF c)
+bool PrimitiveEngine::Release()
 {
-	if(!SetPixel(this->hdc, x, y, c))
+	if(m_vs) m_vs->Release();
+	if(m_ps) m_ps->Release();
+
+	if(m_vsblob) m_vsblob->Release();
+	if(m_psblob) m_psblob->Release();
+
+	this->m_dxgi_device->Release();
+	this->m_dxgi_adapter->Release();
+	this->m_dxgi_factory->Release();
+
+	this->m_d3d_device->Release();
+	this->m_imm_device_context->Release();
+
+	return true;
+}
+
+PrimitiveEngine *PrimitiveEngine::Get()
+{
+	static PrimitiveEngine pe;
+	return &pe;
+}
+
+SwapChain *PrimitiveEngine::CreateSwapChain()
+{
+	return new SwapChain();
+}
+
+DeviceContext *PrimitiveEngine::GetImmediateDeviceContext()
+{
+	return this->m_imm_device_context;
+}
+
+VertexBuffer *PrimitiveEngine::CreateVertexBuffer()
+{
+	return new VertexBuffer();
+}
+
+bool PrimitiveEngine::CreateShaders()
+{
+	ID3DBlob *errblob = nullptr;
+	D3DCompileFromFile(L"shader.fx", nullptr, nullptr, "vsmain", "vs_5_0", NULL, NULL, &this->m_vsblob, &errblob);
+	D3DCompileFromFile(L"shader.fx", nullptr, nullptr, "psmain", "ps_5_0", NULL, NULL, &this->m_psblob, &errblob);
+	this->m_d3d_device->CreateVertexShader(this->m_vsblob->GetBufferPointer(), this->m_vsblob->GetBufferSize(), nullptr, &this->m_vs);
+	this->m_d3d_device->CreatePixelShader(this->m_psblob->GetBufferPointer(), this->m_psblob->GetBufferSize(), nullptr, &this->m_ps);
+	return true;
+}
+
+bool PrimitiveEngine::SetShaders()
+{
+	this->m_imm_context->VSSetShader(this->m_vs, nullptr, 0);
+	this->m_imm_context->PSSetShader(this->m_ps, nullptr, 0);
+	return true;
+}
+
+void PrimitiveEngine::GetShaderBufferAndSize(void **bytecode, UINT *size)
+{
+	*bytecode = this->m_vsblob->GetBufferPointer();
+	*size = (UINT)this->m_vsblob->GetBufferSize();
+}
+
+ECODE PrimitiveEngine::DrawPixel(HDC hdc, COORD x, COORD y, COLORREF c)
+{
+	if(!SetPixel(hdc, x, y, c))
 	{
 		return 1;
 	}
 	return 0;
 }
 
-ECODE PrimitiveEngine::DrawLine(COORD x1, COORD y1, COORD x2, COORD y2, COLORREF c)
+ECODE PrimitiveEngine::DrawLine(HDC hdc, COORD x1, COORD y1, COORD x2, COORD y2, COLORREF c)
 {
 	COORD dx = x2 - x1,
 		dy = y2 - y1,
@@ -122,7 +149,7 @@ ECODE PrimitiveEngine::DrawLine(COORD x1, COORD y1, COORD x2, COORD y2, COLORREF
 
 		for(COORD x = x1 + 1, y = y1; x <= x2; x++)
 		{
-			if(DrawPixel(x, y, c))
+			if(DrawPixel(hdc, x, y, c))
 			{
 				return 1;
 			}
@@ -158,7 +185,7 @@ ECODE PrimitiveEngine::DrawLine(COORD x1, COORD y1, COORD x2, COORD y2, COLORREF
 
 		for(COORD x = x1, y = y1 + 1; y <= y2; y++)
 		{
-			if(DrawPixel(x, y, c))
+			if(DrawPixel(hdc, x, y, c))
 			{
 				return 1;
 			}
@@ -175,11 +202,11 @@ ECODE PrimitiveEngine::DrawLine(COORD x1, COORD y1, COORD x2, COORD y2, COLORREF
 	return 0;
 }
 
-ECODE PrimitiveEngine::DrawTriangle(COORD x1, COORD y1, COORD x2, COORD y2, COORD x3, COORD y3, COLORREF c)
+ECODE PrimitiveEngine::DrawTriangle(HDC hdc, COORD x1, COORD y1, COORD x2, COORD y2, COORD x3, COORD y3, COLORREF c)
 {
-	if(DrawLine(x1, y1, x2, y2, c) ||
-		DrawLine(x2, y2, x3, y3, c) ||
-		DrawLine(x3, y3, x1, y1, c))
+	if(DrawLine(hdc, x1, y1, x2, y2, c) ||
+		DrawLine(hdc, x2, y2, x3, y3, c) ||
+		DrawLine(hdc, x3, y3, x1, y1, c))
 	{
 		return 1;
 	}
@@ -187,7 +214,7 @@ ECODE PrimitiveEngine::DrawTriangle(COORD x1, COORD y1, COORD x2, COORD y2, COOR
 	return 0;
 }
 
-ECODE PrimitiveEngine::DrawCircle(COORD x1, COORD y1, COORD r, COLORREF c)
+ECODE PrimitiveEngine::DrawCircle(HDC hdc, COORD x1, COORD y1, COORD r, COLORREF c)
 {
 	COORD e = -r,
 		x = r,
@@ -195,14 +222,14 @@ ECODE PrimitiveEngine::DrawCircle(COORD x1, COORD y1, COORD r, COLORREF c)
 
 	while(y <= x)
 	{
-		DrawPixel(x1 + x, y1 + y, c);
-		DrawPixel(x1 - x, y1 + y, c);
-		DrawPixel(x1 + x, y1 - y, c);
-		DrawPixel(x1 - x, y1 - y, c);
-		DrawPixel(x1 + y, y1 + x, c);
-		DrawPixel(x1 - y, y1 + x, c);
-		DrawPixel(x1 + y, y1 - x, c);
-		DrawPixel(x1 - y, y1 - x, c);
+		DrawPixel(hdc, x1 + x, y1 + y, c);
+		DrawPixel(hdc, x1 - x, y1 + y, c);
+		DrawPixel(hdc, x1 + x, y1 - y, c);
+		DrawPixel(hdc, x1 - x, y1 - y, c);
+		DrawPixel(hdc, x1 + y, y1 + x, c);
+		DrawPixel(hdc, x1 - y, y1 + x, c);
+		DrawPixel(hdc, x1 + y, y1 - x, c);
+		DrawPixel(hdc, x1 - y, y1 - x, c);
 
 		e += 2 * y + 1;
 		y++;
@@ -217,7 +244,7 @@ ECODE PrimitiveEngine::DrawCircle(COORD x1, COORD y1, COORD r, COLORREF c)
 	return 0;
 }
 
-ECODE PrimitiveEngine::FillCircle(COORD x1, COORD y1, COORD r, COLORREF c)
+ECODE PrimitiveEngine::FillCircle(HDC hdc, COORD x1, COORD y1, COORD r, COLORREF c)
 {
 	COORD e = -r,
 		x = r,
@@ -225,10 +252,10 @@ ECODE PrimitiveEngine::FillCircle(COORD x1, COORD y1, COORD r, COLORREF c)
 
 	while(y <= x)
 	{
-		DrawLine(x1 - x, y1 + y, x1 + x, y1 + y, c);
-		DrawLine(x1 - x, y1 - y, x1 + x, y1 - y, c);
-		DrawLine(x1 - y, y1 + x, x1 + y, y1 + x, c);
-		DrawLine(x1 - y, y1 - x, x1 + y, y1 - x, c);
+		DrawLine(hdc, x1 - x, y1 + y, x1 + x, y1 + y, c);
+		DrawLine(hdc, x1 - x, y1 - y, x1 + x, y1 - y, c);
+		DrawLine(hdc, x1 - y, y1 + x, x1 + y, y1 + x, c);
+		DrawLine(hdc, x1 - y, y1 - x, x1 + y, y1 - x, c);
 
 		e += 2 * y + 1;
 		y++;
@@ -243,7 +270,7 @@ ECODE PrimitiveEngine::FillCircle(COORD x1, COORD y1, COORD r, COLORREF c)
 	return 0;
 }
 
-ECODE PrimitiveEngine::FillTriangle(COORD x1, COORD y1, COORD x2, COORD y2, COORD x3, COORD y3, COLORREF c)
+ECODE PrimitiveEngine::FillTriangle(HDC hdc, COORD x1, COORD y1, COORD x2, COORD y2, COORD x3, COORD y3, COLORREF c)
 {
 	SortLeftRightTriangle(x1, y1, x2, y2, x3, y3);
 
@@ -295,7 +322,7 @@ ECODE PrimitiveEngine::FillTriangle(COORD x1, COORD y1, COORD x2, COORD y2, COOR
 
 	for(COORD x = x1; x <= x3; x++)
 	{
-		if(DrawLine(x, curY2, x, curY3, c))
+		if(DrawLine(hdc, x, curY2, x, curY3, c))
 		{
 			return 1;
 		}
@@ -394,7 +421,7 @@ ECODE PrimitiveEngine::FillTriangle(COORD x1, COORD y1, COORD x2, COORD y2, COOR
 	return 0;
 }
 
-void PrimitiveEngine::SortLeftRightTriangle(COORD& x1, COORD& y1, COORD& x2, COORD& y2, COORD& x3, COORD& y3)
+void PrimitiveEngine::SortLeftRightTriangle(COORD &x1, COORD &y1, COORD &x2, COORD &y2, COORD &x3, COORD &y3)
 {
 	if(x1 > x2 || (x1 == x2 && y1 > y2))
 	{
@@ -413,4 +440,26 @@ void PrimitiveEngine::SortLeftRightTriangle(COORD& x1, COORD& y1, COORD& x2, COO
 		std::swap(x2, x3);
 		std::swap(y2, y3);
 	}
+}
+
+ECODE PrimitiveEngine::FillRectangle(HDC hdc, COORD x1, COORD y1, COORD x2, COORD y2, COLORREF c)
+{
+	if(x1 > x2)
+	{
+		std::swap(x1, x2);
+	}
+	if(y1 > y2)
+	{
+		std::swap(y1, y2);
+	}
+
+	for(COORD x = x1; x <= x2; x++)
+	{
+		for(COORD y = y1; y <= y2; y++)
+		{
+			SetPixel(hdc, x, y, c);
+		}
+	}
+
+	return 0;
 }
