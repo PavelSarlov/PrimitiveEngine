@@ -6,7 +6,7 @@ VertexBuffer::VertexBuffer()
 VertexBuffer::~VertexBuffer()
 {}
 
-bool VertexBuffer::Load(void *list_vertices, UINT size_vertex, UINT size_list, void *shader_byte_code, UINT size_byte_shader)
+bool VertexBuffer::Load(void *list_vertices, UINT size_vertex, UINT size_list, void *shader_byte_code, size_t size_byte_shader)
 {
 	if(m_buffer) m_buffer->Release();
 	if(m_layout) m_layout->Release();
