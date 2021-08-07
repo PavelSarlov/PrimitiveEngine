@@ -13,9 +13,15 @@ struct Mesh;
 
 struct Vector3
 {
-	Vector3() : Vector3(0) {}
-	Vector3(float a) : Vector3(a, a, a) {}
-	Vector3(float x, float y, float z) : Vector3(std::vector<float>{ x, y, z }) {}
+	Vector3() : Vector3(0)
+	{}
+
+	Vector3(float a) : Vector3(a, a, a)
+	{}
+
+	Vector3(float x, float y, float z) : Vector3(std::vector<float>{ x, y, z })
+	{}
+
 	Vector3(std::vector<float> p)
 	{
 		this->x = p[0];
@@ -119,10 +125,18 @@ struct Vector3
 
 struct Vector4
 {
-	Vector4() : Vector4(0) {}
-	Vector4(float a) : Vector4(a, a, a) {}
-	Vector4(float x, float y, float z) : Vector4(x, y, z, 1) {}
-	Vector4(float x, float y, float z, float t) : Vector4(std::vector<float>{ x, y, z, t }) {}
+	Vector4() : Vector4(0)
+	{}
+
+	Vector4(float a) : Vector4(a, a, a)
+	{}
+
+	Vector4(float x, float y, float z) : Vector4(x, y, z, 1)
+	{}
+
+	Vector4(float x, float y, float z, float t) : Vector4(std::vector<float>{ x, y, z, t })
+	{}
+
 	Vector4(std::vector<float> p)
 	{
 		this->x = p[0];
@@ -849,12 +863,36 @@ struct Matrix4
 
 struct Vertex
 {
-	Vector3 position;
+	Vertex() : Vertex(0.0f, 0.0f, 0.0f)
+	{}
+
+	Vertex(float x, float y, float z)
+	{
+		this->pos = {x,y,z};
+	}
+
+	Vertex(const Vertex &other)
+	{
+		*this = other;
+	}
+
+	Vertex &operator=(const Vertex &other)
+	{
+		if(this != &other)
+		{
+			this->pos = other.pos;
+		}
+		return *this;
+	}
+
+	Vector3 pos;
 };
 
 struct Triangle
 {
-	Triangle() : Triangle({Vertex(),Vertex(),Vertex()}) {}
+	Triangle() : Triangle({Vertex(),Vertex(),Vertex()})
+	{}
+
 	Triangle(std::vector<Vertex> p)
 	{
 		for(int i = 0; i < 3; i++)
@@ -885,7 +923,9 @@ struct Triangle
 
 struct Mesh
 {
-	Mesh() : Mesh(std::vector<Triangle>()) {}
+	Mesh() : Mesh(std::vector<Triangle>())
+	{}
+
 	Mesh(std::vector<Triangle> m)
 	{
 		this->m = m;
