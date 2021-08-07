@@ -23,6 +23,9 @@
     <Filter Include="PrimitiveEngine\Graphics\VertexBuffer">
       <UniqueIdentifier>{6e610e26-271b-45b1-a913-74013a2ffdea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PrimitiveEngine\Graphics\VertexShader">
+      <UniqueIdentifier>{0d302028-3790-47f0-8eb2-e9c68ce60183}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -45,6 +48,9 @@
     </ClCompile>
     <ClCompile Include="VertexBuffer.cpp">
       <Filter>PrimitiveEngine\Graphics\VertexBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexShader.cpp">
+      <Filter>PrimitiveEngine\Graphics\VertexShader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -69,5 +75,13 @@
     <ClInclude Include="VertexBuffer.h">
       <Filter>PrimitiveEngine\Graphics\VertexBuffer</Filter>
     </ClInclude>
+    <ClInclude Include="VertexShader.h">
+      <Filter>PrimitiveEngine\Graphics\VertexShader</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="VertexShader.hlsl">
+      <Filter>App</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
