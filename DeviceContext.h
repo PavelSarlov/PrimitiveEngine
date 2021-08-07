@@ -7,9 +7,11 @@
 
 #include "SwapChain.h"
 #include "VertexBuffer.h"
+#include "VertexShader.h"
 
 class SwapChain;
 class VertexBuffer;
+class VertexShader;
 
 class DeviceContext
 {
@@ -19,10 +21,14 @@ public:
 
 public:
 	bool Release();
-	void ClearRenderTargetColor(SwapChain *swap_chain, float red, float green, float blue, float alpha);
 	void SetVertexBuffer(VertexBuffer *vertex_buffer);
-	void DrawTriangleList(UINT vertex_count, UINT start_vertex_index);
 	void SetViewPortSize(UINT width, UINT height);
+	void SetVertexShader(VertexShader *vertex_shader);
+
+public:
+	void ClearRenderTargetColor(SwapChain *swap_chain, float red, float green, float blue, float alpha);
+	void DrawTriangleList(UINT vertex_count, UINT start_vertex_index);
+	void DrawTriangleStrip(UINT vertex_count, UINT start_vertex_index);
 
 private:
 	ID3D11DeviceContext *m_device_context = nullptr;

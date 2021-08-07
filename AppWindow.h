@@ -22,6 +22,7 @@ public:
 private:
 	SwapChain *m_swap_chain = nullptr;
 	VertexBuffer *m_vb = nullptr;
+	VertexShader *m_vs = nullptr;
 };
 
 #endif
