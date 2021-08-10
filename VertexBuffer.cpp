@@ -6,7 +6,7 @@ VertexBuffer::VertexBuffer()
 VertexBuffer::~VertexBuffer()
 {}
 
-bool VertexBuffer::Load(void *list_vertices, UINT size_vertex, UINT size_list, void *shader_byte_code, size_t size_byte_shader)
+bool VertexBuffer::load(void *list_vertices, UINT size_vertex, UINT size_list, void *shader_byte_code, size_t size_byte_shader)
 {
 	if(m_buffer) m_buffer->Release();
 	if(m_layout) m_layout->Release();
@@ -24,7 +24,7 @@ bool VertexBuffer::Load(void *list_vertices, UINT size_vertex, UINT size_list, v
 	this->m_size_vertex = size_vertex;
 	this->m_size_list = size_list;
 
-	if(FAILED(PrimitiveEngine::Get()->m_d3d_device->CreateBuffer(&buff_desc, &init_data, &this->m_buffer)))
+	if(FAILED(PrimitiveEngine::get()->m_d3d_device->CreateBuffer(&buff_desc, &init_data, &this->m_buffer)))
 	{
 		return false;
 	}
@@ -37,7 +37,7 @@ bool VertexBuffer::Load(void *list_vertices, UINT size_vertex, UINT size_list, v
 
 	UINT size_layout = ARRAYSIZE(layout);
 
-	if(FAILED(PrimitiveEngine::Get()->m_d3d_device->CreateInputLayout(layout, size_layout, shader_byte_code, size_byte_shader, &this->m_layout)))
+	if(FAILED(PrimitiveEngine::get()->m_d3d_device->CreateInputLayout(layout, size_layout, shader_byte_code, size_byte_shader, &this->m_layout)))
 	{
 		return false;
 	}
@@ -45,7 +45,7 @@ bool VertexBuffer::Load(void *list_vertices, UINT size_vertex, UINT size_list, v
 	return true;
 }
 
-bool VertexBuffer::Release()
+bool VertexBuffer::release()
 {
 	this->m_layout->Release();
 	this->m_buffer->Release();
@@ -53,7 +53,7 @@ bool VertexBuffer::Release()
 	return true;
 }
 
-UINT VertexBuffer::GetSizeVertexList()
+UINT VertexBuffer::getSizeVertexList()
 {
 	return this->m_size_list;
 }

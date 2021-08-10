@@ -6,21 +6,21 @@ DeviceContext::DeviceContext(ID3D11DeviceContext *device_context) : m_device_con
 DeviceContext::~DeviceContext()
 {}
 
-bool DeviceContext::Release()
+bool DeviceContext::release()
 {
 	this->m_device_context->Release();
 	delete this;
 	return true;
 }
 
-void DeviceContext::ClearRenderTargetColor(SwapChain *swap_chain, float red, float green, float blue, float alpha)
+void DeviceContext::clearRenderTargetColor(SwapChain *swap_chain, float red, float green, float blue, float alpha)
 {
 	FLOAT clear_color[] = {red,green,blue,alpha};
 	this->m_device_context->ClearRenderTargetView(swap_chain->m_rtv, clear_color);
 	this->m_device_context->OMSetRenderTargets(1, &swap_chain->m_rtv, NULL);
 }
 
-void DeviceContext::SetVertexBuffer(VertexBuffer *vertex_buffer)
+void DeviceContext::setVertexBuffer(VertexBuffer *vertex_buffer)
 {
 	UINT stride = vertex_buffer->m_size_vertex;
 	UINT offset = 0;
@@ -29,19 +29,19 @@ void DeviceContext::SetVertexBuffer(VertexBuffer *vertex_buffer)
 	this->m_device_context->IASetInputLayout(vertex_buffer->m_layout);
 }
 
-void DeviceContext::DrawTriangleList(UINT vertex_count, UINT start_vertex_index)
+void DeviceContext::drawTriangleList(UINT vertex_count, UINT start_vertex_index)
 {
 	this->m_device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	this->m_device_context->Draw(vertex_count, start_vertex_index);
 }
 
-void DeviceContext::DrawTriangleStrip(UINT vertex_count, UINT start_vertex_index)
+void DeviceContext::drawTriangleStrip(UINT vertex_count, UINT start_vertex_index)
 {
 	this->m_device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	this->m_device_context->Draw(vertex_count, start_vertex_index);
 }
 
-void DeviceContext::SetViewPortSize(UINT width, UINT height)
+void DeviceContext::setViewPortSize(UINT width, UINT height)
 {
 	D3D11_VIEWPORT vp = {};
 	vp.Width = (FLOAT)width;
@@ -51,7 +51,7 @@ void DeviceContext::SetViewPortSize(UINT width, UINT height)
 	this->m_device_context->RSSetViewports(1, &vp);
 }
 
-void DeviceContext::SetVertexShader(VertexShader *vertex_shader)
+void DeviceContext::setVertexShader(VertexShader *vertex_shader)
 {
 	this->m_device_context->VSSetShader(vertex_shader->m_vs, nullptr, 0);
 }

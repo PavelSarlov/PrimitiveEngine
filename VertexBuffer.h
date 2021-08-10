@@ -16,9 +16,9 @@ public:
 	~VertexBuffer();
 
 public:
-	bool Load(void *list_vertices, UINT size_vertex, UINT size_list, void *shader_byte_code, size_t size_byte_shader);
-	bool Release();
-	UINT GetSizeVertexList();
+	bool load(void *list_vertices, UINT size_vertex, UINT size_list, void *shader_byte_code, size_t size_byte_shader);
+	bool release();
+	UINT getSizeVertexList();
 
 private:
 	UINT m_size_vertex = 0;

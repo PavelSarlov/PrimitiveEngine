@@ -6,14 +6,14 @@ AppWindow::AppWindow()
 AppWindow::~AppWindow()
 {}
 
-void AppWindow::OnCreate()
+void AppWindow::onCreate()
 {
-	Window::OnCreate();
-	PrimitiveEngine::Get()->Init();
-	this->m_swap_chain = PrimitiveEngine::Get()->CreateSwapChain();
+	Window::onCreate();
+	PrimitiveEngine::get()->init();
+	this->m_swap_chain = PrimitiveEngine::get()->createSwapChain();
 
-	RECT rect = this->GetClientWindowRect();
-	this->m_swap_chain->Init(this->m_hwnd, rect.right - rect.left, rect.bottom - rect.top);
+	RECT rect = this->getClientWindowRect();
+	this->m_swap_chain->init(this->m_hwnd, rect.right - rect.left, rect.bottom - rect.top);
 
 	Vertex list[] =
 	{
@@ -28,50 +28,50 @@ void AppWindow::OnCreate()
 	};
 	UINT size_list = ARRAYSIZE(list);
 
-	this->m_vb = PrimitiveEngine::Get()->CreateVertexBuffer();
+	this->m_vb = PrimitiveEngine::get()->createVertexBuffer();
 
-	PrimitiveEngine::Get()->CreateShaders();
+	PrimitiveEngine::get()->createShaders();
 
 	void *shader_byte_code = nullptr;
 	size_t size_shader = 0;
-	PrimitiveEngine::Get()->CompileVertexShader(L"VertexShader.hlsl", "vsmain", &shader_byte_code, &size_shader);
+	PrimitiveEngine::get()->compileVertexShader(L"VertexShader.hlsl", "vsmain", &shader_byte_code, &size_shader);
 
-	this->m_vs = PrimitiveEngine::Get()->CreateVertexShader(shader_byte_code, size_shader);
+	this->m_vs = PrimitiveEngine::get()->createVertexShader(shader_byte_code, size_shader);
 
-	this->m_vb->Load(list, sizeof(Vertex), size_list, shader_byte_code, size_shader);
+	this->m_vb->load(list, sizeof(Vertex), size_list, shader_byte_code, size_shader);
 
-	PrimitiveEngine::Get()->ReleaseCompiledShader();
+	PrimitiveEngine::get()->releaseCompiledShader();
 }
 
-void AppWindow::OnUpdate()
+void AppWindow::onUpdate()
 {
-	Window::OnUpdate();
+	Window::onUpdate();
 
 	// clear render target
-	PrimitiveEngine::Get()->GetImmediateDeviceContext()->ClearRenderTargetColor(this->m_swap_chain, 0, 0.3f, 0.4f, 1);
+	PrimitiveEngine::get()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain, 0, 0.3f, 0.4f, 1);
 
 	// set viewport of render target in which we will draw
-	RECT rect = this->GetClientWindowRect();
-	PrimitiveEngine::Get()->GetImmediateDeviceContext()->SetViewPortSize(rect.right - rect.left, rect.bottom - rect.top);
+	RECT rect = this->getClientWindowRect();
+	PrimitiveEngine::get()->getImmediateDeviceContext()->setViewPortSize(rect.right - rect.left, rect.bottom - rect.top);
 
 	// set default shader in the graphics pipeline
-	PrimitiveEngine::Get()->SetShaders();
-	PrimitiveEngine::Get()->GetImmediateDeviceContext()->SetVertexShader(this->m_vs);
+	PrimitiveEngine::get()->setShaders();
+	PrimitiveEngine::get()->getImmediateDeviceContext()->setVertexShader(this->m_vs);
 
 	// set the list of vertices
-	PrimitiveEngine::Get()->GetImmediateDeviceContext()->SetVertexBuffer(this->m_vb);
+	PrimitiveEngine::get()->getImmediateDeviceContext()->setVertexBuffer(this->m_vb);
 
 	// draw the vertices
-	//PrimitiveEngine::Get()->GetImmediateDeviceContext()->DrawTriangleList(this->m_vb->GetSizeVertexList(), 0);
-	PrimitiveEngine::Get()->GetImmediateDeviceContext()->DrawTriangleStrip(this->m_vb->GetSizeVertexList(), 0);
+	//PrimitiveEngine::get()->getImmediateDeviceContext()->drawTriangleList(this->m_vb->getSizeVertexList(), 0);
+	PrimitiveEngine::get()->getImmediateDeviceContext()->drawTriangleStrip(this->m_vb->getSizeVertexList(), 0);
 
-	this->m_swap_chain->Present(true);
+	this->m_swap_chain->present(true);
 }
 
-void AppWindow::OnDestroy()
+void AppWindow::onDestroy()
 {
-	Window::OnDestroy();
-	this->m_vb->Release();
-	this->m_swap_chain->Release();
-	PrimitiveEngine::Get()->Release();
+	Window::onDestroy();
+	this->m_vb->release();
+	this->m_swap_chain->release();
+	PrimitiveEngine::get()->release();
 }

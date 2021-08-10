@@ -6,9 +6,9 @@ SwapChain::SwapChain()
 SwapChain::~SwapChain()
 {}
 
-bool SwapChain::Init(HWND hwnd, UINT width, UINT height)
+bool SwapChain::init(HWND hwnd, UINT width, UINT height)
 {
-	ID3D11Device *device = PrimitiveEngine::Get()->m_d3d_device;
+	ID3D11Device *device = PrimitiveEngine::get()->m_d3d_device;
 
 	DXGI_SWAP_CHAIN_DESC desc;
 	ZeroMemory(&desc, sizeof(desc));
@@ -25,14 +25,14 @@ bool SwapChain::Init(HWND hwnd, UINT width, UINT height)
 	desc.Windowed = TRUE;
 
 	// Create swapchain for the window indicated by HWND parameter
-	HRESULT hrs = PrimitiveEngine::Get()->m_dxgi_factory->CreateSwapChain(device, &desc, &this->m_swap_chain);
+	HRESULT hrs = PrimitiveEngine::get()->m_dxgi_factory->CreateSwapChain(device, &desc, &this->m_swap_chain);
 
 	if(FAILED(hrs))
 	{
 		return false;
 	}
 
-	// Get the back buffer color and create its render target view
+	// get the back buffer color and create its render target view
 	ID3D11Texture2D *buffer = NULL;
 	hrs = this->m_swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void **)&buffer);
 
@@ -52,14 +52,14 @@ bool SwapChain::Init(HWND hwnd, UINT width, UINT height)
 	return true;
 }
 
-bool SwapChain::Release()
+bool SwapChain::release()
 {
 	this->m_swap_chain->Release();
 	delete this;
 	return true;
 }
 
-bool SwapChain::Present(bool vsync)
+bool SwapChain::present(bool vsync)
 {
 	this->m_swap_chain->Present(vsync, NULL);
 

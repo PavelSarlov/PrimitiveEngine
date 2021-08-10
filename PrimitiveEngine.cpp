@@ -6,7 +6,7 @@ PrimitiveEngine::PrimitiveEngine() : m_d3d_device(0), m_dxgi_adapter(0), m_dxgi_
 PrimitiveEngine::~PrimitiveEngine()
 {}
 
-bool PrimitiveEngine::Init()
+bool PrimitiveEngine::init()
 {
 	D3D_DRIVER_TYPE driver_types[] =
 	{
@@ -49,7 +49,7 @@ bool PrimitiveEngine::Init()
 	return true;
 }
 
-bool PrimitiveEngine::Release()
+bool PrimitiveEngine::release()
 {
 	if(m_vs) m_vs->Release();
 	if(m_ps) m_ps->Release();
@@ -62,46 +62,46 @@ bool PrimitiveEngine::Release()
 	this->m_dxgi_factory->Release();
 
 	this->m_d3d_device->Release();
-	this->m_imm_device_context->Release();
+	this->m_imm_device_context->release();
 
 	return true;
 }
 
-PrimitiveEngine *PrimitiveEngine::Get()
+PrimitiveEngine *PrimitiveEngine::get()
 {
 	static PrimitiveEngine pe;
 	return &pe;
 }
 
-SwapChain *PrimitiveEngine::CreateSwapChain()
+SwapChain *PrimitiveEngine::createSwapChain()
 {
 	return new SwapChain();
 }
 
-DeviceContext *PrimitiveEngine::GetImmediateDeviceContext()
+DeviceContext *PrimitiveEngine::getImmediateDeviceContext()
 {
 	return this->m_imm_device_context;
 }
 
-VertexBuffer *PrimitiveEngine::CreateVertexBuffer()
+VertexBuffer *PrimitiveEngine::createVertexBuffer()
 {
 	return new VertexBuffer();
 }
 
-VertexShader *PrimitiveEngine::CreateVertexShader(const void *shader_byte_code, size_t byte_code_size)
+VertexShader *PrimitiveEngine::createVertexShader(const void *shader_byte_code, size_t byte_code_size)
 {
 	VertexShader *vs = new VertexShader();
 
-	if(!vs->Init(shader_byte_code, byte_code_size))
+	if(!vs->init(shader_byte_code, byte_code_size))
 	{
-		vs->Release();
+		vs->release();
 		return nullptr;
 	}
 
 	return vs;
 }
 
-bool PrimitiveEngine::CompileVertexShader(const wchar_t *file_name, const char *entry_point_name, void **shader_byte_code, size_t *byte_code_size)
+bool PrimitiveEngine::compileVertexShader(const wchar_t *file_name, const char *entry_point_name, void **shader_byte_code, size_t *byte_code_size)
 {
 	ID3DBlob *error_blob = nullptr;
 	if(FAILED(::D3DCompileFromFile(file_name, nullptr, nullptr, entry_point_name, "vs_5_0", 0, 0, &this->m_blob, &error_blob)))
@@ -116,20 +116,20 @@ bool PrimitiveEngine::CompileVertexShader(const wchar_t *file_name, const char *
 	return true;
 }
 
-void PrimitiveEngine::ReleaseCompiledShader()
+void PrimitiveEngine::releaseCompiledShader()
 {
 	if(this->m_blob) this->m_blob->Release();
 }
 
-bool PrimitiveEngine::CreateShaders()
+bool PrimitiveEngine::createShaders()
 {
 	ID3DBlob *errblob = nullptr;
-	D3DCompileFromFile(L"shader.fx", nullptr, nullptr, "psmain", "ps_5_0", NULL, NULL, &this->m_psblob, &errblob);
+	D3DCompileFromFile(L"PixelShader.hlsl", nullptr, nullptr, "psmain", "ps_5_0", NULL, NULL, &this->m_psblob, &errblob);
 	this->m_d3d_device->CreatePixelShader(this->m_psblob->GetBufferPointer(), this->m_psblob->GetBufferSize(), nullptr, &this->m_ps);
 	return true;
 }
 
-bool PrimitiveEngine::SetShaders()
+bool PrimitiveEngine::setShaders()
 {
 	this->m_imm_context->PSSetShader(this->m_ps, nullptr, 0);
 	return true;

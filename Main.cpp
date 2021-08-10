@@ -5,11 +5,11 @@
 int main()
 {
 	AppWindow app;
-	if(app.Init())
+	if(app.init())
 	{
-		while(app.IsRunning())
+		while(app.isRunning())
 		{
-			app.Process();
+			app.broadcast();
 		}
 	}
 

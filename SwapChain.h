@@ -16,9 +16,9 @@ public:
 	~SwapChain();
 
 public:
-	bool Init(HWND hwnd, UINT width, UINT height);
-	bool Release();
-	bool Present(bool vsync);
+	bool init(HWND hwnd, UINT width, UINT height);
+	bool release();
+	bool present(bool vsync);
 
 private:
 	IDXGISwapChain *m_swap_chain = nullptr;

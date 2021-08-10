@@ -15,9 +15,10 @@ public:
 	AppWindow();
 	~AppWindow();
 
-	virtual void OnCreate() override;
-	virtual void OnUpdate() override;
-	virtual void OnDestroy() override;
+public:
+	virtual void onCreate() override;
+	virtual void onUpdate() override;
+	virtual void onDestroy() override;
 
 private:
 	SwapChain *m_swap_chain = nullptr;

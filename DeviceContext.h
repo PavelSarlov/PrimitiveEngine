@@ -20,15 +20,15 @@ public:
 	~DeviceContext();
 
 public:
-	bool Release();
-	void SetVertexBuffer(VertexBuffer *vertex_buffer);
-	void SetViewPortSize(UINT width, UINT height);
-	void SetVertexShader(VertexShader *vertex_shader);
+	bool release();
+	void setVertexBuffer(VertexBuffer *vertex_buffer);
+	void setViewPortSize(UINT width, UINT height);
+	void setVertexShader(VertexShader *vertex_shader);
 
 public:
-	void ClearRenderTargetColor(SwapChain *swap_chain, float red, float green, float blue, float alpha);
-	void DrawTriangleList(UINT vertex_count, UINT start_vertex_index);
-	void DrawTriangleStrip(UINT vertex_count, UINT start_vertex_index);
+	void clearRenderTargetColor(SwapChain *swap_chain, float red, float green, float blue, float alpha);
+	void drawTriangleList(UINT vertex_count, UINT start_vertex_index);
+	void drawTriangleStrip(UINT vertex_count, UINT start_vertex_index);
 
 private:
 	ID3D11DeviceContext *m_device_context = nullptr;

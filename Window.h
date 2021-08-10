@@ -13,7 +13,7 @@
 #define DEFAULT_HEIGHT (UINT)768
 #define DEFAULT_WCLASS L"Window"
 #define DEFAULT_WNAME L"New Window"
-#define DEFAULT_WMENU L""
+#define DEFAULT_WMENU L"Menu"
 
 class Window
 {
@@ -22,18 +22,18 @@ public:
 	~Window();
 
 public:
-	bool Init();
-	bool Init(LPCWSTR className, LPCWSTR winName, UINT width, UINT height);
-	bool Process();
-	bool Release();
-	bool IsRunning();
-	RECT GetClientWindowRect();
-	void SetHWND(HWND hwnd);
+	bool init();
+	bool init(LPCWSTR className, LPCWSTR winName, UINT width, UINT height);
+	bool broadcast();
+	bool release();
+	bool isRunning();
+	RECT getClientWindowRect();
+	void setHWND(HWND hwnd);
 
 public:
-	virtual void OnCreate();
-	virtual void OnUpdate();
-	virtual void OnDestroy();
+	virtual void onCreate();
+	virtual void onUpdate();
+	virtual void onDestroy();
 
 protected:
 	HWND m_hwnd = nullptr;

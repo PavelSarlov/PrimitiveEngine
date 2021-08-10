@@ -17,10 +17,10 @@ public :
 	~VertexShader();
 
 public:
-	void Release();
+	void release();
 
 private:
-	bool Init(const void *shader_byte_code, size_t byte_code_size);
+	bool init(const void *shader_byte_code, size_t byte_code_size);
 
 private:
 	ID3D11VertexShader *m_vs = nullptr;

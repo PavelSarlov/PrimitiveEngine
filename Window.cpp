@@ -17,14 +17,14 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		Window *window = (Window *)((LPCREATESTRUCT)lParam)->lpCreateParams;
 		// ...and store for later lookup
 		SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)window);
-		window->SetHWND(hwnd);
-		window->OnCreate();
+		window->setHWND(hwnd);
+		window->onCreate();
 		break;
 	}
 	case WM_DESTROY:
 	{
 		Window *window = (Window *)GetWindowLongPtr(hwnd, GWLP_USERDATA);
-		window->OnDestroy();
+		window->onDestroy();
 		::PostQuitMessage(0);
 		break;
 	}
@@ -37,12 +37,12 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return NULL;
 }
 
-bool Window::Init()
+bool Window::init()
 {
-	return this->Init(DEFAULT_WCLASS, DEFAULT_WNAME, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+	return this->init(DEFAULT_WCLASS, DEFAULT_WNAME, DEFAULT_WIDTH, DEFAULT_HEIGHT);
 }
 
-bool Window::Init(LPCWSTR className, LPCWSTR winName, UINT width, UINT height)
+bool Window::init(LPCWSTR className, LPCWSTR winName, UINT width, UINT height)
 {
 	WNDCLASSEX wc;
 	wc.hInstance = nullptr;
@@ -89,11 +89,11 @@ bool Window::Init(LPCWSTR className, LPCWSTR winName, UINT width, UINT height)
 	return true;
 }
 
-bool Window::Process()
+bool Window::broadcast()
 {
 	MSG msg;
 
-	this->OnUpdate();
+	this->onUpdate();
 
 	while(::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) > 0)
 	{
@@ -107,7 +107,7 @@ bool Window::Process()
 }
 
 
-bool Window::Release()
+bool Window::release()
 {
 	if(!::DestroyWindow(this->m_hwnd))
 	{
@@ -119,30 +119,30 @@ bool Window::Release()
 	return true;
 }
 
-bool Window::IsRunning()
+bool Window::isRunning()
 {
 	return this->m_is_running;
 }
 
-RECT Window::GetClientWindowRect()
+RECT Window::getClientWindowRect()
 {
 	RECT rect;
 	::GetClientRect(this->m_hwnd, &rect);
 	return rect;
 }
 
-void Window::SetHWND(HWND hwnd)
+void Window::setHWND(HWND hwnd)
 {
 	this->m_hwnd = hwnd;
 }
 
-void Window::OnCreate()
+void Window::onCreate()
 {}
 
-void Window::OnUpdate()
+void Window::onUpdate()
 {}
 
-void Window::OnDestroy()
+void Window::onDestroy()
 {
 	this->m_is_running = false;
 }
