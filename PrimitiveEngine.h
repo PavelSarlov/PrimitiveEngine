@@ -13,11 +13,13 @@
 #include "DeviceContext.h"
 #include "VertexBuffer.h"
 #include "VertexShader.h"
+#include "PixelShader.h"
 
 class SwapChain;
 class DeviceContext;
 class VertexBuffer;
 class VertexShader;
+class PixelShader;
 
 class PrimitiveEngine
 {
@@ -37,13 +39,12 @@ public:
 	DeviceContext *getImmediateDeviceContext();
 	VertexBuffer *createVertexBuffer();
 	VertexShader *createVertexShader(const void *shader_byte_code, size_t byte_code_size);
+	PixelShader *createPixelShader(const void *shader_byte_code, size_t byte_code_size);
 
 public:
 	bool compileVertexShader(const wchar_t *file_name, const char *entry_point_name, void **shader_byte_code, size_t *byte_code_size);
+	bool compilePixelShader(const wchar_t *file_name, const char *entry_point_name, void **shader_byte_code, size_t *byte_code_size);
 	void releaseCompiledShader();
-	bool createShaders();
-	bool setShaders();
-
 
 //public:
 //	ECODE DrawPixel(HDC hdc, COORD x, COORD y, COLORREF c);
@@ -82,6 +83,7 @@ private:
 	friend class SwapChain;
 	friend class VertexBuffer;
 	friend class VertexShader;
+	friend class PixelShader;
 };
 
 #endif // !PRIMITIVEENGINE_H

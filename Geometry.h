@@ -863,12 +863,16 @@ struct Matrix4
 
 struct Vertex
 {
-	Vertex() : Vertex(0.0f, 0.0f, 0.0f)
+	Vertex() : Vertex(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f)
 	{}
 
-	Vertex(float x, float y, float z)
+	Vertex(float x, float y, float z) : Vertex(x, y, z, 1.0f, 1.0f, 1.0f)
+	{}
+
+	Vertex(float x, float y, float z, float r, float g, float b)
 	{
 		this->pos = {x,y,z};
+		this->color = {r,g,b};
 	}
 
 	Vertex(const Vertex &other)
@@ -881,11 +885,13 @@ struct Vertex
 		if(this != &other)
 		{
 			this->pos = other.pos;
+			this->color = other.color;
 		}
 		return *this;
 	}
 
 	Vector3 pos;
+	Vector3 color;
 };
 
 struct Triangle

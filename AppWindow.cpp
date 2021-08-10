@@ -17,10 +17,10 @@ void AppWindow::onCreate()
 
 	Vertex list[] =
 	{
-		{-0.5f, -0.5f, 0.0f},
-		{-0.5f, 0.5f, 0.0f},
-		{0.5f, -0.5f, 0.0f},
-		{0.5f, 0.5f, 0.0f},
+		{-0.5f, -0.5f, 0.0f, 1,0,0},
+		{-0.5f, 0.5f, 0.0f,  0,1,0},
+		{0.5f, -0.5f, 0.0f,  0,0,1},
+		{0.5f, 0.5f, 0.0f,   1,1,0},
 
 		/*{0.5f, 0.5f, 0.0f},
 		{0.5f, -0.5f, 0.0f},
@@ -30,16 +30,16 @@ void AppWindow::onCreate()
 
 	this->m_vb = PrimitiveEngine::get()->createVertexBuffer();
 
-	PrimitiveEngine::get()->createShaders();
-
 	void *shader_byte_code = nullptr;
 	size_t size_shader = 0;
+
 	PrimitiveEngine::get()->compileVertexShader(L"VertexShader.hlsl", "vsmain", &shader_byte_code, &size_shader);
-
 	this->m_vs = PrimitiveEngine::get()->createVertexShader(shader_byte_code, size_shader);
-
 	this->m_vb->load(list, sizeof(Vertex), size_list, shader_byte_code, size_shader);
+	PrimitiveEngine::get()->releaseCompiledShader();
 
+	PrimitiveEngine::get()->compilePixelShader(L"PixelShader.hlsl", "psmain", &shader_byte_code, &size_shader);
+	this->m_ps = PrimitiveEngine::get()->createPixelShader(shader_byte_code, size_shader);
 	PrimitiveEngine::get()->releaseCompiledShader();
 }
 
@@ -55,8 +55,8 @@ void AppWindow::onUpdate()
 	PrimitiveEngine::get()->getImmediateDeviceContext()->setViewPortSize(rect.right - rect.left, rect.bottom - rect.top);
 
 	// set default shader in the graphics pipeline
-	PrimitiveEngine::get()->setShaders();
 	PrimitiveEngine::get()->getImmediateDeviceContext()->setVertexShader(this->m_vs);
+	PrimitiveEngine::get()->getImmediateDeviceContext()->setPixelShader(this->m_ps);
 
 	// set the list of vertices
 	PrimitiveEngine::get()->getImmediateDeviceContext()->setVertexBuffer(this->m_vb);
@@ -73,5 +73,7 @@ void AppWindow::onDestroy()
 	Window::onDestroy();
 	this->m_vb->release();
 	this->m_swap_chain->release();
+	this->m_vs->release();
+	this->m_ps->release();
 	PrimitiveEngine::get()->release();
 }

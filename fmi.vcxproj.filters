@@ -26,6 +26,9 @@
     <Filter Include="PrimitiveEngine\Graphics\VertexShader">
       <UniqueIdentifier>{0d302028-3790-47f0-8eb2-e9c68ce60183}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PrimitiveEngine\Graphics\PixelShader">
+      <UniqueIdentifier>{a1879602-1211-4d69-9319-81b4ef145187}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -52,6 +55,9 @@
     <ClCompile Include="VertexShader.cpp">
       <Filter>PrimitiveEngine\Graphics\VertexShader</Filter>
     </ClCompile>
+    <ClCompile Include="PixelShader.cpp">
+      <Filter>PrimitiveEngine\Graphics\PixelShader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -77,6 +83,9 @@
     </ClInclude>
     <ClInclude Include="VertexShader.h">
       <Filter>PrimitiveEngine\Graphics\VertexShader</Filter>
+    </ClInclude>
+    <ClInclude Include="PixelShader.h">
+      <Filter>PrimitiveEngine\Graphics\PixelShader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

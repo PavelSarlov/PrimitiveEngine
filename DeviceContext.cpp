@@ -55,3 +55,8 @@ void DeviceContext::setVertexShader(VertexShader *vertex_shader)
 {
 	this->m_device_context->VSSetShader(vertex_shader->m_vs, nullptr, 0);
 }
+
+void DeviceContext::setPixelShader(PixelShader *pixel_shader)
+{
+	this->m_device_context->PSSetShader(pixel_shader->m_ps, nullptr, 0);
+}

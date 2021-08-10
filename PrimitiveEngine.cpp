@@ -101,6 +101,19 @@ VertexShader *PrimitiveEngine::createVertexShader(const void *shader_byte_code, 
 	return vs;
 }
 
+PixelShader *PrimitiveEngine::createPixelShader(const void *shader_byte_code, size_t byte_code_size)
+{
+	PixelShader *ps = new PixelShader();
+
+	if(!ps->init(shader_byte_code, byte_code_size))
+	{
+		ps->release();
+		return nullptr;
+	}
+
+	return ps;
+}
+
 bool PrimitiveEngine::compileVertexShader(const wchar_t *file_name, const char *entry_point_name, void **shader_byte_code, size_t *byte_code_size)
 {
 	ID3DBlob *error_blob = nullptr;
@@ -116,23 +129,24 @@ bool PrimitiveEngine::compileVertexShader(const wchar_t *file_name, const char *
 	return true;
 }
 
+bool PrimitiveEngine::compilePixelShader(const wchar_t *file_name, const char *entry_point_name, void **shader_byte_code, size_t *byte_code_size)
+{
+	ID3DBlob *error_blob = nullptr;
+	if(FAILED(::D3DCompileFromFile(file_name, nullptr, nullptr, entry_point_name, "ps_5_0", 0, 0, &this->m_blob, &error_blob)))
+	{
+		if(error_blob) error_blob->Release();
+		return false;
+	}
+
+	*shader_byte_code = this->m_blob->GetBufferPointer();
+	*byte_code_size = this->m_blob->GetBufferSize();
+
+	return true;
+}
+
 void PrimitiveEngine::releaseCompiledShader()
 {
 	if(this->m_blob) this->m_blob->Release();
-}
-
-bool PrimitiveEngine::createShaders()
-{
-	ID3DBlob *errblob = nullptr;
-	D3DCompileFromFile(L"PixelShader.hlsl", nullptr, nullptr, "psmain", "ps_5_0", NULL, NULL, &this->m_psblob, &errblob);
-	this->m_d3d_device->CreatePixelShader(this->m_psblob->GetBufferPointer(), this->m_psblob->GetBufferSize(), nullptr, &this->m_ps);
-	return true;
-}
-
-bool PrimitiveEngine::setShaders()
-{
-	this->m_imm_context->PSSetShader(this->m_ps, nullptr, 0);
-	return true;
 }
 
 

@@ -12,6 +12,7 @@
 class SwapChain;
 class VertexBuffer;
 class VertexShader;
+class PixelShader;
 
 class DeviceContext
 {
@@ -24,6 +25,7 @@ public:
 	void setVertexBuffer(VertexBuffer *vertex_buffer);
 	void setViewPortSize(UINT width, UINT height);
 	void setVertexShader(VertexShader *vertex_shader);
+	void setPixelShader(PixelShader *pixel_shader);
 
 public:
 	void clearRenderTargetColor(SwapChain *swap_chain, float red, float green, float blue, float alpha);

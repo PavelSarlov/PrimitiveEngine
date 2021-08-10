@@ -8,6 +8,7 @@
 #include "SwapChain.h"
 #include "DeviceContext.h"
 #include "VertexBuffer.h"
+#include "PixelShader.h"
 
 class AppWindow : public Window
 {
@@ -24,6 +25,7 @@ private:
 	SwapChain *m_swap_chain = nullptr;
 	VertexBuffer *m_vb = nullptr;
 	VertexShader *m_vs = nullptr;
+	PixelShader *m_ps = nullptr;
 };
 
 #endif
