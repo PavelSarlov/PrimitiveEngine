@@ -8,7 +8,7 @@ PixelShader::~PixelShader()
 
 void PixelShader::release()
 {
-	this->m_ps->Release();
+	if(this->m_ps) this->m_ps->Release();
 }
 
 bool PixelShader::init(const void *shader_byte_code, size_t byte_code_size)

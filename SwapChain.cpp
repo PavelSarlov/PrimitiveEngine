@@ -54,7 +54,8 @@ bool SwapChain::init(HWND hwnd, UINT width, UINT height)
 
 bool SwapChain::release()
 {
-	this->m_swap_chain->Release();
+	if(this->m_swap_chain) this->m_swap_chain->Release();
+	if(this->m_rtv) this->m_rtv->Release();
 	delete this;
 	return true;
 }

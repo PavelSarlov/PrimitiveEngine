@@ -1,5 +1,4 @@
 #pragma once
-
 #ifndef DEVICECONTEXT_H
 #define DEVICECONTEXT_H
 
@@ -13,6 +12,7 @@ class SwapChain;
 class VertexBuffer;
 class VertexShader;
 class PixelShader;
+class ConstantBuffer;
 
 class DeviceContext
 {
@@ -26,6 +26,8 @@ public:
 	void setViewPortSize(UINT width, UINT height);
 	void setVertexShader(VertexShader *vertex_shader);
 	void setPixelShader(PixelShader *pixel_shader);
+	void setConstantBuffer(VertexShader *vertex_shader, ConstantBuffer *buffer);
+	void setConstantBuffer(PixelShader *pixel_shader, ConstantBuffer *buffer);
 
 public:
 	void clearRenderTargetColor(SwapChain *swap_chain, float red, float green, float blue, float alpha);
@@ -34,6 +36,9 @@ public:
 
 private:
 	ID3D11DeviceContext *m_device_context = nullptr;
+
+private:
+	friend class ConstantBuffer;
 };
 
 #endif // !DEVICECONTEXT_H

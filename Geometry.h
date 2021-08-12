@@ -13,7 +13,7 @@ struct Mesh;
 
 struct Vector3
 {
-	Vector3() : Vector3(0)
+	/*Vector3() : Vector3(0)
 	{}
 
 	Vector3(float a) : Vector3(a, a, a)
@@ -32,7 +32,7 @@ struct Vector3
 	Vector3(const Vector3 &other)
 	{
 		*this = other;
-	}
+	} */
 
 	inline Vector3 &operator=(const Vector3 &other)
 	{
@@ -65,11 +65,11 @@ struct Vector3
 	}
 	inline Vector3 operator+(Vector3 other)
 	{
-		return Vector3(x + other.x, y + other.y, z + other.z);
+		return {x + other.x, y + other.y, z + other.z};
 	}
 	inline Vector3 operator-(Vector3 other)
 	{
-		return Vector3(x - other.x, y - other.y, z - other.z);
+		return {x - other.x, y - other.y, z - other.z};
 	}
 	inline float operator*(Vector3 other)
 	{
@@ -77,13 +77,13 @@ struct Vector3
 	}
 	inline Vector3 operator*(const float a)
 	{
-		return Vector3(x * a, y * a, z * a);
+		return {x * a, y * a, z * a};
 	}
 	inline Vector3 operator/(const float a)
 	{
 		if(a != 0.0f)
 		{
-			return Vector3(x / a, y / a, z / a);
+			return {x / a, y / a, z / a};
 		}
 		return *this;
 	}
@@ -117,7 +117,7 @@ struct Vector3
 	}
 	inline Vector3 CrossProduct(Vector3 other)
 	{
-		return Vector3(y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x);
+		return {y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x};
 	}
 
 	float x, y, z;
@@ -125,7 +125,7 @@ struct Vector3
 
 struct Vector4
 {
-	Vector4() : Vector4(0)
+	/*Vector4() : Vector4(0)
 	{}
 
 	Vector4(float a) : Vector4(a, a, a)
@@ -148,7 +148,7 @@ struct Vector4
 	Vector4(const Vector4 &other)
 	{
 		*this = other;
-	}
+	}*/
 
 	inline Vector4 &operator=(const Vector4 &other)
 	{
@@ -185,17 +185,17 @@ struct Vector4
 	inline Vector4 operator+(Vector4 other)
 	{
 		this->Dehomogenize();
-		return Vector4(x + other.x, y + other.y, z + other.z);
+		return {x + other.x, y + other.y, z + other.z};
 	}
 	inline Vector4 operator-(Vector4 other)
 	{
 		this->Dehomogenize();
-		return Vector4(x - other.x, y - other.y, z - other.z);
+		return {x - other.x, y - other.y, z - other.z};
 	}
 	inline Vector4 operator*(const float a)
 	{
 		this->Dehomogenize();
-		return Vector4(x * a, y * a, z * a);
+		return {x * a, y * a, z * a};
 	}
 	inline float operator*(Vector4 other)
 	{
@@ -207,7 +207,7 @@ struct Vector4
 	{
 		this->Dehomogenize();
 		if(a != 0.0f)
-			return Vector4(x / a, y / a, z / a);
+			return {x / a, y / a, z / a};
 		return *this;
 	}
 	inline void operator+=(Vector4 other)
@@ -259,7 +259,7 @@ struct Vector4
 	{
 		other.Dehomogenize();
 		this->Dehomogenize();
-		return Vector4(y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x);
+		return {y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x};
 	}
 
 	float x, y, z, t;
@@ -863,7 +863,7 @@ struct Matrix4
 
 struct Vertex
 {
-	Vertex() : Vertex(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f)
+	/*Vertex() : Vertex(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f)
 	{}
 
 	Vertex(float x, float y, float z) : Vertex(x, y, z, 1.0f, 1.0f, 1.0f)
@@ -888,10 +888,18 @@ struct Vertex
 			this->color = other.color;
 		}
 		return *this;
-	}
+	}*/
 
 	Vector3 pos;
+	Vector3 pos1;
 	Vector3 color;
+	Vector3 color1;
+};
+
+__declspec(align(16))
+struct Constant
+{
+	unsigned int m_time;
 };
 
 struct Triangle
@@ -953,3 +961,4 @@ struct Mesh
 
 	std::vector<Triangle> m;
 };
+

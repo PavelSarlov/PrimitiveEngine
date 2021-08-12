@@ -8,7 +8,7 @@ DeviceContext::~DeviceContext()
 
 bool DeviceContext::release()
 {
-	this->m_device_context->Release();
+	if(this->m_device_context) this->m_device_context->Release();
 	delete this;
 	return true;
 }
@@ -59,4 +59,14 @@ void DeviceContext::setVertexShader(VertexShader *vertex_shader)
 void DeviceContext::setPixelShader(PixelShader *pixel_shader)
 {
 	this->m_device_context->PSSetShader(pixel_shader->m_ps, nullptr, 0);
+}
+
+void DeviceContext::setConstantBuffer(VertexShader *vertex_shader, ConstantBuffer *buffer)
+{
+	this->m_device_context->VSSetConstantBuffers(0, 1, &buffer->m_buffer);
+}
+
+void DeviceContext::setConstantBuffer(PixelShader *pixel_shader, ConstantBuffer *buffer)
+{
+	this->m_device_context->PSSetConstantBuffers(0, 1, &buffer->m_buffer);
 }

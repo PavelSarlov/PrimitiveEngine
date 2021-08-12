@@ -8,7 +8,7 @@ VertexShader::~VertexShader()
 
 void VertexShader::release()
 {
-	this->m_vs->Release();
+	if(this->m_vs) this->m_vs->Release();
 	delete this;
 }
 
