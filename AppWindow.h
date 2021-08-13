@@ -25,12 +25,22 @@ public:
 	virtual void onUpdate() override;
 	virtual void onDestroy() override;
 
+public:
+	void updateQuadPosition();
+
 private:
 	SwapChain *m_swap_chain = nullptr;
 	VertexBuffer *m_vb = nullptr;
 	VertexShader *m_vs = nullptr;
 	PixelShader *m_ps = nullptr;
 	ConstantBuffer *m_cb = nullptr;
+
+private:
+	float m_old_delta = 0.0f;
+	float m_new_delta = 0.0f;
+	float m_delta_time = 0.0f;
+	float m_delta_pos = 0.0f;
+	float m_delta_scale = 0.0f;
 };
 
 #endif

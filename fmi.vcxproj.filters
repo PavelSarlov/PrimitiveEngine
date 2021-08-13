@@ -32,6 +32,9 @@
     <Filter Include="PrimitiveEngine\Graphics\ConstantBuffer">
       <UniqueIdentifier>{e3708ac3-a173-4998-9891-9d9980e13543}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PrimitiveEngine\Math">
+      <UniqueIdentifier>{09f11b32-1c84-42b5-8812-caf377abcd35}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -72,9 +75,6 @@
     <ClInclude Include="PrimitiveEngine.h">
       <Filter>PrimitiveEngine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Geometry.h">
-      <Filter>PrimitiveEngine\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="AppWindow.h">
       <Filter>App</Filter>
     </ClInclude>
@@ -95,6 +95,9 @@
     </ClInclude>
     <ClInclude Include="ConstantBuffer.h">
       <Filter>PrimitiveEngine\Graphics\ConstantBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Geometry.h">
+      <Filter>PrimitiveEngine\Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
