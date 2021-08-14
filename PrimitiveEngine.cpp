@@ -119,6 +119,11 @@ ConstantBuffer *PrimitiveEngine::createConstantBuffer()
 	return new ConstantBuffer();
 }
 
+IndexBuffer *PrimitiveEngine::createIndexBuffer()
+{
+	return new IndexBuffer();
+}
+
 bool PrimitiveEngine::compileVertexShader(const wchar_t *file_name, const char *entry_point_name, void **shader_byte_code, size_t *byte_code_size)
 {
 	ID3DBlob *error_blob = nullptr;

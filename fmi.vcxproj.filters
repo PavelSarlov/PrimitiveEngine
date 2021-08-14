@@ -35,6 +35,9 @@
     <Filter Include="PrimitiveEngine\Math">
       <UniqueIdentifier>{09f11b32-1c84-42b5-8812-caf377abcd35}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PrimitiveEngine\Graphics\IndexBuffer">
+      <UniqueIdentifier>{69da7116-14a8-402c-a045-2d2556f12d46}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -67,6 +70,9 @@
     <ClCompile Include="ConstantBuffer.cpp">
       <Filter>PrimitiveEngine\Graphics\ConstantBuffer</Filter>
     </ClCompile>
+    <ClCompile Include="IndexBuffer.cpp">
+      <Filter>PrimitiveEngine\Graphics\IndexBuffer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -98,6 +104,9 @@
     </ClInclude>
     <ClInclude Include="Geometry.h">
       <Filter>PrimitiveEngine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexBuffer.h">
+      <Filter>PrimitiveEngine\Graphics\IndexBuffer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

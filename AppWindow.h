@@ -11,6 +11,7 @@
 #include "DeviceContext.h"
 #include "VertexBuffer.h"
 #include "ConstantBuffer.h"
+#include "IndexBuffer.h"
 #include "PixelShader.h"
 #include "VertexShader.h"
 
@@ -34,6 +35,7 @@ private:
 	VertexShader *m_vs = nullptr;
 	PixelShader *m_ps = nullptr;
 	ConstantBuffer *m_cb = nullptr;
+	IndexBuffer *m_ib = nullptr;
 
 private:
 	float m_old_delta = 0.0f;

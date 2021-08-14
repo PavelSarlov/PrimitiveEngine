@@ -6,13 +6,17 @@
 
 #include "SwapChain.h"
 #include "VertexBuffer.h"
+#include "ConstantBuffer.h"
+#include "IndexBuffer.h"
 #include "VertexShader.h"
+#include "PixelShader.h"
 
 class SwapChain;
 class VertexBuffer;
+class ConstantBuffer;
+class IndexBuffer;
 class VertexShader;
 class PixelShader;
-class ConstantBuffer;
 
 class DeviceContext
 {
@@ -28,10 +32,12 @@ public:
 	void setPixelShader(PixelShader *pixel_shader);
 	void setConstantBuffer(VertexShader *vertex_shader, ConstantBuffer *buffer);
 	void setConstantBuffer(PixelShader *pixel_shader, ConstantBuffer *buffer);
+	void setIndexBuffer(IndexBuffer *index_buffer);
 
 public:
 	void clearRenderTargetColor(SwapChain *swap_chain, float red, float green, float blue, float alpha);
 	void drawTriangleList(UINT vertex_count, UINT start_vertex_index);
+	void drawIndexedTriangleList(UINT index_count, UINT start_index_location, UINT start_vertex_index);
 	void drawTriangleStrip(UINT vertex_count, UINT start_vertex_index);
 
 private:
