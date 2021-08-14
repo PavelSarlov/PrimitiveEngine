@@ -720,37 +720,31 @@ public:
 
 	inline static Matrix4x4 rotationX(float angleRad)
 	{
-		Matrix4x4 matrix;
-		matrix[0][0] = 1.0f;
+		Matrix4x4 matrix = Matrix4x4::identityMatrix();
 		matrix[1][1] = cosf(angleRad);
-		matrix[1][2] = -sinf(angleRad);
-		matrix[2][1] = sinf(angleRad);
+		matrix[1][2] = sinf(angleRad);
+		matrix[2][1] = -sinf(angleRad);
 		matrix[2][2] = cosf(angleRad);
-		matrix[3][3] = 1.0f;
 		return matrix;
 	}
 
 	inline static Matrix4x4 rotationY(float angleRad)
 	{
-		Matrix4x4 matrix;
+		Matrix4x4 matrix = Matrix4x4::identityMatrix();
 		matrix[0][0] = cosf(angleRad);
-		matrix[0][2] = sinf(angleRad);
-		matrix[2][0] = -sinf(angleRad);
+		matrix[0][2] = -sinf(angleRad);
+		matrix[2][0] = sinf(angleRad);
 		matrix[2][2] = cosf(angleRad);
-		matrix[1][1] = 1.0f;
-		matrix[3][3] = 1.0f;
 		return matrix;
 	}
 
 	inline static Matrix4x4 rotationZ(float angleRad)
 	{
-		Matrix4x4 matrix;
+		Matrix4x4 matrix = Matrix4x4::identityMatrix();
 		matrix[0][0] = cosf(angleRad);
-		matrix[0][1] = -sinf(angleRad);
-		matrix[1][0] = sinf(angleRad);
+		matrix[0][1] = sinf(angleRad);
+		matrix[1][0] = -sinf(angleRad);
 		matrix[1][1] = cosf(angleRad);
-		matrix[2][2] = 1.0f;
-		matrix[3][3] = 1.0f;
 		return matrix;
 	}
 
@@ -960,7 +954,6 @@ struct Vertex
 	}*/
 
 	Vector3 pos;
-	Vector3 pos1;
 	Vector3 color;
 	Vector3 color1;
 };
