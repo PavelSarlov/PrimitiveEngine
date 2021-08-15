@@ -14,8 +14,10 @@
 #include "IndexBuffer.h"
 #include "PixelShader.h"
 #include "VertexShader.h"
+#include "InputListener.h"
+#include "InputSystem.h"
 
-class AppWindow : public Window
+class AppWindow : public Window, public InputListener
 {
 public:
 	AppWindow();
@@ -25,6 +27,10 @@ public:
 	virtual void onCreate() override;
 	virtual void onUpdate() override;
 	virtual void onDestroy() override;
+
+public:
+	virtual void onKeyDown(USHORT key) override;
+	virtual void onKeyUp(USHORT key) override;
 
 public:
 	void updateQuadPosition();
@@ -43,6 +49,9 @@ private:
 	float m_delta_time = 0.0f;
 	float m_delta_pos = 0.0f;
 	float m_delta_scale = 0.0f;
+
+	float m_rot_x = 0.0f;
+	float m_rot_y = 0.0f;
 };
 
 #endif

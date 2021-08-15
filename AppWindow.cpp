@@ -9,9 +9,11 @@ AppWindow::~AppWindow()
 void AppWindow::onCreate()
 {
 	Window::onCreate();
-	PrimitiveEngine::get()->init();
 
-	// init swap chain
+	InputSystem::get()->addListener(this);
+
+	// init graphics engine and swap chain
+	PrimitiveEngine::get()->init();
 	this->m_swap_chain = PrimitiveEngine::get()->createSwapChain();
 	RECT rect = this->getClientWindowRect();
 	this->m_swap_chain->init(this->m_hwnd, rect.right - rect.left, rect.bottom - rect.top);
@@ -87,6 +89,8 @@ void AppWindow::onUpdate()
 {
 	Window::onUpdate();
 
+	InputSystem::get()->update();
+
 	// clear render target
 	PrimitiveEngine::get()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain, 0, 0.3f, 0.4f, 1);
 
@@ -117,7 +121,7 @@ void AppWindow::onUpdate()
 	// timing
 	this->m_old_delta = this->m_new_delta;
 	this->m_new_delta = ::GetTickCount();
-	this->m_delta_time = (this->m_new_delta - this->m_old_delta) / 1000.0f; //(this->m_old_delta) ? ((this->m_new_delta - this->m_old_delta) / 1000.0f) : 0;
+	this->m_delta_time = (this->m_new_delta - this->m_old_delta) / 1000.0f;
 }
 
 void AppWindow::onDestroy()
@@ -158,13 +162,13 @@ void AppWindow::updateQuadPosition()
 
 	cc.m_world = Matrix4x4::scaleMatrix(1, 1, 1);
 
-	temp = Matrix4x4::rotationZ(m_delta_scale);
+	temp = Matrix4x4::rotationZ(0.0f);
 	cc.m_world *= temp;
 
-	temp = Matrix4x4::rotationY(m_delta_scale);
+	temp = Matrix4x4::rotationY(this->m_rot_y);
 	cc.m_world *= temp;
 
-	temp = Matrix4x4::rotationX(m_delta_scale);
+	temp = Matrix4x4::rotationX(this->m_rot_x);
 	cc.m_world *= temp;
 
 	cc.m_view = Matrix4x4::identityMatrix();
@@ -179,4 +183,45 @@ void AppWindow::updateQuadPosition()
 
 
 	this->m_cb->update(PrimitiveEngine::get()->getImmediateDeviceContext(), &cc);
+}
+
+void AppWindow::onKeyDown(USHORT key)
+{
+	if(key == 'W')
+	{
+		m_rot_x += 3.14f * this->m_delta_time;
+	}
+	else if(key == 'S')
+	{
+		m_rot_x -= 3.14f * this->m_delta_time;
+	}
+	else if(key == 'A')
+	{
+		m_rot_y += 3.14f * this->m_delta_time;
+	}
+	else if(key == 'D')
+	{
+		m_rot_y -= 3.14f * this->m_delta_time;
+	}
+}
+
+void AppWindow::onKeyUp(USHORT key)
+{
+	// test
+	if(key == 'W')
+	{
+		m_rot_x += 3.14f * this->m_delta_time;
+	}
+	else if(key == 'S')
+	{
+		m_rot_x -= 3.14f * this->m_delta_time;
+	}
+	else if(key == 'A')
+	{
+		m_rot_y += 3.14f * this->m_delta_time;
+	}
+	else if(key == 'D')
+	{
+		m_rot_y -= 3.14f * this->m_delta_time;
+	}
 }
