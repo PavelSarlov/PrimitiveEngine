@@ -34,14 +34,14 @@ public:
 	virtual void onKeyDown(USHORT key) override;
 	virtual void onKeyUp(USHORT key) override;
 
-	virtual void onMouseMove(const Point &delta_mouse_pos) override;
-	virtual void onLeftMouseDown(const Point &delta_mouse_pos) override;
-	virtual void onLeftMouseUp(const Point &delta_mouse_pos) override;
-	virtual void onRightMouseDown(const Point &delta_mouse_pos) override;
-	virtual void onRightMouseUp(const Point &delta_mouse_pos) override;
+	virtual void onMouseMove(const Point &mouse_pos) override;
+	virtual void onLeftMouseDown(const Point &mouse_pos) override;
+	virtual void onLeftMouseUp(const Point &mouse_pos) override;
+	virtual void onRightMouseDown(const Point &mouse_pos) override;
+	virtual void onRightMouseUp(const Point &mouse_pos) override;
 
 public:
-	void updateQuadPosition();
+	void update();
 
 private:
 	SwapChain *m_swap_chain = nullptr;
@@ -52,8 +52,8 @@ private:
 	IndexBuffer *m_ib = nullptr;
 
 private:
-	ULONG m_old_delta = 0.0f;
-	ULONG m_new_delta = 0.0f;
+	ULONG m_old_delta = 0;
+	ULONG m_new_delta = 0;
 
 	float m_delta_time = 0.0f;
 	float m_delta_pos = 0.0f;
@@ -62,7 +62,11 @@ private:
 	float m_rot_x = 0.0f;
 	float m_rot_y = 0.0f;
 
-	float m_scale_cube = 0.0f;
+	float m_scale_cube = 1.0f;
+	float m_forward = 0.0f;
+	float m_rightward = 0.0f;
+
+	Matrix4x4 m_world_cam;
 };
 
 #endif

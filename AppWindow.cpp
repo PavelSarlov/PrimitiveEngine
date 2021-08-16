@@ -10,7 +10,10 @@ void AppWindow::onCreate()
 {
 	Window::onCreate();
 
+	this->m_world_cam = Matrix4x4::translationMatrix(0, 0, -2);
+
 	InputSystem::get()->addListener(this);
+	InputSystem::get()->showCursor(false);
 
 	// init graphics engine and swap chain
 	PrimitiveEngine::get()->init();
@@ -99,7 +102,7 @@ void AppWindow::onUpdate()
 	PrimitiveEngine::get()->getImmediateDeviceContext()->setViewPortSize(rect.right - rect.left, rect.bottom - rect.top);
 
 	// update constant buffer
-	this->updateQuadPosition();
+	this->update();
 
 	// bind the constant buffer to the graphics pipeline for each shader
 	PrimitiveEngine::get()->getImmediateDeviceContext()->setConstantBuffer(this->m_vs, this->m_cb);
@@ -146,7 +149,7 @@ void AppWindow::onKillFocus()
 	InputSystem::get()->removeListener(this);
 }
 
-void AppWindow::updateQuadPosition()
+void AppWindow::update()
 {
 	Constant cc = {};
 	cc.m_time = ::GetTickCount();
@@ -170,7 +173,7 @@ void AppWindow::updateQuadPosition()
 
 	cc.m_world *= temp;*/
 
-	cc.m_world = Matrix4x4::scaleMatrix(this->m_scale_cube, this->m_scale_cube, this->m_scale_cube);
+	/*cc.m_world = Matrix4x4::scaleMatrix(this->m_scale_cube, this->m_scale_cube, this->m_scale_cube);
 
 	temp = Matrix4x4::rotationZ(0.0f);
 	cc.m_world *= temp;
@@ -179,16 +182,33 @@ void AppWindow::updateQuadPosition()
 	cc.m_world *= temp;
 
 	temp = Matrix4x4::rotationX(this->m_rot_x);
-	cc.m_world *= temp;
+	cc.m_world *= temp;*/
 
-	cc.m_view = Matrix4x4::identityMatrix();
-	cc.m_proj = Matrix4x4::orthogonalProjMatrix
-	(
-		(this->getClientWindowRect().right - this->getClientWindowRect().left) / 300.0f,
-		(this->getClientWindowRect().bottom - this->getClientWindowRect().top) / 300.0f,
-		-4.0f,
-		4.0f
-	);
+	cc.m_world = Matrix4x4::identityMatrix();
+	Matrix4x4 world_cam = Matrix4x4::identityMatrix();
+
+	world_cam *= Matrix4x4::rotationX(m_rot_x);
+	world_cam *= Matrix4x4::rotationY(m_rot_y);
+
+	Vector3 new_pos = this->m_world_cam.getTranslation() + world_cam.getDirectionZ() * this->m_forward * 0.3f + world_cam.getDirectionX() * this->m_rightward * 0.3f;
+
+	world_cam.setTranslation(new_pos);
+	this->m_world_cam = world_cam;
+	world_cam = world_cam.inversedMatrix();
+
+	cc.m_view = world_cam;
+	//cc.m_proj = Matrix4x4::orthogonalProjMatrix
+	//(
+	//	(this->getClientWindowRect().right - this->getClientWindowRect().left) / 300.0f,
+	//	(this->getClientWindowRect().bottom - this->getClientWindowRect().top) / 300.0f,
+	//	-4.0f,
+	//	4.0f
+	//);
+
+	int width = (this->getClientWindowRect().right - this->getClientWindowRect().left);
+	int height = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
+
+	cc.m_proj = Matrix4x4::perspectiveFovMatrix(1.57f, ((float)width / (float)height), 0.1f, 100.0f);
 
 
 	this->m_cb->update(PrimitiveEngine::get()->getImmediateDeviceContext(), &cc);
@@ -200,50 +220,80 @@ void AppWindow::onKeyDown(USHORT key)
 	{
 	case 'W':
 	{
-		m_rot_x += 3.14f * this->m_delta_time;
+		//m_rot_x += 3.14f * this->m_delta_time;
+		this->m_forward = 1.0f;
+
+		break;
 	}
 	case 'S':
 	{
-		m_rot_x -= 3.14f * this->m_delta_time;
+		// m_rot_x -= 3.14f * this->m_delta_time;
+		this->m_forward = -1.0f;
+		break;
 	}
 	case 'A':
 	{
-		m_rot_y += 3.14f * this->m_delta_time;
+		// m_rot_y += 3.14f * this->m_delta_time;
+		this->m_rightward = -1.0f;
+
+		break;
 	}
 	case 'D':
 	{
-		m_rot_y -= 3.14f * this->m_delta_time;
+		// m_rot_y -= 3.14f * this->m_delta_time;
+		this->m_rightward = 1.0f;
+
+		break;
 	}
 	}
 }
 
 void AppWindow::onKeyUp(USHORT key)
 {
-
+	switch(key)
+	{
+	case 'W':
+	case 'S':
+	{
+		this->m_forward = 0.0f;
+		break;
+	}
+	case 'A':
+	case 'D':
+	{
+		this->m_rightward = 0.0f;
+		break;
+	}
+	}
 }
 
-void AppWindow::onMouseMove(const Point &delta_mouse_pos)
+void AppWindow::onMouseMove(const Point &mouse_pos)
 {
-	this->m_rot_x -= delta_mouse_pos.m_y * this->m_delta_time;
-	this->m_rot_y -= delta_mouse_pos.m_x * this->m_delta_time;
+	int width = (this->getClientWindowRect().right - this->getClientWindowRect().left);
+	int height = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
+
+	this->m_rot_x += (mouse_pos.m_y - (height / 2.0f)) * this->m_delta_time * 0.1f;
+	this->m_rot_y += (mouse_pos.m_x - (width / 2.0f)) * this->m_delta_time * 0.1f;
+
+	InputSystem::get()->setCursorPos(Point(width / 2, height / 2));
 }
 
-void AppWindow::onLeftMouseDown(const Point &delta_mouse_pos)
+void AppWindow::onLeftMouseDown(const Point &mouse_pos)
 {
 	this->m_scale_cube = 0.5f;
 }
 
-void AppWindow::onLeftMouseUp(const Point &delta_mouse_pos)
+void AppWindow::onLeftMouseUp(const Point &mouse_pos)
 {
 	this->m_scale_cube = 1.0f;
 }
 
-void AppWindow::onRightMouseDown(const Point &delta_mouse_pos)
+void AppWindow::onRightMouseDown(const Point &mouse_pos)
 {
 	this->m_scale_cube = 2.0f;
 }
 
-void AppWindow::onRightMouseUp(const Point &delta_mouse_pos)
+void AppWindow::onRightMouseUp(const Point &mouse_pos)
 {
 	this->m_scale_cube = 1.0f;
 }

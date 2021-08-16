@@ -21,6 +21,9 @@ public:
 	void update();
 	void addListener(InputListener *listener);
 	void removeListener(InputListener *listener);
+	
+	void setCursorPos(const Point &pos);
+	void showCursor(bool show);
 
 private:
 	std::unordered_set<InputListener *> m_listeners;

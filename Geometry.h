@@ -70,12 +70,12 @@ public:
 
 	inline Vector3 operator+(const Vector3 &other)
 	{
-		return {x + other.x, y + other.y, z + other.z};
+		return { x + other.x, y + other.y, z + other.z };
 	}
 
 	inline Vector3 operator-(const Vector3 &other)
 	{
-		return {x - other.x, y - other.y, z - other.z};
+		return { x - other.x, y - other.y, z - other.z };
 	}
 
 	inline float operator*(const Vector3 &other)
@@ -85,14 +85,14 @@ public:
 
 	inline Vector3 operator*(float a)
 	{
-		return {x * a, y * a, z * a};
+		return { x * a, y * a, z * a };
 	}
 
 	inline Vector3 operator/(float a)
 	{
 		if(a != 0.0f)
 		{
-			return {x / a, y / a, z / a};
+			return { x / a, y / a, z / a };
 		}
 		return *this;
 	}
@@ -133,7 +133,7 @@ public:
 
 	inline Vector3 crossProduct(const Vector3 &other)
 	{
-		return {y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x};
+		return { y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x };
 	}
 
 	inline static Vector3 lerp(const Vector3 &start, const Vector3 &end, float delta)
@@ -213,17 +213,17 @@ public:
 
 	inline Vector4 operator+(const Vector4 &other)
 	{
-		return {x + other.x, y + other.y, z + other.z};
+		return { x + other.x, y + other.y, z + other.z };
 	}
 
 	inline Vector4 operator-(const Vector4 &other)
 	{
-		return {x - other.x, y - other.y, z - other.z};
+		return { x - other.x, y - other.y, z - other.z };
 	}
 
 	inline Vector4 operator*(float a)
 	{
-		return {x * a, y * a, z * a};
+		return { x * a, y * a, z * a };
 	}
 
 	inline float operator*(const Vector4 &other)
@@ -234,7 +234,7 @@ public:
 	inline Vector4 operator/(float a)
 	{
 		if(a != 0.0f)
-			return {x / a, y / a, z / a};
+			return { x / a, y / a, z / a };
 		return *this;
 	}
 
@@ -287,7 +287,7 @@ public:
 
 	inline Vector4 crossProduct(const Vector4 &other)
 	{
-		return {y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x};
+		return { y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x };
 	}
 
 public:
@@ -299,7 +299,7 @@ class Matrix3x3
 public:
 	Matrix3x3()
 	{
-		for(auto &r : this->m)
+		for(auto &r : this->m_mat)
 		{
 			for(auto &c : r)
 			{
@@ -314,7 +314,7 @@ public:
 		{
 			for(int j = 0; j < 3; j++)
 			{
-				this->m[i][j] = matrix[i][j];
+				this->m_mat[i][j] = matrix[i][j];
 			}
 		}
 	}
@@ -332,7 +332,7 @@ public:
 			{
 				for(int j = 0; j < 3; j++)
 				{
-					this->m[i][j] = other.m[i][j];
+					this->m_mat[i][j] = other.m_mat[i][j];
 				}
 			}
 		}
@@ -345,7 +345,7 @@ public:
 		{
 			for(int j = 0; j < 3; j++)
 			{
-				out << ' ' << matrix.m[i][j];
+				out << ' ' << matrix.m_mat[i][j];
 			}
 			out << std::endl;
 		}
@@ -358,7 +358,7 @@ public:
 		{
 			for(int j = 0; j < 3; j++)
 			{
-				in >> matrix.m[i][j];
+				in >> matrix.m_mat[i][j];
 			}
 		}
 		return in;
@@ -367,7 +367,7 @@ public:
 	inline float *operator[](int row)
 	{
 		if(row >= 0 && row < 3)
-			return this->m[row];
+			return this->m_mat[row];
 	}
 
 	inline Matrix3x3 operator+(const Matrix3x3 &other)
@@ -377,7 +377,7 @@ public:
 		{
 			for(int j = 0; j < 3; j++)
 			{
-				result[i][j] = m[i][j] + other.m[i][j];
+				result[i][j] = m_mat[i][j] + other.m_mat[i][j];
 			}
 		}
 		return result;
@@ -390,7 +390,7 @@ public:
 		{
 			for(int j = 0; j < 3; j++)
 			{
-				result[i][j] = m[i][j] - other.m[i][j];
+				result[i][j] = m_mat[i][j] - other.m_mat[i][j];
 			}
 		}
 		return result;
@@ -403,7 +403,7 @@ public:
 		{
 			for(int j = 0; j < 3; j++)
 			{
-				result[i][j] = m[i][j] * a;
+				result[i][j] = m_mat[i][j] * a;
 			}
 		}
 		return result;
@@ -416,7 +416,7 @@ public:
 		{
 			for(int j = 0; j < 3; j++)
 			{
-				result[i][j] = m[i][0] * other.m[0][j] + m[i][1] * other.m[1][j] + m[i][2] * other.m[2][j];
+				result[i][j] = m_mat[i][0] * other.m_mat[0][j] + m_mat[i][1] * other.m_mat[1][j] + m_mat[i][2] * other.m_mat[2][j];
 			}
 		}
 		return result;
@@ -429,7 +429,7 @@ public:
 		{
 			for(int j = 0; j < 3; j++)
 			{
-				result[i][j] = m[i][j] / a;
+				result[i][j] = m_mat[i][j] / a;
 			}
 		}
 		return result;
@@ -458,7 +458,7 @@ public:
 		{
 			for(int j = 0; j < 3; j++)
 			{
-				result[i][j] = m[j][i];
+				result[i][j] = m_mat[j][i];
 			}
 		}
 		return result;
@@ -475,12 +475,12 @@ public:
 
 	inline float determinant()
 	{
-		return m[0][0] * m[1][1] * m[2][2] +
-			m[0][1] * m[1][2] * m[2][0] +
-			m[0][2] * m[2][1] * m[1][0] -
-			(m[2][0] * m[1][1] * m[0][2] +
-				m[0][1] * m[1][0] * m[2][2] +
-				m[0][0] * m[1][2] * m[2][1]);
+		return m_mat[0][0] * m_mat[1][1] * m_mat[2][2] +
+			m_mat[0][1] * m_mat[1][2] * m_mat[2][0] +
+			m_mat[0][2] * m_mat[2][1] * m_mat[1][0] -
+			(m_mat[2][0] * m_mat[1][1] * m_mat[0][2] +
+				m_mat[0][1] * m_mat[1][0] * m_mat[2][2] +
+				m_mat[0][0] * m_mat[1][2] * m_mat[2][1]);
 	}
 
 	inline static Matrix3x3 rotationX(float angleRad)
@@ -526,7 +526,7 @@ public:
 	}
 
 public:
-	float m[3][3] = {};
+	float m_mat[3][3] = {};
 };
 
 class Matrix4x4
@@ -534,7 +534,7 @@ class Matrix4x4
 public:
 	Matrix4x4()
 	{
-		for(auto &r : this->m)
+		for(auto &r : this->m_mat)
 		{
 			for(auto &c : r)
 			{
@@ -549,7 +549,7 @@ public:
 		{
 			for(int j = 0; j < 4; j++)
 			{
-				this->m[i][j] = matrix[i][j];
+				this->m_mat[i][j] = matrix[i][j];
 			}
 		}
 	}
@@ -567,7 +567,7 @@ public:
 			{
 				for(int j = 0; j < 4; j++)
 				{
-					this->m[i][j] = other.m[i][j];
+					this->m_mat[i][j] = other.m_mat[i][j];
 				}
 			}
 		}
@@ -580,7 +580,7 @@ public:
 		{
 			for(int j = 0; j < 4; j++)
 			{
-				out << ' ' << matrix.m[i][j];
+				out << ' ' << matrix.m_mat[i][j];
 			}
 			out << std::endl;
 		}
@@ -593,7 +593,7 @@ public:
 		{
 			for(int j = 0; j < 4; j++)
 			{
-				in >> matrix.m[i][j];
+				in >> matrix.m_mat[i][j];
 			}
 		}
 		return in;
@@ -601,7 +601,7 @@ public:
 
 	inline float *operator[](int row)
 	{
-		return this->m[row];
+		return this->m_mat[row];
 	}
 
 	inline Matrix4x4 operator+(const Matrix4x4 &other)
@@ -611,7 +611,7 @@ public:
 		{
 			for(int j = 0; j < 4; j++)
 			{
-				result[i][j] = m[i][j] + other.m[i][j];
+				result[i][j] = m_mat[i][j] + other.m_mat[i][j];
 			}
 		}
 		return result;
@@ -624,7 +624,7 @@ public:
 		{
 			for(int j = 0; j < 4; j++)
 			{
-				result[i][j] = m[i][j] - other.m[i][j];
+				result[i][j] = m_mat[i][j] - other.m_mat[i][j];
 			}
 		}
 		return result;
@@ -637,7 +637,7 @@ public:
 		{
 			for(int j = 0; j < 4; j++)
 			{
-				result[i][j] = m[i][j] * a;
+				result[i][j] = m_mat[i][j] * a;
 			}
 		}
 		return result;
@@ -650,7 +650,7 @@ public:
 		{
 			for(int j = 0; j < 4; j++)
 			{
-				result[i][j] = m[i][0] * other.m[0][j] + m[i][1] * other.m[1][j] + m[i][2] * other.m[2][j] + m[i][3] * other.m[3][j];
+				result[i][j] = m_mat[i][0] * other.m_mat[0][j] + m_mat[i][1] * other.m_mat[1][j] + m_mat[i][2] * other.m_mat[2][j] + m_mat[i][3] * other.m_mat[3][j];
 			}
 		}
 		return result;
@@ -661,7 +661,7 @@ public:
 		Vector4 result;
 		for(int i = 0; i < 4; i++)
 		{
-			result[i] = m[i][0] * v.x + m[i][1] * v.y + m[i][2] * v.z + m[i][3] * v.t;
+			result[i] = m_mat[i][0] * v.x + m_mat[i][1] * v.y + m_mat[i][2] * v.z + m_mat[i][3] * v.t;
 		}
 		return result;
 	}
@@ -673,7 +673,7 @@ public:
 		{
 			for(int j = 0; j < 4; j++)
 			{
-				result[i][j] = m[i][j] / a;
+				result[i][j] = m_mat[i][j] / a;
 			}
 		}
 		return result;
@@ -702,7 +702,7 @@ public:
 		{
 			for(int j = 0; j < 4; j++)
 			{
-				result[i][j] = m[j][i];
+				result[i][j] = m_mat[j][i];
 			}
 		}
 		return result;
@@ -755,13 +755,13 @@ public:
 		{
 			for(int j = 0; j < 3; j++)
 			{
-				m1[i][j] = m[i + 1][j + 1];
-				m2[i][j] = m[i + 1][j == 0 ? j : j + 1];
-				m3[i][j] = m[i + 1][j <= 1 ? j : j + 1];
-				m4[i][j] = m[i + 1][j];
+				m1[i][j] = m_mat[i + 1][j + 1];
+				m2[i][j] = m_mat[i + 1][j == 0 ? j : j + 1];
+				m3[i][j] = m_mat[i + 1][j <= 1 ? j : j + 1];
+				m4[i][j] = m_mat[i + 1][j];
 			}
 		}
-		return m[0][0] * m1.determinant() - m[0][1] * m2.determinant() + m[0][2] * m3.determinant() - m[0][3] * m4.determinant();
+		return m_mat[0][0] * m1.determinant() - m_mat[0][1] * m2.determinant() + m_mat[0][2] * m3.determinant() - m_mat[0][3] * m4.determinant();
 	}
 
 	inline Matrix4x4 inversedMatrix()
@@ -781,7 +781,7 @@ public:
 						{
 							if(j != c)
 							{
-								adj[ii][jj++] = m[i][j];
+								adj[ii][jj++] = m_mat[i][j];
 							}
 						}
 						ii++;
@@ -820,6 +820,18 @@ public:
 		return matrix;
 	}
 
+	inline void setTranslation(float x, float y, float z)
+	{
+		this->setTranslation(Vector3(x, y, z));
+	}
+
+	inline void setTranslation(const Vector3 &translation)
+	{
+		this->m_mat[3][0] = translation.x;
+		this->m_mat[3][1] = translation.y;
+		this->m_mat[3][2] = translation.z;
+	}
+
 	inline static Matrix4x4 orthogonalProjMatrix(float width, float height, float near_plane, float far_plane)
 	{
 		Matrix4x4 matrix = Matrix4x4::identityMatrix();
@@ -827,6 +839,20 @@ public:
 		matrix[1][1] = 2.0f / height;
 		matrix[2][2] = 1.0f / (far_plane - near_plane);
 		matrix[3][2] = -(near_plane / (far_plane - near_plane));
+		return matrix;
+	}
+
+	inline static Matrix4x4 perspectiveFovMatrix(float fov, float aspect, float zNear, float zFar)
+	{
+		float yScale = 1.0f / tanf(fov / 2.0f);
+		float xScale = yScale / aspect;
+
+		Matrix4x4 matrix = Matrix4x4::identityMatrix();
+		matrix[0][0] = xScale;
+		matrix[1][1] = yScale;
+		matrix[2][2] = zFar / (zFar - zNear);
+		matrix[2][3] = 1.0f;
+		matrix[3][2] = (-zNear * zFar) / (zFar - zNear);
 		return matrix;
 	}
 
@@ -842,6 +868,18 @@ public:
 		matrix[1][1] = scale.y;
 		matrix[2][2] = scale.z;
 		return matrix;
+	}
+
+	inline void setScale(float x, float y, float z)
+	{
+		return this->setScale(Vector3(x, y, z));
+	}
+
+	inline void setScale(const Vector3 &scale)
+	{
+		this->m_mat[0][0] = scale.x;
+		this->m_mat[1][1] = scale.y;
+		this->m_mat[2][2] = scale.z;
 	}
 
 	inline static Matrix4x4 pointAtMatrix(Vector4 camLocation, Vector4 camRight, Vector4 camUp, Vector4 camForward, Vector4 target)
@@ -909,6 +947,21 @@ public:
 		return result;
 	}
 
+	inline Vector3 getDirectionZ()
+	{
+		return { this->m_mat[2][0], this->m_mat[2][1], this->m_mat[2][2] };
+	}
+
+	inline Vector3 getDirectionX()
+	{
+		return { this->m_mat[0][0], this->m_mat[0][1], this->m_mat[0][2] };
+	}
+
+	inline Vector3 getTranslation()
+	{
+		return { this->m_mat[3][0], this->m_mat[3][1], this->m_mat[3][2] };
+	}
+
 private:
 	inline void swapRows(float row1[], float row2[])
 	{
@@ -921,7 +974,7 @@ private:
 	}
 
 public:
-	float m[4][4] = {};
+	float m_mat[4][4] = {};
 };
 
 struct Vertex
