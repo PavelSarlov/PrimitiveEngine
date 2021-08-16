@@ -34,6 +34,8 @@ public:
 	virtual void onCreate();
 	virtual void onUpdate();
 	virtual void onDestroy();
+	virtual void onFocus();
+	virtual void onKillFocus();
 
 protected:
 	HWND m_hwnd = nullptr;

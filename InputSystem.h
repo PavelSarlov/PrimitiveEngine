@@ -2,10 +2,11 @@
 #ifndef INPUTSYSTEM_H
 #define INPUTSYSTEM_H
 
-#include <map>
+#include <unordered_set>
 #include <Windows.h>
 
 #include "InputListener.h"
+#include "Point.h"
 
 class InputSystem
 {
@@ -22,9 +23,11 @@ public:
 	void removeListener(InputListener *listener);
 
 private:
-	std::map<InputListener *, InputListener *> m_map_listeners;
+	std::unordered_set<InputListener *> m_listeners;
 	UCHAR m_keys_state[256] = {};
 	UCHAR m_old_keys_state[256] = {};
+	Point m_old_mouse_pos = Point();
+	bool m_first_time = true;
 };
 
 #endif // !INPUTSYSTEM_H

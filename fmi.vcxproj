@@ -40,6 +40,7 @@
     <ClInclude Include="InputListener.h" />
     <ClInclude Include="InputSystem.h" />
     <ClInclude Include="PixelShader.h" />
+    <ClInclude Include="Point.h" />
     <ClInclude Include="PrimitiveEngine.h" />
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="SwapChain.h" />

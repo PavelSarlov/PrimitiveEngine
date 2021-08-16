@@ -120,7 +120,7 @@ void AppWindow::onUpdate()
 
 	// timing
 	this->m_old_delta = this->m_new_delta;
-	this->m_new_delta = ::GetTickCount();
+	this->m_new_delta = ::GetTickCount64();
 	this->m_delta_time = (this->m_new_delta - this->m_old_delta) / 1000.0f;
 }
 
@@ -134,6 +134,16 @@ void AppWindow::onDestroy()
 	this->m_vs->release();
 	this->m_ps->release();
 	PrimitiveEngine::get()->release();
+}
+
+void AppWindow::onFocus()
+{
+	InputSystem::get()->addListener(this);
+}
+
+void AppWindow::onKillFocus()
+{
+	InputSystem::get()->removeListener(this);
 }
 
 void AppWindow::updateQuadPosition()
@@ -160,7 +170,7 @@ void AppWindow::updateQuadPosition()
 
 	cc.m_world *= temp;*/
 
-	cc.m_world = Matrix4x4::scaleMatrix(1, 1, 1);
+	cc.m_world = Matrix4x4::scaleMatrix(this->m_scale_cube, this->m_scale_cube, this->m_scale_cube);
 
 	temp = Matrix4x4::rotationZ(0.0f);
 	cc.m_world *= temp;
@@ -181,47 +191,59 @@ void AppWindow::updateQuadPosition()
 	);
 
 
-
 	this->m_cb->update(PrimitiveEngine::get()->getImmediateDeviceContext(), &cc);
 }
 
 void AppWindow::onKeyDown(USHORT key)
 {
-	if(key == 'W')
+	switch(key)
+	{
+	case 'W':
 	{
 		m_rot_x += 3.14f * this->m_delta_time;
 	}
-	else if(key == 'S')
+	case 'S':
 	{
 		m_rot_x -= 3.14f * this->m_delta_time;
 	}
-	else if(key == 'A')
+	case 'A':
 	{
 		m_rot_y += 3.14f * this->m_delta_time;
 	}
-	else if(key == 'D')
+	case 'D':
 	{
 		m_rot_y -= 3.14f * this->m_delta_time;
+	}
 	}
 }
 
 void AppWindow::onKeyUp(USHORT key)
 {
-	// test
-	if(key == 'W')
-	{
-		m_rot_x += 3.14f * this->m_delta_time;
-	}
-	else if(key == 'S')
-	{
-		m_rot_x -= 3.14f * this->m_delta_time;
-	}
-	else if(key == 'A')
-	{
-		m_rot_y += 3.14f * this->m_delta_time;
-	}
-	else if(key == 'D')
-	{
-		m_rot_y -= 3.14f * this->m_delta_time;
-	}
+
+}
+
+void AppWindow::onMouseMove(const Point &delta_mouse_pos)
+{
+	this->m_rot_x -= delta_mouse_pos.m_y * this->m_delta_time;
+	this->m_rot_y -= delta_mouse_pos.m_x * this->m_delta_time;
+}
+
+void AppWindow::onLeftMouseDown(const Point &delta_mouse_pos)
+{
+	this->m_scale_cube = 0.5f;
+}
+
+void AppWindow::onLeftMouseUp(const Point &delta_mouse_pos)
+{
+	this->m_scale_cube = 1.0f;
+}
+
+void AppWindow::onRightMouseDown(const Point &delta_mouse_pos)
+{
+	this->m_scale_cube = 2.0f;
+}
+
+void AppWindow::onRightMouseUp(const Point &delta_mouse_pos)
+{
+	this->m_scale_cube = 1.0f;
 }

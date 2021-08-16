@@ -27,10 +27,18 @@ public:
 	virtual void onCreate() override;
 	virtual void onUpdate() override;
 	virtual void onDestroy() override;
+	virtual void onFocus() override;
+	virtual void onKillFocus() override;
 
 public:
 	virtual void onKeyDown(USHORT key) override;
 	virtual void onKeyUp(USHORT key) override;
+
+	virtual void onMouseMove(const Point &delta_mouse_pos) override;
+	virtual void onLeftMouseDown(const Point &delta_mouse_pos) override;
+	virtual void onLeftMouseUp(const Point &delta_mouse_pos) override;
+	virtual void onRightMouseDown(const Point &delta_mouse_pos) override;
+	virtual void onRightMouseUp(const Point &delta_mouse_pos) override;
 
 public:
 	void updateQuadPosition();
@@ -44,14 +52,17 @@ private:
 	IndexBuffer *m_ib = nullptr;
 
 private:
-	float m_old_delta = 0.0f;
-	float m_new_delta = 0.0f;
+	ULONG m_old_delta = 0.0f;
+	ULONG m_new_delta = 0.0f;
+
 	float m_delta_time = 0.0f;
 	float m_delta_pos = 0.0f;
 	float m_delta_scale = 0.0f;
 
 	float m_rot_x = 0.0f;
 	float m_rot_y = 0.0f;
+
+	float m_scale_cube = 0.0f;
 };
 
 #endif

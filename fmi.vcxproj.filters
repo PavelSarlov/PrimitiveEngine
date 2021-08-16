@@ -120,6 +120,9 @@
     <ClInclude Include="InputListener.h">
       <Filter>PrimitiveEngine\Input</Filter>
     </ClInclude>
+    <ClInclude Include="Point.h">
+      <Filter>PrimitiveEngine\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">
