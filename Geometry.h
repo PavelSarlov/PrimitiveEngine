@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 
+class Vector2;
 class Vector3;
 class Vector4;
 class Matrix3x3;
@@ -10,6 +11,117 @@ class Matrix4x4;
 struct Vertex;
 class Triangle;
 class Mesh;
+
+class Vector2
+{
+public:
+	Vector2() : Vector2(0)
+	{}
+
+	Vector2(float a) : Vector2(a, a)
+	{}
+
+	Vector2(float x, float y) : Vector2(std::vector<float>{x, y})
+	{}
+
+	Vector2(const std::vector<float> &p)
+	{
+		this->m_x = p[0];
+		this->y = p[1];
+	}
+
+	Vector2(const Vector2 &other)
+	{
+		*this = other;
+	}
+
+	inline Vector2 &operator=(const Vector2 &other)
+	{
+		if(this != &other)
+		{
+			this->m_x = other.m_x;
+			this->y = other.y;
+		}
+		return *this;
+	}
+
+	inline float &operator[](int index)
+	{
+		switch(index)
+		{
+		case 0: return this->m_x;
+		case 1: return this->y;
+		default: throw std::out_of_range("Index out of range");
+		}
+	}
+
+	inline friend std::ostream &operator<<(std::ostream &out, const Vector2 &vec)
+	{
+		out << ' ' << vec.m_x << ' ' << vec.y;
+		return out;
+	}
+
+	inline friend std::istream &operator>>(std::istream &in, Vector2 &vec)
+	{
+		in >> vec.m_x >> vec.y;
+		return in;
+	}
+
+	inline Vector2 operator+(const Vector2 &other)
+	{
+		return { m_x + other.m_x, y + other.y };
+	}
+
+	inline Vector2 operator-(const Vector2 &other)
+	{
+		return { m_x - other.m_x, y - other.y };
+	}
+
+	inline float operator*(const Vector2 &other)
+	{
+		return m_x * other.m_x + y * other.y;
+	}
+
+	inline Vector2 operator*(float a)
+	{
+		return { m_x * a, y * a };
+	}
+
+	inline Vector2 operator/(float a)
+	{
+		if(a != 0.0f)
+		{
+			return { m_x / a, y / a };
+		}
+		return *this;
+	}
+
+	inline void operator+=(const Vector2 &other)
+	{
+		m_x += other.m_x; y += other.y;
+	}
+
+	inline void operator-=(const Vector2 &other)
+	{
+		m_x -= other.m_x; y -= other.y;
+	}
+
+	inline void operator*=(float a)
+	{
+		m_x *= a; y *= a;
+	}
+
+	inline void operator/=(float a)
+	{
+		if(a != 0.0f)
+		{
+			m_x /= a; y /= a;
+		}
+	}
+
+public:
+	float m_x, y;
+};
 
 class Vector3
 {
@@ -25,7 +137,7 @@ public:
 
 	Vector3(const std::vector<float> &p)
 	{
-		this->x = p[0];
+		this->m_x = p[0];
 		this->y = p[1];
 		this->z = p[2];
 	}
@@ -39,7 +151,7 @@ public:
 	{
 		if(this != &other)
 		{
-			this->x = other.x;
+			this->m_x = other.m_x;
 			this->y = other.y;
 			this->z = other.z;
 		}
@@ -50,80 +162,81 @@ public:
 	{
 		switch(index)
 		{
-		case 0: return this->x;
+		case 0: return this->m_x;
 		case 1: return this->y;
 		case 2: return this->z;
+		default: throw std::out_of_range("Index out of range");
 		}
 	}
 
 	inline friend std::ostream &operator<<(std::ostream &out, const Vector3 &vec)
 	{
-		out << ' ' << vec.x << ' ' << vec.y << ' ' << vec.z;
+		out << ' ' << vec.m_x << ' ' << vec.y << ' ' << vec.z;
 		return out;
 	}
 
 	inline friend std::istream &operator>>(std::istream &in, Vector3 &vec)
 	{
-		in >> vec.x >> vec.y >> vec.z;
+		in >> vec.m_x >> vec.y >> vec.z;
 		return in;
 	}
 
 	inline Vector3 operator+(const Vector3 &other)
 	{
-		return { x + other.x, y + other.y, z + other.z };
+		return { m_x + other.m_x, y + other.y, z + other.z };
 	}
 
 	inline Vector3 operator-(const Vector3 &other)
 	{
-		return { x - other.x, y - other.y, z - other.z };
+		return { m_x - other.m_x, y - other.y, z - other.z };
 	}
 
 	inline float operator*(const Vector3 &other)
 	{
-		return x * other.x + y * other.y + z * other.z;
+		return m_x * other.m_x + y * other.y + z * other.z;
 	}
 
 	inline Vector3 operator*(float a)
 	{
-		return { x * a, y * a, z * a };
+		return { m_x * a, y * a, z * a };
 	}
 
 	inline Vector3 operator/(float a)
 	{
 		if(a != 0.0f)
 		{
-			return { x / a, y / a, z / a };
+			return { m_x / a, y / a, z / a };
 		}
 		return *this;
 	}
 
 	inline void operator+=(const Vector3 &other)
 	{
-		x += other.x; y += other.y; z += other.z;
+		m_x += other.m_x; y += other.y; z += other.z;
 	}
 
 	inline void operator-=(const Vector3 &other)
 	{
-		x -= other.x; y -= other.y; z -= other.z;
+		m_x -= other.m_x; y -= other.y; z -= other.z;
 	}
 
 	inline void operator*=(float a)
 	{
-		x *= a; y *= a; z *= a;
+		m_x *= a; y *= a; z *= a;
 	}
 
 	inline void operator/=(float a)
 	{
 		if(a != 0.0f)
 		{
-			x /= a; y /= a; z /= a;
+			m_x /= a; y /= a; z /= a;
 		}
 	}
 
 public:
 	inline float length()
 	{
-		return sqrtf(x * x + y * y + z * z);
+		return sqrtf(m_x * m_x + y * y + z * z);
 	}
 
 	inline Vector3 normalized()
@@ -133,18 +246,18 @@ public:
 
 	inline Vector3 crossProduct(const Vector3 &other)
 	{
-		return { y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x };
+		return { y * other.z - z * other.y, z * other.m_x - m_x * other.z, m_x * other.y - y * other.m_x };
 	}
 
 	inline static Vector3 lerp(const Vector3 &start, const Vector3 &end, float delta)
 	{
-		return Vector3(start.x * (1.0f - delta) + end.x * (delta),
+		return Vector3(start.m_x * (1.0f - delta) + end.m_x * (delta),
 			start.y * (1.0f - delta) + end.y * (delta),
 			start.z * (1.0f - delta) + end.z * (delta));
 	}
 
 public:
-	float x, y, z;
+	float m_x, y, z;
 };
 
 class Vector4
@@ -164,7 +277,7 @@ public:
 
 	Vector4(const std::vector<float> &p)
 	{
-		this->x = p[0];
+		this->m_x = p[0];
 		this->y = p[1];
 		this->z = p[2];
 		this->t = p[3];
@@ -179,7 +292,7 @@ public:
 	{
 		if(this != &other)
 		{
-			this->x = other.x;
+			this->m_x = other.m_x;
 			this->y = other.y;
 			this->z = other.z;
 			this->t = other.t;
@@ -191,17 +304,17 @@ public:
 	{
 		switch(index)
 		{
-		case 0: return this->x;
+		case 0: return this->m_x;
 		case 1: return this->y;
 		case 2: return this->z;
 		case 3: return this->t;
-		default: return this->x;
+		default: throw std::out_of_range("Index out of range");
 		}
 	}
 
 	inline friend std::ostream &operator<<(std::ostream &out, const Vector4 &vec)
 	{
-		out << ' ' << vec.x << ' ' << vec.y << ' ' << vec.z << ' ' << vec.t;
+		out << ' ' << vec.m_x << ' ' << vec.y << ' ' << vec.z << ' ' << vec.t;
 		return out;
 	}
 
@@ -213,51 +326,51 @@ public:
 
 	inline Vector4 operator+(const Vector4 &other)
 	{
-		return { x + other.x, y + other.y, z + other.z };
+		return { m_x + other.m_x, y + other.y, z + other.z };
 	}
 
 	inline Vector4 operator-(const Vector4 &other)
 	{
-		return { x - other.x, y - other.y, z - other.z };
+		return { m_x - other.m_x, y - other.y, z - other.z };
 	}
 
 	inline Vector4 operator*(float a)
 	{
-		return { x * a, y * a, z * a };
+		return { m_x * a, y * a, z * a };
 	}
 
 	inline float operator*(const Vector4 &other)
 	{
-		return x * other.x + y * other.y + z * other.z;
+		return m_x * other.m_x + y * other.y + z * other.z;
 	}
 
 	inline Vector4 operator/(float a)
 	{
 		if(a != 0.0f)
-			return { x / a, y / a, z / a };
+			return { m_x / a, y / a, z / a };
 		return *this;
 	}
 
 	inline void operator+=(const Vector4 &other)
 	{
-		x += other.x; y += other.y; z += other.z;
+		m_x += other.m_x; y += other.y; z += other.z;
 	}
 
 	inline void operator-=(const Vector4 &other)
 	{
-		x -= other.x; y -= other.y; z -= other.z;
+		m_x -= other.m_x; y -= other.y; z -= other.z;
 	}
 
 	inline void operator*=(float a)
 	{
-		x *= a; y *= a; z *= a;
+		m_x *= a; y *= a; z *= a;
 	}
 
 	inline void operator/=(float a)
 	{
 		if(a != 0.0f)
 		{
-			x /= a; y /= a; z /= a;
+			m_x /= a; y /= a; z /= a;
 		}
 	}
 
@@ -265,14 +378,14 @@ public:
 	inline float length()
 	{
 		this->dehomogenize();
-		return sqrtf(x * x + y * y + z * z);
+		return sqrtf(m_x * m_x + y * y + z * z);
 	}
 
 	inline void dehomogenize()
 	{
 		if(t != 1.0f && t != 0.0f)
 		{
-			x /= t; y /= t; z /= t; t = 1;
+			m_x /= t; y /= t; z /= t; t = 1;
 		}
 	}
 
@@ -287,11 +400,11 @@ public:
 
 	inline Vector4 crossProduct(const Vector4 &other)
 	{
-		return { y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x };
+		return { y * other.z - z * other.y, z * other.m_x - m_x * other.z, m_x * other.y - y * other.m_x };
 	}
 
 public:
-	float x, y, z, t;
+	float m_x, y, z, t;
 };
 
 class Matrix3x3
@@ -520,7 +633,7 @@ public:
 	inline static Matrix3x3 transformationMatrix(const Vector4 &e1, const Vector4 &e2, const Vector4 &e3)
 	{
 		Matrix3x3 matrix;
-		matrix[0][0] = e1.x; matrix[0][1] = e2.x; matrix[0][2] = e3.x;
+		matrix[0][0] = e1.m_x; matrix[0][1] = e2.m_x; matrix[0][2] = e3.m_x;
 		matrix[1][0] = e1.y; matrix[1][1] = e2.y; matrix[1][2] = e3.y;
 		matrix[2][0] = e1.z; matrix[2][1] = e2.z; matrix[2][2] = e3.z;
 		return matrix;
@@ -662,7 +775,7 @@ public:
 		Vector4 result;
 		for(int i = 0; i < 4; i++)
 		{
-			result[i] = m_mat[i][0] * v.x + m_mat[i][1] * v.y + m_mat[i][2] * v.z + m_mat[i][3] * v.t;
+			result[i] = m_mat[i][0] * v.m_x + m_mat[i][1] * v.y + m_mat[i][2] * v.z + m_mat[i][3] * v.t;
 		}
 		return result;
 	}
@@ -815,7 +928,7 @@ public:
 	inline static Matrix4x4 translationMatrix(const Vector3 &translation)
 	{
 		Matrix4x4 matrix = Matrix4x4::identityMatrix();
-		matrix[3][0] = translation.x;
+		matrix[3][0] = translation.m_x;
 		matrix[3][1] = translation.y;
 		matrix[3][2] = translation.z;
 		return matrix;
@@ -828,7 +941,7 @@ public:
 
 	inline void setTranslation(const Vector3 &translation)
 	{
-		this->m_mat[3][0] = translation.x;
+		this->m_mat[3][0] = translation.m_x;
 		this->m_mat[3][1] = translation.y;
 		this->m_mat[3][2] = translation.z;
 	}
@@ -865,7 +978,7 @@ public:
 	inline static Matrix4x4 scaleMatrix(const Vector3 &scale)
 	{
 		Matrix4x4 matrix = Matrix4x4::identityMatrix();
-		matrix[0][0] = scale.x;
+		matrix[0][0] = scale.m_x;
 		matrix[1][1] = scale.y;
 		matrix[2][2] = scale.z;
 		return matrix;
@@ -878,7 +991,7 @@ public:
 
 	inline void setScale(const Vector3 &scale)
 	{
-		this->m_mat[0][0] = scale.x;
+		this->m_mat[0][0] = scale.m_x;
 		this->m_mat[1][1] = scale.y;
 		this->m_mat[2][2] = scale.z;
 	}
@@ -980,36 +1093,8 @@ public:
 
 struct Vertex
 {
-	/*Vertex() : Vertex(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f)
-	{}
-
-	Vertex(float x, float y, float z) : Vertex(x, y, z, 1.0f, 1.0f, 1.0f)
-	{}
-
-	Vertex(float x, float y, float z, float r, float g, float b)
-	{
-		this->pos = {x,y,z};
-		this->color = {r,g,b};
-	}
-
-	Vertex(const Vertex &other)
-	{
-		*this = other;
-	}
-
-	Vertex &operator=(const Vertex &other)
-	{
-		if(this != &other)
-		{
-			this->pos = other.pos;
-			this->color = other.color;
-		}
-		return *this;
-	}*/
-
-	Vector3 pos;
-	Vector3 color;
-	Vector3 color1;
+	Vector3 position;
+	Vector2 texcoord;
 };
 
 __declspec(align(16))

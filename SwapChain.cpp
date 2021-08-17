@@ -46,8 +46,8 @@ SwapChain::SwapChain(HWND hwnd, UINT width, UINT height, RenderSystem *system) :
 
 SwapChain::~SwapChain()
 {
-	if(this->m_swap_chain) this->m_swap_chain->Release();
 	if(this->m_rtv) this->m_rtv->Release();
+	if(this->m_swap_chain) this->m_swap_chain->Release();
 }
 
 bool SwapChain::present(bool vsync)

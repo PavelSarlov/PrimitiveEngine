@@ -7,6 +7,7 @@ GraphicsEngine::GraphicsEngine()
 	try
 	{
 		this->m_render_system = new RenderSystem();
+		this->m_tex_manager = new TextureManager();
 	}
 	catch(std::exception e)
 	{
@@ -18,6 +19,7 @@ GraphicsEngine::GraphicsEngine()
 GraphicsEngine::~GraphicsEngine()
 {
 	GraphicsEngine::m_engine = nullptr;
+	delete this->m_tex_manager;
 	delete this->m_render_system;
 }
 
@@ -41,4 +43,9 @@ void GraphicsEngine::release()
 RenderSystem *GraphicsEngine::getRenderSystem()
 {
 	return this->m_render_system;
+}
+
+TextureManager *GraphicsEngine::getTextureManager()
+{
+	return this->m_tex_manager;
 }

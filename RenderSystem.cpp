@@ -43,17 +43,17 @@ RenderSystem::RenderSystem()
 
 RenderSystem::~RenderSystem()
 {
-	if(this->m_vs) this->m_vs->Release();
-	if(this->m_ps) this->m_ps->Release();
+	//if(this->m_vs) this->m_vs->Release();
+	//if(this->m_ps) this->m_ps->Release();
 
-	if(this->m_vsblob) this->m_vsblob->Release();
-	if(this->m_psblob) this->m_psblob->Release();
+	//if(this->m_vsblob) this->m_vsblob->Release();
+	//if(this->m_psblob) this->m_psblob->Release();
 
-	if(this->m_dxgi_device) this->m_dxgi_device->Release();
-	if(this->m_dxgi_adapter) this->m_dxgi_adapter->Release();
-	if(this->m_dxgi_factory) this->m_dxgi_factory->Release();
+	this->m_dxgi_device->Release();
+	this->m_dxgi_adapter->Release();
+	this->m_dxgi_factory->Release();
 
-	if(this->m_d3d_device) this->m_d3d_device->Release();
+	this->m_d3d_device->Release();
 }
 
 SwapChainPtr RenderSystem::createSwapChain(HWND hwnd, UINT width, UINT height, RenderSystem *system)

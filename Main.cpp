@@ -13,10 +13,13 @@ int main()
 	catch(std::exception e)
 	{
 		std::cout << e.what() << std::endl;
-		GraphicsEngine::release();
 		InputSystem::release();
+		GraphicsEngine::release();
 		return -1;
 	}
+
+	InputSystem::release();
+	GraphicsEngine::release();
 
 	return 0;
 }

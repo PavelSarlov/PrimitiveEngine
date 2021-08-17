@@ -1,6 +1,6 @@
 #include "AppWindow.h"
 
-AppWindow::AppWindow()
+AppWindow::AppWindow() : Window()
 {}
 
 AppWindow::~AppWindow()
@@ -10,30 +10,73 @@ void AppWindow::onCreate()
 {
 	Window::onCreate();
 
-	this->m_world_cam = Matrix4x4::translationMatrix(0, 0, -2);
-
 	InputSystem::get()->addListener(this);
 	InputSystem::get()->showCursor(false);
+
+	this->m_wood_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\wood.jpg");
 
 	// create swap chain
 	RECT rect = this->getClientWindowRect();
 	this->m_swap_chain = GraphicsEngine::get()->getRenderSystem()->createSwapChain(this->m_hwnd, rect.right - rect.left, rect.bottom - rect.top, GraphicsEngine::get()->getRenderSystem());
 
+	this->m_world_cam = Matrix4x4::translationMatrix(0, 0, -2);
 
-	// create list of vertices
+	Vector3 position_list[] =
+	{
+		// front
+		{Vector3(-0.5f,-0.5f,-0.5f)},
+		{Vector3(-0.5f, 0.5f,-0.5f)},
+		{Vector3(0.5f, 0.5f,-0.5f)},
+		{Vector3(0.5f,-0.5f,-0.5f)},
+
+		// back
+		{Vector3(0.5f,-0.5f, 0.5f)},
+		{Vector3(0.5f, 0.5f, 0.5f)},
+		{Vector3(-0.5f, 0.5f, 0.5f)},
+		{Vector3(-0.5f,-0.5f, 0.5f)},
+	};
+
+	Vector2 texcoord_list[] =
+	{
+		{Vector2(0.0f,0.0f)},
+		{Vector2(0.0f,1.0f)},
+		{Vector2(1.0f,0.0f)},
+		{Vector2(1.0f,1.0f)}
+	};
+
 	Vertex vertex_list[] =
 	{
 		// front
-		{Vector3(-0.5f,-0.5f,-0.5f),	Vector3(1,0,0),		Vector3(0.2f,0,0)},
-		{Vector3(-0.5f, 0.5f,-0.5f),	Vector3(1,1,0),		Vector3(0.2f,0.2f,0)},
-		{Vector3(0.5f, 0.5f,-0.5f),		Vector3(1,1,0),		Vector3(0.2f,0.2f,0)},
-		{Vector3(0.5f,-0.5f,-0.5f),		Vector3(1,0,0),		Vector3(0.2f,0,0)},
+		{position_list[0], texcoord_list[1]},
+		{position_list[1], texcoord_list[0]},
+		{position_list[2], texcoord_list[2]},
+		{position_list[3], texcoord_list[3]},
 
 		// back
-		{Vector3(0.5f,-0.5f, 0.5f),		Vector3(0,1,0),		Vector3(0,0.2f,0)},
-		{Vector3(0.5f, 0.5f, 0.5f),		Vector3(0,1,1),		Vector3(0,0.2f,0.2f)},
-		{Vector3(-0.5f, 0.5f, 0.5f),	Vector3(0,1,1),		Vector3(0,0.2f,0.2f)},
-		{Vector3(-0.5f,-0.5f, 0.5f),	Vector3(0,1,0),		Vector3(0,0.2f,0)},
+		{position_list[4], texcoord_list[1]},
+		{position_list[5], texcoord_list[0]},
+		{position_list[6], texcoord_list[2]},
+		{position_list[7], texcoord_list[3]},
+
+		{position_list[1], texcoord_list[1]},
+		{position_list[6], texcoord_list[0]},
+		{position_list[5], texcoord_list[2]},
+		{position_list[2], texcoord_list[3]},
+
+		{position_list[7], texcoord_list[1]},
+		{position_list[0], texcoord_list[0]},
+		{position_list[3], texcoord_list[2]},
+		{position_list[4], texcoord_list[3]},
+
+		{position_list[3], texcoord_list[1]},
+		{position_list[2], texcoord_list[0]},
+		{position_list[5], texcoord_list[2]},
+		{position_list[4], texcoord_list[3]},
+
+		{position_list[7], texcoord_list[1]},
+		{position_list[6], texcoord_list[0]},
+		{position_list[1], texcoord_list[2]},
+		{position_list[0], texcoord_list[3]},
 	};
 	UINT size_vertex_list = ARRAYSIZE(vertex_list);
 
@@ -47,23 +90,23 @@ void AppWindow::onCreate()
 		4,5,6,
 		6,7,4,
 		// top
-		1,6,5,
-		5,2,1,
+		8,9,10,
+		10,11,8,
 		// bottom
-		7,0,3,
-		3,4,7,
+		12,13,14,
+		14,15,12,
 		// right
-		3,2,5,
-		5,4,3,
+		16,17,18,
+		18,19,16,
 		//left
-		7,6,1,
-		1,0,7
+		20,21,22,
+		22,23,20
 	};
 	UINT size_index_list = ARRAYSIZE(index_list);
 
 	// create index buffer
 	this->m_ib = GraphicsEngine::get()->getRenderSystem()->createIndexBuffer(index_list, size_index_list, GraphicsEngine::get()->getRenderSystem());
-	
+
 	// shaders data
 	void *shader_byte_code = nullptr;
 	size_t size_shader = 0;
@@ -108,6 +151,9 @@ void AppWindow::onUpdate()
 	// set default shader in the graphics pipeline
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexShader(this->m_vs);
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setPixelShader(this->m_ps);
+
+	// set wood texture
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setTexture(this->m_ps, this->m_wood_tex);
 
 	// set the list of vertices
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(this->m_vb);

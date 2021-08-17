@@ -53,10 +53,10 @@ private:
 private:
 	ID3DBlob *m_blob = nullptr;
 
-	ID3DBlob *m_vsblob = nullptr;
+	/*ID3DBlob *m_vsblob = nullptr;
 	ID3DBlob *m_psblob = nullptr;
 	ID3D11VertexShader *m_vs = nullptr;
-	ID3D11PixelShader *m_ps = nullptr;
+	ID3D11PixelShader *m_ps = nullptr;*/
 
 private:
 	friend class SwapChain;
@@ -65,6 +65,7 @@ private:
 	friend class IndexBuffer;
 	friend class VertexShader;
 	friend class PixelShader;
+	friend class Texture;
 };
 
 
