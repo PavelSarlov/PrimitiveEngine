@@ -18,7 +18,7 @@ public:
 	~ConstantBuffer();
 
 public:
-	void update(DeviceContext *context, void *buffer);
+	void update(DeviceContextPtr context, void *buffer);
 
 private:
 	ID3D11Buffer *m_buffer = nullptr;

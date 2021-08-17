@@ -1,30 +1,17 @@
 #include "Window.h"
 
-
-Window::Window()
-{}
-
-Window::~Window()
-{}
-
 LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch(msg)
 	{
 	case WM_CREATE:
 	{
-		// collect window...
-		Window *window = (Window *)((LPCREATESTRUCT)lParam)->lpCreateParams;
-		// ...and store for later lookup
-		SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)window);
-		window->setHWND(hwnd);
-		window->onCreate();
 		break;
 	}
 	case WM_SETFOCUS:
 	{
 		Window *window = (Window *)GetWindowLongPtr(hwnd, GWLP_USERDATA);
-		window->onFocus();
+		if(window) window->onFocus();
 		break;
 	}
 	case WM_KILLFOCUS:
@@ -49,12 +36,10 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return NULL;
 }
 
-bool Window::init()
-{
-	return this->init(DEFAULT_WCLASS, DEFAULT_WNAME, DEFAULT_WIDTH, DEFAULT_HEIGHT);
-}
+Window::Window() : Window(DEFAULT_WCLASS, DEFAULT_WNAME, DEFAULT_WIDTH, DEFAULT_HEIGHT)
+{}
 
-bool Window::init(LPCWSTR className, LPCWSTR winName, UINT width, UINT height)
+Window::Window(LPCWSTR className, LPCWSTR winName, UINT width, UINT height)
 {
 	WNDCLASSEX wc;
 	wc.hInstance = nullptr;
@@ -72,9 +57,7 @@ bool Window::init(LPCWSTR className, LPCWSTR winName, UINT width, UINT height)
 
 	if(!::RegisterClassEx(&wc))
 	{
-		fprintf(stderr, "%ld\n", GetLastError());
-		fprintf(stderr, "%s\n", "Failed to create window class");
-		return false;
+		throw std::exception("Window class registration failed");
 	}
 
 	/*if(!window)
@@ -85,25 +68,32 @@ bool Window::init(LPCWSTR className, LPCWSTR winName, UINT width, UINT height)
 	this->m_hwnd = ::CreateWindowEx(WS_EX_OVERLAPPEDWINDOW, className, winName,
 		WS_CAPTION | WS_SYSMENU,
 		CW_USEDEFAULT, CW_USEDEFAULT, width, height,
-		nullptr, nullptr, nullptr, this);
+		nullptr, nullptr, nullptr, nullptr);
 
 	if(!this->m_hwnd)
 	{
-		fprintf(stderr, "%ld\n", GetLastError());
-		fprintf(stderr, "%s\n", "Failed to create window");
-		return false;
+		throw std::exception("Window creation failed");
 	}
 
 	::ShowWindow(this->m_hwnd, SW_SHOW);
 	::UpdateWindow(this->m_hwnd);
 
 	this->m_is_running = true;
-	return true;
 }
+
+Window::~Window()
+{}
 
 bool Window::broadcast()
 {
 	MSG msg;
+
+	if(!this->m_is_init)
+	{
+		SetWindowLongPtr(this->m_hwnd, GWLP_USERDATA, (LONG_PTR)this);
+		this->onCreate();
+		this->m_is_init = true;
+	}
 
 	this->onUpdate();
 
@@ -118,21 +108,9 @@ bool Window::broadcast()
 	return true;
 }
 
-
-bool Window::release()
-{
-	if(!::DestroyWindow(this->m_hwnd))
-	{
-		fprintf(stderr, "%ld\n", GetLastError());
-		fprintf(stderr, "%s\n", "Failed to destroy window");
-		return false;
-	}
-
-	return true;
-}
-
 bool Window::isRunning()
 {
+	if(this->m_is_running) this->broadcast();
 	return this->m_is_running;
 }
 
@@ -141,11 +119,6 @@ RECT Window::getClientWindowRect()
 	RECT rect;
 	::GetClientRect(this->m_hwnd, &rect);
 	return rect;
-}
-
-void Window::setHWND(HWND hwnd)
-{
-	this->m_hwnd = hwnd;
 }
 
 void Window::onCreate()

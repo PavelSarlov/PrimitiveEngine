@@ -44,12 +44,12 @@ public:
 	void update();
 
 private:
-	SwapChain *m_swap_chain = nullptr;
-	VertexBuffer *m_vb = nullptr;
-	VertexShader *m_vs = nullptr;
-	PixelShader *m_ps = nullptr;
-	ConstantBuffer *m_cb = nullptr;
-	IndexBuffer *m_ib = nullptr;
+	SwapChainPtr m_swap_chain = nullptr;
+	VertexBufferPtr m_vb = nullptr;
+	VertexShaderPtr m_vs = nullptr;
+	PixelShaderPtr m_ps = nullptr;
+	ConstantBufferPtr m_cb = nullptr;
+	IndexBufferPtr m_ib = nullptr;
 
 private:
 	ULONG m_old_delta = 0;

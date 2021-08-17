@@ -1,19 +1,30 @@
 #include "InputSystem.h"
 
+InputSystem *InputSystem::m_system = nullptr;
+
 InputSystem::InputSystem()
-{
-	POINT current_moust_pos = {};
-	::GetCursorPos(&current_moust_pos);
-	this->m_old_mouse_pos = Point(current_moust_pos.x, current_moust_pos.y);
-}
+{}
 
 InputSystem::~InputSystem()
-{}
+{
+	InputSystem::m_system = nullptr;
+}
 
 InputSystem *InputSystem::get()
 {
-	static InputSystem inSystem;
-	return &inSystem;
+	return InputSystem::m_system;
+}
+
+void InputSystem::create()
+{
+	if(InputSystem::m_system) throw std::exception("InputSystem already created");
+	InputSystem::m_system = new InputSystem();
+}
+
+void InputSystem::release()
+{
+	if(!InputSystem::m_system) return;
+	delete InputSystem::m_system;
 }
 
 void InputSystem::update()
@@ -21,11 +32,11 @@ void InputSystem::update()
 	POINT current_mouse_pos = {};
 	::GetCursorPos(&current_mouse_pos);
 
-	/*if(this->m_first_time)
+	if(this->m_first_time)
 	{
-		this->m_old_mouse_pos = Point(current_moust_pos.x, current_moust_pos.y);
+		this->m_old_mouse_pos = Point(current_mouse_pos.x, current_mouse_pos.y);
 		this->m_first_time = false;
-	}*/
+	}
 
 	if(current_mouse_pos.x != this->m_old_mouse_pos.m_x || current_mouse_pos.y != this->m_old_mouse_pos.m_y)
 	{

@@ -10,18 +10,19 @@
 
 class InputSystem
 {
-public:
+private:
 	InputSystem();
 	~InputSystem();
 
 public:
 	static InputSystem *get();
+	static void create();
+	static void release();
 
 public:
 	void update();
 	void addListener(InputListener *listener);
 	void removeListener(InputListener *listener);
-	
 	void setCursorPos(const Point &pos);
 	void showCursor(bool show);
 
@@ -31,6 +32,7 @@ private:
 	UCHAR m_old_keys_state[256] = {};
 	Point m_old_mouse_pos = Point();
 	bool m_first_time = true;
+	static InputSystem *m_system;
 };
 
 #endif // !INPUTSYSTEM_H

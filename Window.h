@@ -3,12 +3,8 @@
 #define WINDOW_H
 
 #include <Windows.h>
-#include <stdio.h>
-#include <stdint.h>
+#include <exception>
 
-#define RES uint16_t
-#define COORD int32_t
-#define ECODE uint16_t
 #define DEFAULT_WIDTH (UINT)1024
 #define DEFAULT_HEIGHT (UINT)768
 #define DEFAULT_WCLASS L"Window"
@@ -19,16 +15,12 @@ class Window
 {
 public:
 	Window();
+	Window(LPCWSTR className, LPCWSTR winName, UINT width, UINT height);
 	~Window();
 
 public:
-	bool init();
-	bool init(LPCWSTR className, LPCWSTR winName, UINT width, UINT height);
-	bool broadcast();
-	bool release();
 	bool isRunning();
 	RECT getClientWindowRect();
-	void setHWND(HWND hwnd);
 
 public:
 	virtual void onCreate();
@@ -37,9 +29,13 @@ public:
 	virtual void onFocus();
 	virtual void onKillFocus();
 
+private:
+	bool broadcast();
+
 protected:
 	HWND m_hwnd = nullptr;
 	bool m_is_running = false;
+	bool m_is_init = false;
 };
 
 

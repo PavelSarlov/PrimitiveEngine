@@ -24,17 +24,13 @@ public:
 	~RenderSystem();
 
 public:
-	bool init();
-	bool release();
-
-public:
-	SwapChain *createSwapChain(HWND hwnd, UINT width, UINT height, RenderSystem *system);
-	DeviceContext *getImmediateDeviceContext();
-	VertexBuffer *createVertexBuffer(void *list_vertices, UINT size_vertex, UINT size_list, void *shader_byte_code, size_t size_byte_shader, RenderSystem *system);
-	VertexShader *createVertexShader(const void *shader_byte_code, size_t byte_code_size, RenderSystem *system);
-	PixelShader *createPixelShader(const void *shader_byte_code, size_t byte_code_size, RenderSystem *system);
-	ConstantBuffer *createConstantBuffer(void *buffer, UINT size_buffer, RenderSystem *system);
-	IndexBuffer *createIndexBuffer(void *list_indices, UINT size_list, RenderSystem *system);
+	SwapChainPtr createSwapChain(HWND hwnd, UINT width, UINT height, RenderSystem *system);
+	DeviceContextPtr getImmediateDeviceContext();
+	VertexBufferPtr createVertexBuffer(void *list_vertices, UINT size_vertex, UINT size_list, void *shader_byte_code, size_t size_byte_shader, RenderSystem *system);
+	VertexShaderPtr createVertexShader(const void *shader_byte_code, size_t byte_code_size, RenderSystem *system);
+	PixelShaderPtr createPixelShader(const void *shader_byte_code, size_t byte_code_size, RenderSystem *system);
+	ConstantBufferPtr createConstantBuffer(void *buffer, UINT size_buffer, RenderSystem *system);
+	IndexBufferPtr createIndexBuffer(void *list_indices, UINT size_list, RenderSystem *system);
 
 public:
 	bool compileVertexShader(const wchar_t *file_name, const char *entry_point_name, void **shader_byte_code, size_t *byte_code_size);
@@ -42,7 +38,7 @@ public:
 	void releaseCompiledShader();
 
 private:
-	DeviceContext *m_imm_device_context = nullptr;
+	DeviceContextPtr m_imm_device_context = nullptr;
 
 private:
 	ID3D11Device *m_d3d_device = nullptr;

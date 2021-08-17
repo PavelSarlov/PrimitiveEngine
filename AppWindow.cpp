@@ -15,9 +15,6 @@ void AppWindow::onCreate()
 	InputSystem::get()->addListener(this);
 	InputSystem::get()->showCursor(false);
 
-	// init graphics engine
-	GraphicsEngine::get()->init();
-
 	// create swap chain
 	RECT rect = this->getClientWindowRect();
 	this->m_swap_chain = GraphicsEngine::get()->getRenderSystem()->createSwapChain(this->m_hwnd, rect.right - rect.left, rect.bottom - rect.top, GraphicsEngine::get()->getRenderSystem());
@@ -130,13 +127,6 @@ void AppWindow::onUpdate()
 void AppWindow::onDestroy()
 {
 	Window::onDestroy();
-	delete m_swap_chain;
-	delete m_vb;
-	delete m_vs;
-	delete m_ps;
-	delete m_cb;
-	delete m_ib;
-	GraphicsEngine::get()->getRenderSystem()->release();
 }
 
 void AppWindow::onFocus()

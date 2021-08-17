@@ -7,22 +7,23 @@
 
 class GraphicsEngine
 {
-public:
+private:
 	GraphicsEngine();
+
+public:
 	~GraphicsEngine();
 
 public:
-	bool init();
-	bool release();
-
-public:
 	static GraphicsEngine *get();
+	static void create();
+	static void release();
 
 public:
 	RenderSystem *getRenderSystem();
 
 private:
 	RenderSystem *m_render_system = nullptr;
+	static GraphicsEngine *m_engine;
 };
 
 #endif // !PRIMITIVEENGINE_H

@@ -1,12 +1,6 @@
 #include "RenderSystem.h"
 
 RenderSystem::RenderSystem()
-{}
-
-RenderSystem::~RenderSystem()
-{}
-
-bool RenderSystem::init()
 {
 	D3D_DRIVER_TYPE driver_types[] =
 	{
@@ -37,19 +31,17 @@ bool RenderSystem::init()
 
 	if(FAILED(hrs))
 	{
-		return false;
+		throw std::exception("RenderSystem creation failed");
 	}
 
-	this->m_imm_device_context = new DeviceContext(this->m_imm_context, this);
+	this->m_imm_device_context = std::make_shared<DeviceContext>(this->m_imm_context, this);
 
 	this->m_d3d_device->QueryInterface(__uuidof(IDXGIDevice), (void **)&m_dxgi_device);
 	this->m_dxgi_device->GetParent(__uuidof(IDXGIAdapter), (void **)&m_dxgi_adapter);
 	this->m_dxgi_adapter->GetParent(__uuidof(IDXGIFactory), (void **)&m_dxgi_factory);
-
-	return true;
 }
 
-bool RenderSystem::release()
+RenderSystem::~RenderSystem()
 {
 	if(this->m_vs) this->m_vs->Release();
 	if(this->m_ps) this->m_ps->Release();
@@ -61,91 +53,88 @@ bool RenderSystem::release()
 	if(this->m_dxgi_adapter) this->m_dxgi_adapter->Release();
 	if(this->m_dxgi_factory) this->m_dxgi_factory->Release();
 
-	delete this->m_imm_device_context;
 	if(this->m_d3d_device) this->m_d3d_device->Release();
-
-	return true;
 }
 
-SwapChain *RenderSystem::createSwapChain(HWND hwnd, UINT width, UINT height, RenderSystem *system)
+SwapChainPtr RenderSystem::createSwapChain(HWND hwnd, UINT width, UINT height, RenderSystem *system)
 {
 	try
 	{
-		return new SwapChain(hwnd, width, height, this);
+		return std::make_shared<SwapChain>(hwnd, width, height, this);
 	}
 	catch(std::exception e)
 	{
-		std::cout << e.what();
+		std::cout << e.what() << std::endl;
 		return nullptr;
 	}
 }
 
-DeviceContext *RenderSystem::getImmediateDeviceContext()
+DeviceContextPtr RenderSystem::getImmediateDeviceContext()
 {
 	return this->m_imm_device_context;
 }
 
-VertexBuffer *RenderSystem::createVertexBuffer(void *list_vertices, UINT size_vertex, UINT size_list, void *shader_byte_code, size_t size_byte_shader, RenderSystem *system)
+VertexBufferPtr RenderSystem::createVertexBuffer(void *list_vertices, UINT size_vertex, UINT size_list, void *shader_byte_code, size_t size_byte_shader, RenderSystem *system)
 {
 	try
 	{
-		return new VertexBuffer(list_vertices, size_vertex, size_list, shader_byte_code, size_byte_shader, this);
+		return std::make_shared<VertexBuffer>(list_vertices, size_vertex, size_list, shader_byte_code, size_byte_shader, this);
 	}
 	catch(std::exception e)
 	{
-		std::cout << e.what();
+		std::cout << e.what() << std::endl;
 		return nullptr;
 	}
 }
 
-VertexShader *RenderSystem::createVertexShader(const void *shader_byte_code, size_t byte_code_size, RenderSystem *system)
+VertexShaderPtr RenderSystem::createVertexShader(const void *shader_byte_code, size_t byte_code_size, RenderSystem *system)
 {
 	try
 	{
-		return new VertexShader(shader_byte_code, byte_code_size, this);
+		return std::make_shared<VertexShader>(shader_byte_code, byte_code_size, this);
 	}
 	catch(std::exception e)
 	{
-		std::cout << e.what();
+		std::cout << e.what() << std::endl;
 		return nullptr;
 	}
 }
 
-PixelShader *RenderSystem::createPixelShader(const void *shader_byte_code, size_t byte_code_size, RenderSystem *system)
+PixelShaderPtr RenderSystem::createPixelShader(const void *shader_byte_code, size_t byte_code_size, RenderSystem *system)
 {
 	try
 	{
-		return new PixelShader(shader_byte_code, byte_code_size, this);
+		return std::make_shared<PixelShader>(shader_byte_code, byte_code_size, this);
 	}
 	catch(std::exception e)
 	{
-		std::cout << e.what();
+		std::cout << e.what() << std::endl;
 		return nullptr;
 	}
 }
 
-ConstantBuffer *RenderSystem::createConstantBuffer(void *buffer, UINT size_buffer, RenderSystem *system)
+ConstantBufferPtr RenderSystem::createConstantBuffer(void *buffer, UINT size_buffer, RenderSystem *system)
 {
 	try
 	{
-		return new ConstantBuffer(buffer, size_buffer, this);
+		return std::make_shared<ConstantBuffer>(buffer, size_buffer, this);
 	}
 	catch(std::exception e)
 	{
-		std::cout << e.what();
+		std::cout << e.what() << std::endl;
 		return nullptr;
 	}
 }
 
-IndexBuffer *RenderSystem::createIndexBuffer(void *list_indices, UINT size_list, RenderSystem *system)
+IndexBufferPtr RenderSystem::createIndexBuffer(void *list_indices, UINT size_list, RenderSystem *system)
 {
 	try
 	{
-		return new IndexBuffer(list_indices, size_list, this);
+		return std::make_shared<IndexBuffer>(list_indices, size_list, this);
 	}
 	catch(std::exception e)
 	{
-		std::cout << e.what();
+		std::cout << e.what() << std::endl;
 		return nullptr;
 	}
 }
