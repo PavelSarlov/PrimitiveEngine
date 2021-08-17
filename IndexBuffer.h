@@ -2,21 +2,21 @@
 #ifndef INDEXBUFFER_H
 #define INDEXBUFFER_H
 
-#include "PrimitiveEngine.h"
+#include "RenderSystem.h"
+#include "Prerequisites.h"
 
 #include <d3d11.h>
+#include <exception>
 
 class DeviceContext;
 
 class IndexBuffer
 {
 public:
-	IndexBuffer();
+	IndexBuffer(void *list_indices, UINT size_list, RenderSystem *system);
 	~IndexBuffer();
 
 public:
-	bool load(void *list_indices, UINT size_list);
-	bool release();
 	UINT getSizeIndexList();
 
 private:
@@ -24,6 +24,7 @@ private:
 
 private:
 	ID3D11Buffer *m_buffer = nullptr;
+	RenderSystem *m_system = nullptr;
 
 private:
 	friend class DeviceContext;

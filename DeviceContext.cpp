@@ -1,16 +1,11 @@
 #include "DeviceContext.h"
 
-DeviceContext::DeviceContext(ID3D11DeviceContext *device_context) : m_device_context(device_context)
+DeviceContext::DeviceContext(ID3D11DeviceContext *device_context, RenderSystem *system) : m_device_context(device_context), m_system(system)
 {}
 
 DeviceContext::~DeviceContext()
-{}
-
-bool DeviceContext::release()
 {
 	if(this->m_device_context) this->m_device_context->Release();
-	delete this;
-	return true;
 }
 
 void DeviceContext::clearRenderTargetColor(SwapChain *swap_chain, float red, float green, float blue, float alpha)

@@ -1,13 +1,12 @@
 #pragma once
-#ifndef PRIMITIVEENGINE_H
-#define PRIMITIVEENGINE_H
+#ifndef RENDERSYSTEM_H
+#define RENDERSYSTEM_H
 
-#include <stdint.h>
 #include <Windows.h>
-#include <stdio.h>
 #include <algorithm>
 #include <d3d11.h>
 #include <d3dcompiler.h>
+#include <iostream>
 
 #include "SwapChain.h"
 #include "DeviceContext.h"
@@ -16,54 +15,31 @@
 #include "IndexBuffer.h"
 #include "VertexShader.h"
 #include "PixelShader.h"
+#include "Prerequisites.h"
 
-class SwapChain;
-class DeviceContext;
-class VertexBuffer;
-class ConstantBuffer;
-class IndexBuffer;
-class VertexShader;
-class PixelShader;
-
-
-class PrimitiveEngine
+class RenderSystem
 {
 public:
-	PrimitiveEngine();
-	~PrimitiveEngine();
+	RenderSystem();
+	~RenderSystem();
 
 public:
 	bool init();
 	bool release();
 
 public:
-	static PrimitiveEngine *get();
-
-public:
-	SwapChain *createSwapChain();
+	SwapChain *createSwapChain(HWND hwnd, UINT width, UINT height, RenderSystem *system);
 	DeviceContext *getImmediateDeviceContext();
-	VertexBuffer *createVertexBuffer();
-	VertexShader *createVertexShader(const void *shader_byte_code, size_t byte_code_size);
-	PixelShader *createPixelShader(const void *shader_byte_code, size_t byte_code_size);
-	ConstantBuffer *createConstantBuffer();
-	IndexBuffer *createIndexBuffer();
+	VertexBuffer *createVertexBuffer(void *list_vertices, UINT size_vertex, UINT size_list, void *shader_byte_code, size_t size_byte_shader, RenderSystem *system);
+	VertexShader *createVertexShader(const void *shader_byte_code, size_t byte_code_size, RenderSystem *system);
+	PixelShader *createPixelShader(const void *shader_byte_code, size_t byte_code_size, RenderSystem *system);
+	ConstantBuffer *createConstantBuffer(void *buffer, UINT size_buffer, RenderSystem *system);
+	IndexBuffer *createIndexBuffer(void *list_indices, UINT size_list, RenderSystem *system);
 
 public:
 	bool compileVertexShader(const wchar_t *file_name, const char *entry_point_name, void **shader_byte_code, size_t *byte_code_size);
 	bool compilePixelShader(const wchar_t *file_name, const char *entry_point_name, void **shader_byte_code, size_t *byte_code_size);
 	void releaseCompiledShader();
-
-	//public:
-	//	ECODE DrawPixel(HDC hdc, COORD x, COORD y, COLORREF c);
-	//	ECODE DrawLine(HDC hdc, COORD x1, COORD y1, COORD x2, COORD y2, COLORREF c);
-	//	ECODE DrawTriangle(HDC hdc, COORD x1, COORD y1, COORD x2, COORD y2, COORD x3, COORD y3, COLORREF c);
-	//	ECODE FillTriangle(HDC hdc, COORD x1, COORD y1, COORD x2, COORD y2, COORD x3, COORD y3, COLORREF c);
-	//	ECODE DrawCircle(HDC hdc, COORD x1, COORD y1, COORD r, COLORREF c);
-	//	ECODE FillCircle(HDC hdc, COORD x1, COORD y1, COORD r, COLORREF c);
-	//	ECODE FillRectangle(HDC hdc, COORD x1, COORD y1, COORD x2, COORD y2, COLORREF c);
-	//
-	//private:
-	//	void SortLeftRightTriangle(COORD &x1, COORD &y1, COORD &x2, COORD &y2, COORD &x3, COORD &y3);
 
 private:
 	DeviceContext *m_imm_device_context = nullptr;
@@ -95,4 +71,5 @@ private:
 	friend class PixelShader;
 };
 
-#endif // !PRIMITIVEENGINE_H
+
+#endif // !RENDERSYSTEM_H

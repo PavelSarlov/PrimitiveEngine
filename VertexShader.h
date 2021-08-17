@@ -4,29 +4,23 @@
 #define VERTEXSHADER_H
 
 #include <d3d11.h>
+#include <exception>
 
-#include "PrimitiveEngine.h"
-
-class PrimitiveEngine;
-class DeviceContext;
+#include "Prerequisites.h"
+#include "RenderSystem.h"
 
 class VertexShader
 {
-public :
-	VertexShader();
-	~VertexShader();
-
 public:
-	void release();
-
-private:
-	bool init(const void *shader_byte_code, size_t byte_code_size);
+	VertexShader(const void *shader_byte_code, size_t byte_code_size, RenderSystem *system);
+	~VertexShader();
 
 private:
 	ID3D11VertexShader *m_vs = nullptr;
+	RenderSystem *m_system = nullptr;
 
 private:
-	friend class PrimitiveEngine;
+	friend class RenderSystem;
 	friend class DeviceContext;
 };
 

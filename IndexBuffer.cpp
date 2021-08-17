@@ -1,12 +1,6 @@
 #include "IndexBuffer.h"
 
-IndexBuffer::IndexBuffer()
-{}
-
-IndexBuffer::~IndexBuffer()
-{}
-
-bool IndexBuffer::load(void *list_indices, UINT size_list)
+IndexBuffer::IndexBuffer(void *list_indices, UINT size_list, RenderSystem *system) : m_system(system)
 {
 	if(m_buffer) m_buffer->Release();
 
@@ -22,19 +16,15 @@ bool IndexBuffer::load(void *list_indices, UINT size_list)
 
 	this->m_size_list = size_list;
 
-	if(FAILED(PrimitiveEngine::get()->m_d3d_device->CreateBuffer(&buff_desc, &init_data, &this->m_buffer)))
+	if(FAILED(this->m_system->m_d3d_device->CreateBuffer(&buff_desc, &init_data, &this->m_buffer)))
 	{
-		return false;
+		throw std::exception("IndexBuffer creation failed");
 	}
-
-	return true;
 }
 
-bool IndexBuffer::release()
+IndexBuffer::~IndexBuffer()
 {
 	if(this->m_buffer) this->m_buffer->Release();
-	delete this;
-	return true;
 }
 
 UINT IndexBuffer::getSizeIndexList()

@@ -4,29 +4,23 @@
 #define PIXELSHADER_H
 
 #include <d3d11.h>
+#include <exception>
 
-#include "PrimitiveEngine.h"
-
-class PrimitiveEngine;
-class DeviceContext;
+#include "RenderSystem.h"
+#include "Prerequisites.h"
 
 class PixelShader
 {
 public:
-	PixelShader();
+	PixelShader(const void *shader_byte_code, size_t byte_code_size, RenderSystem *system);
 	~PixelShader();
-
-public:
-	void release();
-
-private:
-	bool init(const void *shader_byte_code, size_t byte_code_size);
 
 private:
 	ID3D11PixelShader *m_ps = nullptr;
+	RenderSystem *m_system = nullptr;
 
 private:
-	friend class PrimitiveEngine;
+	friend class RenderSystem;
 	friend class DeviceContext;
 };
 

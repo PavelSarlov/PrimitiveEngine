@@ -368,6 +368,7 @@ public:
 	{
 		if(row >= 0 && row < 3)
 			return this->m_mat[row];
+		return nullptr;
 	}
 
 	inline Matrix3x3 operator+(const Matrix3x3 &other)

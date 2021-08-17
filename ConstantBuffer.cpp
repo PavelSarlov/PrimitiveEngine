@@ -1,15 +1,7 @@
 #include "ConstantBuffer.h"
 
-ConstantBuffer::ConstantBuffer()
-{}
-
-ConstantBuffer::~ConstantBuffer()
-{}
-
-bool ConstantBuffer::load(void *buffer, UINT size_buffer)
+ConstantBuffer::ConstantBuffer(void *buffer, UINT size_buffer, RenderSystem *system) : m_system(system)
 {
-	if(m_buffer) m_buffer->Release();
-
 	D3D11_BUFFER_DESC buff_desc = {};
 	buff_desc.Usage = D3D11_USAGE_DEFAULT;
 	buff_desc.ByteWidth = size_buffer;
@@ -20,19 +12,15 @@ bool ConstantBuffer::load(void *buffer, UINT size_buffer)
 	D3D11_SUBRESOURCE_DATA init_data = {};
 	init_data.pSysMem = buffer;
 
-	if(FAILED(PrimitiveEngine::get()->m_d3d_device->CreateBuffer(&buff_desc, &init_data, &this->m_buffer)))
+	if(FAILED(this->m_system->m_d3d_device->CreateBuffer(&buff_desc, &init_data, &this->m_buffer)))
 	{
-		return false;
+		throw std::exception("ConstantBuffer creation failed");
 	}
-
-	return true;
 }
 
-bool ConstantBuffer::release()
+ConstantBuffer::~ConstantBuffer()
 {
 	if(this->m_buffer) this->m_buffer->Release();
-	delete this;
-	return true;
 }
 
 void ConstantBuffer::update(DeviceContext *context, void *buffer)

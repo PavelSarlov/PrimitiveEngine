@@ -15,13 +15,15 @@ void AppWindow::onCreate()
 	InputSystem::get()->addListener(this);
 	InputSystem::get()->showCursor(false);
 
-	// init graphics engine and swap chain
-	PrimitiveEngine::get()->init();
-	this->m_swap_chain = PrimitiveEngine::get()->createSwapChain();
-	RECT rect = this->getClientWindowRect();
-	this->m_swap_chain->init(this->m_hwnd, rect.right - rect.left, rect.bottom - rect.top);
+	// init graphics engine
+	GraphicsEngine::get()->init();
 
-	// create list of vertices and vertex buffer
+	// create swap chain
+	RECT rect = this->getClientWindowRect();
+	this->m_swap_chain = GraphicsEngine::get()->getRenderSystem()->createSwapChain(this->m_hwnd, rect.right - rect.left, rect.bottom - rect.top, GraphicsEngine::get()->getRenderSystem());
+
+
+	// create list of vertices
 	Vertex vertex_list[] =
 	{
 		// front
@@ -37,10 +39,8 @@ void AppWindow::onCreate()
 		{Vector3(-0.5f,-0.5f, 0.5f),	Vector3(0,1,0),		Vector3(0,0.2f,0)},
 	};
 	UINT size_vertex_list = ARRAYSIZE(vertex_list);
-	this->m_vb = PrimitiveEngine::get()->createVertexBuffer();
 
-
-	// create index list and index buffer
+	// create index list
 	UINT index_list[] =
 	{
 		// front
@@ -63,29 +63,29 @@ void AppWindow::onCreate()
 		1,0,7
 	};
 	UINT size_index_list = ARRAYSIZE(index_list);
-	this->m_ib = PrimitiveEngine::get()->createIndexBuffer();
-	this->m_ib->load(index_list, size_index_list);
 
+	// create index buffer
+	this->m_ib = GraphicsEngine::get()->getRenderSystem()->createIndexBuffer(index_list, size_index_list, GraphicsEngine::get()->getRenderSystem());
+	
 	// shaders data
 	void *shader_byte_code = nullptr;
 	size_t size_shader = 0;
 
-	// create vertex shader
-	PrimitiveEngine::get()->compileVertexShader(L"VertexShader.hlsl", "vsmain", &shader_byte_code, &size_shader);
-	this->m_vs = PrimitiveEngine::get()->createVertexShader(shader_byte_code, size_shader);
-	this->m_vb->load(vertex_list, sizeof(Vertex), size_vertex_list, shader_byte_code, size_shader);
-	PrimitiveEngine::get()->releaseCompiledShader();
+	// create vertex shader and buffer
+	GraphicsEngine::get()->getRenderSystem()->compileVertexShader(L"VertexShader.hlsl", "vsmain", &shader_byte_code, &size_shader);
+	this->m_vs = GraphicsEngine::get()->getRenderSystem()->createVertexShader(shader_byte_code, size_shader, GraphicsEngine::get()->getRenderSystem());
+	this->m_vb = GraphicsEngine::get()->getRenderSystem()->createVertexBuffer(vertex_list, sizeof(Vertex), size_vertex_list, shader_byte_code, size_shader, GraphicsEngine::get()->getRenderSystem());
+	GraphicsEngine::get()->getRenderSystem()->releaseCompiledShader();
 
 	// create pixel shader
-	PrimitiveEngine::get()->compilePixelShader(L"PixelShader.hlsl", "psmain", &shader_byte_code, &size_shader);
-	this->m_ps = PrimitiveEngine::get()->createPixelShader(shader_byte_code, size_shader);
-	PrimitiveEngine::get()->releaseCompiledShader();
+	GraphicsEngine::get()->getRenderSystem()->compilePixelShader(L"PixelShader.hlsl", "psmain", &shader_byte_code, &size_shader);
+	this->m_ps = GraphicsEngine::get()->getRenderSystem()->createPixelShader(shader_byte_code, size_shader, GraphicsEngine::get()->getRenderSystem());
+	GraphicsEngine::get()->getRenderSystem()->releaseCompiledShader();
 
 	// create constant buffer
 	Constant cc = {};
 	cc.m_time = 0;
-	this->m_cb = PrimitiveEngine::get()->createConstantBuffer();
-	this->m_cb->load(&cc, sizeof(Constant));
+	this->m_cb = GraphicsEngine::get()->getRenderSystem()->createConstantBuffer(&cc, sizeof(Constant), GraphicsEngine::get()->getRenderSystem());
 }
 
 void AppWindow::onUpdate()
@@ -95,30 +95,30 @@ void AppWindow::onUpdate()
 	InputSystem::get()->update();
 
 	// clear render target
-	PrimitiveEngine::get()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain, 0, 0.3f, 0.4f, 1);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain, 0, 0.3f, 0.4f, 1);
 
 	// set viewport of render target in which we will draw
 	RECT rect = this->getClientWindowRect();
-	PrimitiveEngine::get()->getImmediateDeviceContext()->setViewPortSize(rect.right - rect.left, rect.bottom - rect.top);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setViewPortSize(rect.right - rect.left, rect.bottom - rect.top);
 
 	// update constant buffer
 	this->update();
 
 	// bind the constant buffer to the graphics pipeline for each shader
-	PrimitiveEngine::get()->getImmediateDeviceContext()->setConstantBuffer(this->m_vs, this->m_cb);
-	PrimitiveEngine::get()->getImmediateDeviceContext()->setConstantBuffer(this->m_ps, this->m_cb);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setConstantBuffer(this->m_vs, this->m_cb);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setConstantBuffer(this->m_ps, this->m_cb);
 
 	// set default shader in the graphics pipeline
-	PrimitiveEngine::get()->getImmediateDeviceContext()->setVertexShader(this->m_vs);
-	PrimitiveEngine::get()->getImmediateDeviceContext()->setPixelShader(this->m_ps);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexShader(this->m_vs);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setPixelShader(this->m_ps);
 
 	// set the list of vertices
-	PrimitiveEngine::get()->getImmediateDeviceContext()->setVertexBuffer(this->m_vb);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(this->m_vb);
 	// set the list of indices
-	PrimitiveEngine::get()->getImmediateDeviceContext()->setIndexBuffer(this->m_ib);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setIndexBuffer(this->m_ib);
 
 	// draw the object
-	PrimitiveEngine::get()->getImmediateDeviceContext()->drawIndexedTriangleList(this->m_ib->getSizeIndexList(), 0, 0);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->drawIndexedTriangleList(this->m_ib->getSizeIndexList(), 0, 0);
 	this->m_swap_chain->present(true);
 
 	// timing
@@ -130,13 +130,13 @@ void AppWindow::onUpdate()
 void AppWindow::onDestroy()
 {
 	Window::onDestroy();
-	this->m_swap_chain->release();
-	this->m_vb->release();
-	this->m_cb->release();
-	this->m_ib->release();
-	this->m_vs->release();
-	this->m_ps->release();
-	PrimitiveEngine::get()->release();
+	delete m_swap_chain;
+	delete m_vb;
+	delete m_vs;
+	delete m_ps;
+	delete m_cb;
+	delete m_ib;
+	GraphicsEngine::get()->getRenderSystem()->release();
 }
 
 void AppWindow::onFocus()
@@ -152,7 +152,7 @@ void AppWindow::onKillFocus()
 void AppWindow::update()
 {
 	Constant cc = {};
-	cc.m_time = ::GetTickCount();
+	cc.m_time = ::GetTickCount64();
 
 	this->m_delta_pos += this->m_delta_time / 10.0f;
 
@@ -211,7 +211,7 @@ void AppWindow::update()
 	cc.m_proj = Matrix4x4::perspectiveFovMatrix(1.57f, ((float)width / (float)height), 0.1f, 100.0f);
 
 
-	this->m_cb->update(PrimitiveEngine::get()->getImmediateDeviceContext(), &cc);
+	this->m_cb->update(GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext(), &cc);
 }
 
 void AppWindow::onKeyDown(USHORT key)

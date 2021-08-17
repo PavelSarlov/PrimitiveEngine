@@ -5,7 +5,7 @@
 #include <Windows.h>
 
 #include "Window.h"
-#include "PrimitiveEngine.h"
+#include "GraphicsEngine.h"
 #include "Geometry.h"
 #include "SwapChain.h"
 #include "DeviceContext.h"

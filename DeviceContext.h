@@ -3,6 +3,7 @@
 #define DEVICECONTEXT_H
 
 #include <d3d11.h>
+#include <exception>
 
 #include "SwapChain.h"
 #include "VertexBuffer.h"
@@ -10,22 +11,15 @@
 #include "IndexBuffer.h"
 #include "VertexShader.h"
 #include "PixelShader.h"
-
-class SwapChain;
-class VertexBuffer;
-class ConstantBuffer;
-class IndexBuffer;
-class VertexShader;
-class PixelShader;
+#include "Prerequisites.h"
 
 class DeviceContext
 {
 public:
-	DeviceContext(ID3D11DeviceContext *device_context);
+	DeviceContext(ID3D11DeviceContext *device_context, RenderSystem *system);
 	~DeviceContext();
 
 public:
-	bool release();
 	void setVertexBuffer(VertexBuffer *vertex_buffer);
 	void setViewPortSize(UINT width, UINT height);
 	void setVertexShader(VertexShader *vertex_shader);
@@ -42,6 +36,7 @@ public:
 
 private:
 	ID3D11DeviceContext *m_device_context = nullptr;
+	RenderSystem *m_system = nullptr;
 
 private:
 	friend class ConstantBuffer;
