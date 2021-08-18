@@ -24,13 +24,13 @@ public:
 	~RenderSystem();
 
 public:
-	SwapChainPtr createSwapChain(HWND hwnd, UINT width, UINT height, RenderSystem *system);
+	SwapChainPtr createSwapChain(HWND hwnd, UINT width, UINT height);
 	DeviceContextPtr getImmediateDeviceContext();
-	VertexBufferPtr createVertexBuffer(void *list_vertices, UINT size_vertex, UINT size_list, void *shader_byte_code, size_t size_byte_shader, RenderSystem *system);
-	VertexShaderPtr createVertexShader(const void *shader_byte_code, size_t byte_code_size, RenderSystem *system);
-	PixelShaderPtr createPixelShader(const void *shader_byte_code, size_t byte_code_size, RenderSystem *system);
-	ConstantBufferPtr createConstantBuffer(void *buffer, UINT size_buffer, RenderSystem *system);
-	IndexBufferPtr createIndexBuffer(void *list_indices, UINT size_list, RenderSystem *system);
+	VertexBufferPtr createVertexBuffer(void *list_vertices, UINT size_vertex, UINT size_list, void *shader_byte_code, size_t size_byte_shader);
+	VertexShaderPtr createVertexShader(const void *shader_byte_code, size_t byte_code_size);
+	PixelShaderPtr createPixelShader(const void *shader_byte_code, size_t byte_code_size);
+	ConstantBufferPtr createConstantBuffer(void *buffer, UINT size_buffer);
+	IndexBufferPtr createIndexBuffer(void *list_indices, UINT size_list);
 
 public:
 	bool compileVertexShader(const wchar_t *file_name, const char *entry_point_name, void **shader_byte_code, size_t *byte_code_size);

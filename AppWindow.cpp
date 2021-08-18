@@ -13,119 +13,33 @@ void AppWindow::onCreate()
 	InputSystem::get()->addListener(this);
 	InputSystem::get()->showCursor(false);
 
-	this->m_wood_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\wood.jpg");
+	this->m_wood_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\brick.png");
+	this->m_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\teapot.obj");
 
 	// create swap chain
 	RECT rect = this->getClientWindowRect();
-	this->m_swap_chain = GraphicsEngine::get()->getRenderSystem()->createSwapChain(this->m_hwnd, rect.right - rect.left, rect.bottom - rect.top, GraphicsEngine::get()->getRenderSystem());
+	this->m_swap_chain = GraphicsEngine::get()->getRenderSystem()->createSwapChain(this->m_hwnd, rect.right - rect.left, rect.bottom - rect.top);
 
 	this->m_world_cam = Matrix4x4::translationMatrix(0, 0, -2);
-
-	Vector3 position_list[] =
-	{
-		// front
-		{Vector3(-0.5f,-0.5f,-0.5f)},
-		{Vector3(-0.5f, 0.5f,-0.5f)},
-		{Vector3(0.5f, 0.5f,-0.5f)},
-		{Vector3(0.5f,-0.5f,-0.5f)},
-
-		// back
-		{Vector3(0.5f,-0.5f, 0.5f)},
-		{Vector3(0.5f, 0.5f, 0.5f)},
-		{Vector3(-0.5f, 0.5f, 0.5f)},
-		{Vector3(-0.5f,-0.5f, 0.5f)},
-	};
-
-	Vector2 texcoord_list[] =
-	{
-		{Vector2(0.0f,0.0f)},
-		{Vector2(0.0f,1.0f)},
-		{Vector2(1.0f,0.0f)},
-		{Vector2(1.0f,1.0f)}
-	};
-
-	Vertex vertex_list[] =
-	{
-		// front
-		{position_list[0], texcoord_list[1]},
-		{position_list[1], texcoord_list[0]},
-		{position_list[2], texcoord_list[2]},
-		{position_list[3], texcoord_list[3]},
-
-		// back
-		{position_list[4], texcoord_list[1]},
-		{position_list[5], texcoord_list[0]},
-		{position_list[6], texcoord_list[2]},
-		{position_list[7], texcoord_list[3]},
-
-		{position_list[1], texcoord_list[1]},
-		{position_list[6], texcoord_list[0]},
-		{position_list[5], texcoord_list[2]},
-		{position_list[2], texcoord_list[3]},
-
-		{position_list[7], texcoord_list[1]},
-		{position_list[0], texcoord_list[0]},
-		{position_list[3], texcoord_list[2]},
-		{position_list[4], texcoord_list[3]},
-
-		{position_list[3], texcoord_list[1]},
-		{position_list[2], texcoord_list[0]},
-		{position_list[5], texcoord_list[2]},
-		{position_list[4], texcoord_list[3]},
-
-		{position_list[7], texcoord_list[1]},
-		{position_list[6], texcoord_list[0]},
-		{position_list[1], texcoord_list[2]},
-		{position_list[0], texcoord_list[3]},
-	};
-	UINT size_vertex_list = ARRAYSIZE(vertex_list);
-
-	// create index list
-	UINT index_list[] =
-	{
-		// front
-		0,1,2,
-		2,3,0,
-		// back
-		4,5,6,
-		6,7,4,
-		// top
-		8,9,10,
-		10,11,8,
-		// bottom
-		12,13,14,
-		14,15,12,
-		// right
-		16,17,18,
-		18,19,16,
-		//left
-		20,21,22,
-		22,23,20
-	};
-	UINT size_index_list = ARRAYSIZE(index_list);
-
-	// create index buffer
-	this->m_ib = GraphicsEngine::get()->getRenderSystem()->createIndexBuffer(index_list, size_index_list, GraphicsEngine::get()->getRenderSystem());
 
 	// shaders data
 	void *shader_byte_code = nullptr;
 	size_t size_shader = 0;
 
-	// create vertex shader and buffer
+	// create vertex shader
 	GraphicsEngine::get()->getRenderSystem()->compileVertexShader(L"VertexShader.hlsl", "vsmain", &shader_byte_code, &size_shader);
-	this->m_vs = GraphicsEngine::get()->getRenderSystem()->createVertexShader(shader_byte_code, size_shader, GraphicsEngine::get()->getRenderSystem());
-	this->m_vb = GraphicsEngine::get()->getRenderSystem()->createVertexBuffer(vertex_list, sizeof(Vertex), size_vertex_list, shader_byte_code, size_shader, GraphicsEngine::get()->getRenderSystem());
+	this->m_vs = GraphicsEngine::get()->getRenderSystem()->createVertexShader(shader_byte_code, size_shader);
 	GraphicsEngine::get()->getRenderSystem()->releaseCompiledShader();
 
 	// create pixel shader
 	GraphicsEngine::get()->getRenderSystem()->compilePixelShader(L"PixelShader.hlsl", "psmain", &shader_byte_code, &size_shader);
-	this->m_ps = GraphicsEngine::get()->getRenderSystem()->createPixelShader(shader_byte_code, size_shader, GraphicsEngine::get()->getRenderSystem());
+	this->m_ps = GraphicsEngine::get()->getRenderSystem()->createPixelShader(shader_byte_code, size_shader);
 	GraphicsEngine::get()->getRenderSystem()->releaseCompiledShader();
 
 	// create constant buffer
 	Constant cc = {};
 	cc.m_time = 0;
-	this->m_cb = GraphicsEngine::get()->getRenderSystem()->createConstantBuffer(&cc, sizeof(Constant), GraphicsEngine::get()->getRenderSystem());
+	this->m_cb = GraphicsEngine::get()->getRenderSystem()->createConstantBuffer(&cc, sizeof(Constant));
 }
 
 void AppWindow::onUpdate()
@@ -156,12 +70,12 @@ void AppWindow::onUpdate()
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setTexture(this->m_ps, this->m_wood_tex);
 
 	// set the list of vertices
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(this->m_vb);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(this->m_mesh->getVertexBuffer());
 	// set the list of indices
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setIndexBuffer(this->m_ib);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setIndexBuffer(this->m_mesh->getIndexBuffer());
 
 	// draw the object
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->drawIndexedTriangleList(this->m_ib->getSizeIndexList(), 0, 0);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->drawIndexedTriangleList(this->m_mesh->getIndexBuffer()->getSizeIndexList(), 0, 0);
 	this->m_swap_chain->present(true);
 
 	// timing
@@ -226,7 +140,7 @@ void AppWindow::update()
 	world_cam *= Matrix4x4::rotationX(m_rot_x);
 	world_cam *= Matrix4x4::rotationY(m_rot_y);
 
-	Vector3 new_pos = this->m_world_cam.getTranslation() + world_cam.getDirectionZ() * this->m_forward * 0.3f + world_cam.getDirectionX() * this->m_rightward * 0.3f;
+	Vector3 new_pos = this->m_world_cam.getTranslation() + world_cam.getDirectionZ() * this->m_forward * 0.03f + world_cam.getDirectionX() * this->m_rightward * 0.03f;
 
 	world_cam.setTranslation(new_pos);
 	this->m_world_cam = world_cam;
@@ -244,7 +158,7 @@ void AppWindow::update()
 	int width = (this->getClientWindowRect().right - this->getClientWindowRect().left);
 	int height = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
 
-	cc.m_proj = Matrix4x4::perspectiveFovMatrix(1.57f, ((float)width / (float)height), 0.1f, 100.0f);
+	cc.m_proj.setPerspectiveFovPH(1.57f, ((float)width / (float)height), 0.1f, 100.0f);
 
 
 	this->m_cb->update(GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext(), &cc);
@@ -311,7 +225,7 @@ void AppWindow::onMouseMove(const Point &mouse_pos)
 	this->m_rot_x += (mouse_pos.m_y - (height / 2.0f)) * this->m_delta_time * 0.1f;
 	this->m_rot_y += (mouse_pos.m_x - (width / 2.0f)) * this->m_delta_time * 0.1f;
 
-	InputSystem::get()->setCursorPos(Point(width / 2, height / 2));
+	InputSystem::get()->setCursorPos(Point(width / 2.0f, height / 2.0f));
 }
 
 void AppWindow::onLeftMouseDown(const Point &mouse_pos)

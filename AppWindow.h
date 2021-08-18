@@ -16,6 +16,7 @@
 #include "VertexShader.h"
 #include "InputListener.h"
 #include "InputSystem.h"
+#include "Mesh.h"
 
 class AppWindow : public Window, public InputListener
 {
@@ -51,6 +52,7 @@ private:
 	ConstantBufferPtr m_cb;
 	IndexBufferPtr m_ib;
 	TexturePtr m_wood_tex;
+	MeshPtr m_mesh;
 
 private:
 	ULONG m_old_delta = 0;

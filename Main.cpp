@@ -9,6 +9,9 @@ int main()
 
 		AppWindow app;
 		while(app.isRunning());
+
+		InputSystem::release();
+		GraphicsEngine::release();
 	}
 	catch(std::exception e)
 	{
@@ -17,9 +20,6 @@ int main()
 		GraphicsEngine::release();
 		return -1;
 	}
-
-	InputSystem::release();
-	GraphicsEngine::release();
 
 	return 0;
 }

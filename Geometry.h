@@ -10,7 +10,7 @@ class Matrix3x3;
 class Matrix4x4;
 struct Vertex;
 class Triangle;
-class Mesh;
+class VertexMesh;
 
 class Vector2
 {
@@ -970,6 +970,18 @@ public:
 		return matrix;
 	}
 
+	inline void setPerspectiveFovPH(float fov, float aspect, float zNear, float zFar)
+	{
+		float yScale = 1.0f / tanf(fov / 2.0f);
+		float xScale = yScale / aspect;
+
+		this->m_mat[0][0] = xScale;
+		this->m_mat[1][1] = yScale;
+		this->m_mat[2][2] = zFar / (zFar - zNear);
+		this->m_mat[2][3] = 1.0f;
+		this->m_mat[3][2] = (-zNear * zFar) / (zFar - zNear);
+	}
+
 	inline static Matrix4x4 scaleMatrix(float x, float y, float z)
 	{
 		return Matrix4x4::scaleMatrix(Vector3(x, y, z));
@@ -1140,30 +1152,31 @@ struct Constant
 //	Vertex p[3];
 //};
 //
-//struct Mesh
-//{
-//	Mesh() : Mesh(std::vector<Triangle>())
-//	{}
-//
-//	Mesh(std::vector<Triangle> m)
-//	{
-//		this->m = m;
-//	}
-//
-//	Mesh(const Mesh &other)
-//	{
-//		*this = other;
-//	}
-//
-//	Mesh &operator=(const Mesh &other)
-//	{
-//		if(this != &other)
-//		{
-//			this->m = m;
-//		}
-//		return *this;
-//	}
-//
-//	std::vector<Triangle> m;
-//};
-//
+class VertexMesh
+{
+public:
+	VertexMesh() : VertexMesh(Vector3(), Vector2())
+	{}
+
+	VertexMesh(const Vector3& position, const Vector2& texcoord) : m_position(position), m_texcoord(texcoord)
+	{}
+
+	VertexMesh(const VertexMesh &other)
+	{
+		*this = other;
+	}
+
+	VertexMesh &operator=(const VertexMesh &other)
+	{
+		if(this != &other)
+		{
+			this->m_position = other.m_position;
+			this->m_texcoord = other.m_texcoord;
+		}
+		return *this;
+	}
+
+public:
+	Vector3 m_position;
+	Vector2 m_texcoord;
+};

@@ -56,7 +56,7 @@ RenderSystem::~RenderSystem()
 	this->m_d3d_device->Release();
 }
 
-SwapChainPtr RenderSystem::createSwapChain(HWND hwnd, UINT width, UINT height, RenderSystem *system)
+SwapChainPtr RenderSystem::createSwapChain(HWND hwnd, UINT width, UINT height)
 {
 	try
 	{
@@ -74,7 +74,7 @@ DeviceContextPtr RenderSystem::getImmediateDeviceContext()
 	return this->m_imm_device_context;
 }
 
-VertexBufferPtr RenderSystem::createVertexBuffer(void *list_vertices, UINT size_vertex, UINT size_list, void *shader_byte_code, size_t size_byte_shader, RenderSystem *system)
+VertexBufferPtr RenderSystem::createVertexBuffer(void *list_vertices, UINT size_vertex, UINT size_list, void *shader_byte_code, size_t size_byte_shader)
 {
 	try
 	{
@@ -87,7 +87,7 @@ VertexBufferPtr RenderSystem::createVertexBuffer(void *list_vertices, UINT size_
 	}
 }
 
-VertexShaderPtr RenderSystem::createVertexShader(const void *shader_byte_code, size_t byte_code_size, RenderSystem *system)
+VertexShaderPtr RenderSystem::createVertexShader(const void *shader_byte_code, size_t byte_code_size)
 {
 	try
 	{
@@ -100,7 +100,7 @@ VertexShaderPtr RenderSystem::createVertexShader(const void *shader_byte_code, s
 	}
 }
 
-PixelShaderPtr RenderSystem::createPixelShader(const void *shader_byte_code, size_t byte_code_size, RenderSystem *system)
+PixelShaderPtr RenderSystem::createPixelShader(const void *shader_byte_code, size_t byte_code_size)
 {
 	try
 	{
@@ -113,7 +113,7 @@ PixelShaderPtr RenderSystem::createPixelShader(const void *shader_byte_code, siz
 	}
 }
 
-ConstantBufferPtr RenderSystem::createConstantBuffer(void *buffer, UINT size_buffer, RenderSystem *system)
+ConstantBufferPtr RenderSystem::createConstantBuffer(void *buffer, UINT size_buffer)
 {
 	try
 	{
@@ -126,7 +126,7 @@ ConstantBufferPtr RenderSystem::createConstantBuffer(void *buffer, UINT size_buf
 	}
 }
 
-IndexBufferPtr RenderSystem::createIndexBuffer(void *list_indices, UINT size_list, RenderSystem *system)
+IndexBufferPtr RenderSystem::createIndexBuffer(void *list_indices, UINT size_list)
 {
 	try
 	{

@@ -3,7 +3,6 @@
 #define RESOURCEMANAGER_H
 
 #include <unordered_map>
-#include <filesystem>
 
 #include "Prerequisites.h"
 
