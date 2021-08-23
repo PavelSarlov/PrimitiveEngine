@@ -1,4 +1,7 @@
 #include "IndexBuffer.h"
+#include "RenderSystem.h"
+
+#include <exception>
 
 IndexBuffer::IndexBuffer(void *list_indices, UINT size_list, RenderSystem *system) : m_system(system)
 {

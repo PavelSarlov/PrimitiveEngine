@@ -2,9 +2,9 @@
 #ifndef RESOURCEMANAGER_H
 #define RESOURCEMANAGER_H
 
-#include <unordered_map>
-
 #include "Prerequisites.h"
+
+#include <unordered_map>
 
 class ResourceManager
 {

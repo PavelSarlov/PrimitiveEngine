@@ -2,17 +2,9 @@
 #ifndef DEVICECONTEXT_H
 #define DEVICECONTEXT_H
 
-#include <d3d11.h>
-#include <exception>
-
-#include "SwapChain.h"
-#include "VertexBuffer.h"
-#include "ConstantBuffer.h"
-#include "IndexBuffer.h"
-#include "VertexShader.h"
-#include "PixelShader.h"
-#include "Texture.h"
 #include "Prerequisites.h"
+
+#include <d3d11.h>
 
 class DeviceContext
 {

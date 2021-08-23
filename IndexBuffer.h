@@ -2,11 +2,9 @@
 #ifndef INDEXBUFFER_H
 #define INDEXBUFFER_H
 
-#include "RenderSystem.h"
 #include "Prerequisites.h"
 
 #include <d3d11.h>
-#include <exception>
 
 class DeviceContext;
 

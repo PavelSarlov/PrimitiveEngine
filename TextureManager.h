@@ -3,7 +3,6 @@
 #define TEXTUREMANAGER_H
 
 #include "ResourceManager.h"
-#include "Texture.h"
 
 class TextureManager : public ResourceManager
 {

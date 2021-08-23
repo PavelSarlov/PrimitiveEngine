@@ -3,9 +3,7 @@
 #define TEXTURE_H
 
 #include "Resource.h"
-#include "GraphicsEngine.h"
 
-#include <DirectXTex.h>
 #include <d3d11.h>
 
 class Texture : public Resource

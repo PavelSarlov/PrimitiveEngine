@@ -4,9 +4,7 @@
 #define PIXELSHADER_H
 
 #include <d3d11.h>
-#include <exception>
 
-#include "RenderSystem.h"
 #include "Prerequisites.h"
 
 class PixelShader

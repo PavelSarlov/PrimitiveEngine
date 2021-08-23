@@ -1,4 +1,8 @@
 #include "ConstantBuffer.h"
+#include "RenderSystem.h"
+#include "DeviceContext.h"
+
+#include <exception>
 
 ConstantBuffer::ConstantBuffer(void *buffer, UINT size_buffer, RenderSystem *system) : m_system(system)
 {

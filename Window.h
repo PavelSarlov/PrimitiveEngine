@@ -3,13 +3,6 @@
 #define WINDOW_H
 
 #include <Windows.h>
-#include <exception>
-
-#define DEFAULT_WIDTH (UINT)1024
-#define DEFAULT_HEIGHT (UINT)768
-#define DEFAULT_WCLASS L"Window"
-#define DEFAULT_WNAME L"New Window"
-#define DEFAULT_WMENU L"Menu"
 
 class Window
 {
@@ -21,6 +14,8 @@ public:
 public:
 	bool isRunning();
 	RECT getClientWindowRect();
+	RECT getWindowRect();
+	RECT getSizeScreen();
 
 public:
 	virtual void onCreate();
@@ -28,6 +23,7 @@ public:
 	virtual void onDestroy();
 	virtual void onFocus();
 	virtual void onKillFocus();
+	virtual void onResize();
 
 private:
 	bool broadcast();

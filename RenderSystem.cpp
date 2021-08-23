@@ -1,5 +1,13 @@
 #include "RenderSystem.h"
 
+#include "SwapChain.h"
+#include "DeviceContext.h"
+#include "VertexBuffer.h"
+#include "ConstantBuffer.h"
+#include "IndexBuffer.h"
+#include "VertexShader.h"
+#include "PixelShader.h"
+
 RenderSystem::RenderSystem()
 {
 	D3D_DRIVER_TYPE driver_types[] =
@@ -39,16 +47,12 @@ RenderSystem::RenderSystem()
 	this->m_d3d_device->QueryInterface(__uuidof(IDXGIDevice), (void **)&m_dxgi_device);
 	this->m_dxgi_device->GetParent(__uuidof(IDXGIAdapter), (void **)&m_dxgi_adapter);
 	this->m_dxgi_adapter->GetParent(__uuidof(IDXGIFactory), (void **)&m_dxgi_factory);
+
+	this->initRasterizerState();
 }
 
 RenderSystem::~RenderSystem()
 {
-	//if(this->m_vs) this->m_vs->Release();
-	//if(this->m_ps) this->m_ps->Release();
-
-	//if(this->m_vsblob) this->m_vsblob->Release();
-	//if(this->m_psblob) this->m_psblob->Release();
-
 	this->m_dxgi_device->Release();
 	this->m_dxgi_adapter->Release();
 	this->m_dxgi_factory->Release();
@@ -172,4 +176,21 @@ bool RenderSystem::compilePixelShader(const wchar_t *file_name, const char *entr
 void RenderSystem::releaseCompiledShader()
 {
 	if(this->m_blob) this->m_blob->Release();
+}
+
+void RenderSystem::setRasterizerState(bool cull_front)
+{
+	this->m_imm_context->RSSetState(cull_front ? this->m_cull_front_state : this->m_cull_back_state);
+}
+
+void RenderSystem::initRasterizerState()
+{
+	D3D11_RASTERIZER_DESC desc = {};
+	desc.CullMode = D3D11_CULL_FRONT;
+	desc.DepthClipEnable = true;
+	desc.FillMode = D3D11_FILL_SOLID;
+	this->m_d3d_device->CreateRasterizerState(&desc, &this->m_cull_front_state);
+
+	desc.CullMode = D3D11_CULL_BACK;
+	this->m_d3d_device->CreateRasterizerState(&desc, &this->m_cull_back_state);
 }

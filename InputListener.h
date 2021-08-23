@@ -2,7 +2,7 @@
 #ifndef INPUTLISTENER_H
 #define INPUTLISTENER_H
 
-#include "Point.h"
+#include <Windows.h>
 
 class InputListener
 {
@@ -20,11 +20,11 @@ public:
 
 public:
 	// mouse events
-	virtual void onMouseMove(const Point &mouse_pos) = 0;
-	virtual void onLeftMouseDown(const Point &mouse_pos) = 0;
-	virtual void onLeftMouseUp(const Point &mouse_pos) = 0;
-	virtual void onRightMouseDown(const Point &mouse_pos) = 0;
-	virtual void onRightMouseUp(const Point &mouse_pos) = 0;
+	virtual void onMouseMove(const POINT &mouse_pos) = 0;
+	virtual void onLeftMouseDown(const POINT &mouse_pos) = 0;
+	virtual void onLeftMouseUp(const POINT &mouse_pos) = 0;
+	virtual void onRightMouseDown(const POINT &mouse_pos) = 0;
+	virtual void onRightMouseUp(const POINT &mouse_pos) = 0;
 };
 
 

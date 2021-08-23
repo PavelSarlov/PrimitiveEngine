@@ -1102,6 +1102,11 @@ public:
 		return { this->m_mat[0][0], this->m_mat[0][1], this->m_mat[0][2] };
 	}
 
+	inline Vector3 getDirectionY()
+	{
+		return { this->m_mat[1][0], this->m_mat[1][1], this->m_mat[1][2] };
+	}
+
 	inline Vector3 getTranslation()
 	{
 		return { this->m_mat[3][0], this->m_mat[3][1], this->m_mat[3][2] };

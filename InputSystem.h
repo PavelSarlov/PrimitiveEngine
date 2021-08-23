@@ -2,11 +2,9 @@
 #ifndef INPUTSYSTEM_H
 #define INPUTSYSTEM_H
 
-#include <unordered_set>
-#include <Windows.h>
-
 #include "InputListener.h"
-#include "Point.h"
+
+#include <unordered_set>
 
 class InputSystem
 {
@@ -23,14 +21,14 @@ public:
 	void update();
 	void addListener(InputListener *listener);
 	void removeListener(InputListener *listener);
-	void setCursorPos(const Point &pos);
+	void setCursorPos(const POINT &pos);
 	void showCursor(bool show);
 
 private:
 	std::unordered_set<InputListener *> m_listeners;
-	UCHAR m_keys_state[256] = {};
-	UCHAR m_old_keys_state[256] = {};
-	Point m_old_mouse_pos = Point();
+	UCHAR m_keys_state[256] = { 0 };
+	UCHAR m_old_keys_state[256] = { 0 };
+	POINT m_old_mouse_pos = {};
 	bool m_first_time = true;
 	static InputSystem *m_system;
 };

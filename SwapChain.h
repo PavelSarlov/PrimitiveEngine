@@ -4,10 +4,8 @@
 #define SWAPCHAIN_H
 
 #include "Prerequisites.h"
-#include "RenderSystem.h"
 
 #include <d3d11.h>
-#include <exception>
 
 class DeviceContext;
 
@@ -19,6 +17,11 @@ public:
 
 public:
 	bool present(bool vsync);
+	void resize(UINT width, UINT height);
+	void setFullScreen(bool fullscreen, UINT width, UINT height);
+
+private:
+	void reloadBuffers(UINT width, UINT height);
 
 private:
 	IDXGISwapChain *m_swap_chain = nullptr;

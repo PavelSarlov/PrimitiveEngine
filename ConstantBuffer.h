@@ -2,11 +2,8 @@
 #ifndef CONSTANTBUFFER_H
 #define CONSTANTBUFFER_H
 
-#include "RenderSystem.h"
-#include "DeviceContext.h"
 #include "Prerequisites.h"
 
-#include <exception>
 #include <d3d11.h>
 
 class DeviceContext;

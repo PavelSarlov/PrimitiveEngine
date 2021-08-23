@@ -1,5 +1,7 @@
 #include "InputSystem.h"
 
+#include <Windows.h>
+
 InputSystem *InputSystem::m_system = nullptr;
 
 InputSystem::InputSystem()
@@ -34,18 +36,18 @@ void InputSystem::update()
 
 	if(this->m_first_time)
 	{
-		this->m_old_mouse_pos = Point(current_mouse_pos.x, current_mouse_pos.y);
+		this->m_old_mouse_pos = { current_mouse_pos.x, current_mouse_pos.y };
 		this->m_first_time = false;
 	}
 
-	if(current_mouse_pos.x != this->m_old_mouse_pos.m_x || current_mouse_pos.y != this->m_old_mouse_pos.m_y)
+	if(current_mouse_pos.x != this->m_old_mouse_pos.x || current_mouse_pos.y != this->m_old_mouse_pos.y)
 	{
 		for(auto it = this->m_listeners.begin(); it != this->m_listeners.end(); it++)
 		{
-			(*it)->onMouseMove(Point(current_mouse_pos.x, current_mouse_pos.y));
+			(*it)->onMouseMove({ current_mouse_pos.x, current_mouse_pos.y });
 		}
 	}
-	this->m_old_mouse_pos = Point(current_mouse_pos.x, current_mouse_pos.y);
+	this->m_old_mouse_pos = { current_mouse_pos.x, current_mouse_pos.y };
 
 	if(::GetKeyboardState(m_keys_state))
 	{
@@ -60,14 +62,14 @@ void InputSystem::update()
 					{
 						if(this->m_keys_state[i] != this->m_old_keys_state[i])
 						{
-							(*it)->onLeftMouseDown(Point(current_mouse_pos.x, current_mouse_pos.y));
+							(*it)->onLeftMouseDown({ current_mouse_pos.x, current_mouse_pos.y });
 						}
 					}
 					else if(i == VK_RBUTTON)
 					{
 						if(this->m_keys_state[i] != this->m_old_keys_state[i])
 						{
-							(*it)->onRightMouseDown(Point(current_mouse_pos.x, current_mouse_pos.y));
+							(*it)->onRightMouseDown({ current_mouse_pos.x, current_mouse_pos.y });
 						}
 					}
 					else
@@ -85,11 +87,11 @@ void InputSystem::update()
 					{
 						if(i == VK_LBUTTON)
 						{
-							(*it)->onLeftMouseUp(Point(current_mouse_pos.x, current_mouse_pos.y));
+							(*it)->onLeftMouseUp({ current_mouse_pos.x, current_mouse_pos.y });
 						}
 						else if(i == VK_RBUTTON)
 						{
-							(*it)->onRightMouseUp(Point(current_mouse_pos.x, current_mouse_pos.y));
+							(*it)->onRightMouseUp({ current_mouse_pos.x, current_mouse_pos.y });
 						}
 						else
 						{
@@ -114,9 +116,9 @@ void InputSystem::removeListener(InputListener *listener)
 	this->m_listeners.erase(listener);
 }
 
-void InputSystem::setCursorPos(const Point &pos)
+void InputSystem::setCursorPos(const POINT &pos)
 {
-	::SetCursorPos(pos.m_x, pos.m_y);
+	::SetCursorPos(pos.x, pos.y);
 }
 
 void InputSystem::showCursor(bool show)

@@ -3,11 +3,9 @@
 #ifndef VERTEXSHADER_H
 #define VERTEXSHADER_H
 
-#include <d3d11.h>
-#include <exception>
-
 #include "Prerequisites.h"
-#include "RenderSystem.h"
+
+#include <d3d11.h>
 
 class VertexShader
 {

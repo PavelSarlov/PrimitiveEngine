@@ -1,27 +1,46 @@
 #include "Window.h"
 
+#include <exception>
+
+#define DEFAULT_WIDTH (UINT)1024
+#define DEFAULT_HEIGHT (UINT)768
+#define DEFAULT_WCLASS L"Window"
+#define DEFAULT_WNAME L"New Window"
+#define DEFAULT_WMENU L"Menu"
+
 LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch(msg)
 	{
 	case WM_CREATE:
 	{
+		// event fired on window creation
+		break;
+	}
+	case WM_SIZE:
+	{
+		// event fired on window resizing
+		Window *window = (Window *)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+		if(window) window->onResize();
 		break;
 	}
 	case WM_SETFOCUS:
 	{
+		// event fired on window getting focus
 		Window *window = (Window *)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 		if(window) window->onFocus();
 		break;
 	}
 	case WM_KILLFOCUS:
 	{
+		// event fired on window losing
 		Window *window = (Window *)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 		window->onKillFocus();
 		break;
 	}
 	case WM_DESTROY:
 	{
+		// event fired on window closing
 		Window *window = (Window *)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 		window->onDestroy();
 		::PostQuitMessage(0);
@@ -60,13 +79,8 @@ Window::Window(LPCWSTR className, LPCWSTR winName, UINT width, UINT height)
 		throw std::exception("Window class registration failed");
 	}
 
-	/*if(!window)
-	{
-		window = this;
-	}*/
-
 	this->m_hwnd = ::CreateWindowEx(WS_EX_OVERLAPPEDWINDOW, className, winName,
-		WS_CAPTION | WS_SYSMENU,
+		WS_CAPTION | WS_SYSMENU | WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT, width, height,
 		nullptr, nullptr, nullptr, nullptr);
 
@@ -116,9 +130,24 @@ bool Window::isRunning()
 
 RECT Window::getClientWindowRect()
 {
-	RECT rect;
-	::GetClientRect(this->m_hwnd, &rect);
-	return rect;
+	RECT rc;
+	::GetClientRect(this->m_hwnd, &rc);
+	return rc;
+}
+
+RECT Window::getWindowRect()
+{
+	RECT rc;
+	::GetWindowRect(this->m_hwnd, &rc);
+	return rc;
+}
+
+RECT Window::getSizeScreen()
+{
+	RECT rc;
+	rc.right = ::GetSystemMetrics(SM_CXSCREEN);
+	rc.bottom = ::GetSystemMetrics(SM_CYSCREEN);
+	return rc;
 }
 
 void Window::onCreate()
@@ -136,4 +165,7 @@ void Window::onFocus()
 {}
 
 void Window::onKillFocus()
+{}
+
+void Window::onResize()
 {}

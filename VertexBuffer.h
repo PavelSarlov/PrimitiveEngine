@@ -3,10 +3,8 @@
 #define VERTEXBUFFER_H
 
 #include "Prerequisites.h"
-#include "RenderSystem.h"
 
 #include <d3d11.h>
-#include <exception>
 
 class DeviceContext;
 
