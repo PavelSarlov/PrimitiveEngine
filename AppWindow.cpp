@@ -20,7 +20,7 @@ void AppWindow::onCreate()
 	RECT rect = this->getClientWindowRect();
 	this->m_swap_chain = GraphicsEngine::get()->getRenderSystem()->createSwapChain(this->m_hwnd, rect.right - rect.left, rect.bottom - rect.top);
 
-	this->m_world_cam = Matrix4x4::translationMatrix(0, 0, -2);
+	this->m_world_cam = Matrix4x4::translationMatrix(0, 0, -1);
 
 	// shaders data
 	void *shader_byte_code = nullptr;
@@ -38,7 +38,6 @@ void AppWindow::onCreate()
 
 	// create constant buffer
 	Constant cc = {};
-	cc.m_time = 0;
 	this->m_cb = GraphicsEngine::get()->getRenderSystem()->createConstantBuffer(&cc, sizeof(Constant));
 }
 
@@ -80,8 +79,8 @@ void AppWindow::onUpdate()
 
 	// timing
 	this->m_old_delta = this->m_new_delta;
-	this->m_new_delta = ::GetTickCount64();
-	this->m_delta_time = (this->m_new_delta - this->m_old_delta) / 1000.0f;
+	this->m_new_delta = (ULONG)::GetTickCount64();
+	this->m_delta_time = this->m_old_delta ? (this->m_new_delta - this->m_old_delta) / 1000.0f : 0.0f;
 }
 
 void AppWindow::onDestroy()
@@ -102,7 +101,6 @@ void AppWindow::onKillFocus()
 void AppWindow::update()
 {
 	Constant cc = {};
-	cc.m_time = ::GetTickCount64();
 
 	this->m_delta_pos += this->m_delta_time / 10.0f;
 
@@ -111,9 +109,11 @@ void AppWindow::update()
 		this->m_delta_pos = 0.0f;
 	}
 
-	Matrix4x4 temp;
+	Matrix4x4 m_light_rot_matrix = Matrix4x4::rotationY(this->m_light_rot_y);
 
-	// cc.m_world = Matrix4x4::translationMatrix(Vector3::lerp(Vector3(-2, -2, 0), Vector3(2, 2, 0), this->m_delta_pos));
+	this->m_light_rot_y += 0.707f * this->m_delta_time;
+
+	cc.m_light_dir = m_light_rot_matrix.getDirectionZ();
 
 	this->m_delta_scale += this->m_delta_time / 0.55f;
 
@@ -140,12 +140,13 @@ void AppWindow::update()
 	world_cam *= Matrix4x4::rotationX(m_rot_x);
 	world_cam *= Matrix4x4::rotationY(m_rot_y);
 
-	Vector3 new_pos = this->m_world_cam.getTranslation() + world_cam.getDirectionZ() * this->m_forward * 0.03f + world_cam.getDirectionX() * this->m_rightward * 0.03f;
+	Vector3 new_pos = this->m_world_cam.getTranslation() + world_cam.getDirectionZ() * this->m_forward * 0.01f + world_cam.getDirectionX() * this->m_rightward * 0.01f;
 
 	world_cam.setTranslation(new_pos);
 	this->m_world_cam = world_cam;
 	world_cam = world_cam.inversedMatrix();
 
+	cc.m_cam_pos = new_pos;
 	cc.m_view = world_cam;
 	//cc.m_proj = Matrix4x4::orthogonalProjMatrix
 	//(
