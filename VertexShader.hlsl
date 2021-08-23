@@ -20,6 +20,7 @@ cbuffer constant: register(b0)
 	row_major float4x4 m_proj;
 	float4 m_light_dir;
 	float4 m_cam_pos;
+	float m_time;
 };
 
 VS_OUTPUT vsmain(VS_INPUT input)
@@ -36,6 +37,5 @@ VS_OUTPUT vsmain(VS_INPUT input)
 
 	output.texcoord = input.texcoord;
 	output.normal = input.normal;
-	
 	return output;
 }

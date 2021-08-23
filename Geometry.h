@@ -9,8 +9,8 @@ class Vector4;
 class Matrix3x3;
 class Matrix4x4;
 struct Vertex;
-class Triangle;
 class VertexMesh;
+struct Constant;
 
 class Vector2
 {
@@ -1133,50 +1133,6 @@ struct Vertex
 	Vector2 texcoord;
 };
 
-__declspec(align(16))
-struct Constant
-{
-	Matrix4x4 m_world;
-	Matrix4x4 m_view;
-	Matrix4x4 m_proj;
-	Vector4 m_light_dir;
-	Vector4 m_cam_pos;
-};
-
-//
-//struct Triangle
-//{
-//	Triangle() : Triangle({Vertex(),Vertex(),Vertex()})
-//	{}
-//
-//	Triangle(std::vector<Vertex> p)
-//	{
-//		for(int i = 0; i < 3; i++)
-//		{
-//			this->p[i] = p[i];
-//		}
-//	}
-//
-//	Triangle(const Triangle &other)
-//	{
-//		*this = other;
-//	}
-//
-//	Triangle &operator=(const Triangle &other)
-//	{
-//		if(this != &other)
-//		{
-//			for(int i = 0; i < 3; i++)
-//			{
-//				this->p[i] = other.p[i];
-//			}
-//		}
-//		return *this;
-//	}
-//
-//	Vertex p[3];
-//};
-//
 class VertexMesh
 {
 public:
@@ -1206,4 +1162,15 @@ public:
 	Vector3 m_position;
 	Vector2 m_texcoord;
 	Vector3 m_normal;
+};
+
+__declspec(align(16))
+struct Constant
+{
+	Matrix4x4 m_world;
+	Matrix4x4 m_view;
+	Matrix4x4 m_proj;
+	Vector4 m_light_dir;
+	Vector4 m_cam_pos;
+	float m_time = 0.0f;
 };

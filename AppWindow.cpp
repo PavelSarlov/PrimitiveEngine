@@ -23,17 +23,23 @@ void AppWindow::onCreate()
 	InputSystem::get()->addListener(this);
 	InputSystem::get()->showCursor(!this->m_play_state);
 
-	this->m_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\brick.png");
-	this->m_sky_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\sky.jpg");
+	// create textures
+	this->m_earth_day_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\earth_color.jpg");
+	this->m_earth_night_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\earth_night.jpg");
+	this->m_earth_spec_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\earth_spec.jpg");
+	this->m_sky_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\stars_map.jpg");
+	this->m_cloud_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\clouds.jpg");
 
-	this->m_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\suzanne.obj");
+	// create meshes
+	this->m_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\sphere_hq.obj");
 	this->m_sky_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\sphere.obj");
 
 	// create swap chain
 	RECT rect = this->getClientWindowRect();
 	this->m_swap_chain = GraphicsEngine::get()->getRenderSystem()->createSwapChain(this->m_hwnd, rect.right - rect.left, rect.bottom - rect.top);
 
-	this->m_world_cam = Matrix4x4::translationMatrix(0, 0, -1);
+	// init cam pos
+	this->m_world_cam = Matrix4x4::translationMatrix(0, 0, -2);
 
 	// shaders data
 	void *shader_byte_code = nullptr;
@@ -205,18 +211,32 @@ void AppWindow::render()
 
 	// render model
 	GraphicsEngine::get()->getRenderSystem()->setRasterizerState(false);
-	this->drawMesh(this->m_mesh, this->m_vs, this->m_ps, this->m_cb, this->m_tex);
+
+	TexturePtr list_tex[] =
+	{
+		this->m_earth_day_tex,
+		this->m_earth_spec_tex,
+		this->m_cloud_tex,
+		this->m_earth_night_tex
+	};
+
+	this->drawMesh(this->m_mesh, this->m_vs, this->m_ps, this->m_cb, list_tex, ARRAYSIZE(list_tex));
 
 	// render skybox
 	GraphicsEngine::get()->getRenderSystem()->setRasterizerState(true);
-	this->drawMesh(this->m_sky_mesh, this->m_vs, this->m_sky_ps, this->m_sky_cb, this->m_sky_tex);
 
+	list_tex[0] = this->m_sky_tex;
+
+	this->drawMesh(this->m_sky_mesh, this->m_vs, this->m_sky_ps, this->m_sky_cb, list_tex, 1);
+
+	// swap back and front buffers
 	this->m_swap_chain->present(true);
 
 	// timing
 	this->m_old_delta = this->m_new_delta;
 	this->m_new_delta = (ULONG)::GetTickCount64();
 	this->m_delta_time = this->m_old_delta ? (this->m_new_delta - this->m_old_delta) / 1000.0f : 0.0f;
+	this->m_time += this->m_delta_time;
 }
 
 void AppWindow::update()
@@ -238,6 +258,7 @@ void AppWindow::updateModel()
 	cc.m_proj = this->m_proj_cam;
 	cc.m_cam_pos = this->m_world_cam.getTranslation();
 	cc.m_light_dir = m_light_rot_matrix.getDirectionZ();
+	cc.m_time = this->m_time;
 
 	this->m_cb->update(GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext(), &cc);
 }
@@ -279,7 +300,7 @@ void AppWindow::updateSkyBox()
 	this->m_sky_cb->update(GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext(), &cc);
 }
 
-void AppWindow::drawMesh(const MeshPtr &mesh, const VertexShaderPtr &vs, const PixelShaderPtr &ps, const ConstantBufferPtr &cb, const TexturePtr &tex)
+void AppWindow::drawMesh(const MeshPtr &mesh, const VertexShaderPtr &vs, const PixelShaderPtr &ps, const ConstantBufferPtr &cb, const TexturePtr *list_tex, UINT num_textures)
 {
 	// bind the constant buffer to the graphics pipeline for each shader
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setConstantBuffer(vs, cb);
@@ -290,7 +311,7 @@ void AppWindow::drawMesh(const MeshPtr &mesh, const VertexShaderPtr &vs, const P
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setPixelShader(ps);
 
 	// set texture
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setTexture(ps, tex);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setTexture(ps, list_tex, num_textures);
 
 	// set the list of vertices
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(mesh->getVertexBuffer());
