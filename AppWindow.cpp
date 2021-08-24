@@ -10,6 +10,8 @@
 #include "InputSystem.h"
 #include "Mesh.h"
 
+#include <future>
+
 __declspec(align(16))
 struct Constant
 {
@@ -253,6 +255,17 @@ void AppWindow::render()
 	this->m_new_delta = (ULONG)::GetTickCount64();
 	this->m_delta_time = this->m_old_delta ? (this->m_new_delta - this->m_old_delta) / 1000.0f : 0.0f;
 	this->m_time += this->m_delta_time;
+
+	// fps
+	this->m_frames++;
+	if(this->m_time - this->m_old_time >= 1.0f)
+	{
+		wchar_t title[256];
+		swprintf_s(title, 256, L"FPS: %d", (int)(this->m_frames / (this->m_time - this->m_old_time)));
+		::SetWindowTextW(this->m_hwnd, title);
+		this->m_old_time = this->m_time;
+		this->m_frames = 0;
+	}
 }
 
 void AppWindow::update()

@@ -90,6 +90,9 @@ private:
 
 	bool m_play_state = true;
 	bool m_fullscreen = false;
+
+	int m_frames = 0;
+	float m_old_time = 0.0f;
 };
 
 #endif
