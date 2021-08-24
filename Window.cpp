@@ -12,6 +12,28 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch(msg)
 	{
+	case WM_MOUSEWHEEL:
+	{
+		// event fired on mouse scrolling
+		Window *window = (Window *)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+		if(window)
+		{
+			POINT current_mouse_pos = {};
+			::GetCursorPos(&current_mouse_pos);
+			short wheel_delta = GET_WHEEL_DELTA_WPARAM(wParam);
+
+			if(wheel_delta > 0)
+			{
+				window->onMouseWheelUp(current_mouse_pos, wheel_delta);
+			}
+			else
+			{
+				window->onMouseWheelDown(current_mouse_pos, wheel_delta);
+			}
+		}
+
+		break;
+	}
 	case WM_CREATE:
 	{
 		// event fired on window creation
@@ -168,4 +190,10 @@ void Window::onKillFocus()
 {}
 
 void Window::onResize()
+{}
+
+void Window::onMouseWheelUp(const POINT &mouse_pos, const short &wheel_delta)
+{}
+
+void Window::onMouseWheelDown(const POINT &mouse_pos, const short &wheel_delta)
 {}

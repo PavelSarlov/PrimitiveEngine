@@ -24,6 +24,8 @@ public:
 	virtual void onFocus();
 	virtual void onKillFocus();
 	virtual void onResize();
+	virtual void onMouseWheelUp(const POINT &mouse_pos, const short &wheel_delta);
+	virtual void onMouseWheelDown(const POINT &mouse_pos, const short &wheel_delta);
 
 private:
 	bool broadcast();
