@@ -38,10 +38,11 @@ public:
 public:
 	void render();
 	void update();
-	void updateModel();
+	void updateModel(const Vector3 &position, const MaterialPtr &material);
 	void updateCamera();
 	void updateSkyBox();
-	void drawMesh(const MeshPtr &mesh, const VertexShaderPtr &vs, const PixelShaderPtr &ps, const ConstantBufferPtr &cb, const TexturePtr *list_tex, UINT num_textures);
+	void updateLight();
+	void drawMesh(const MeshPtr &mesh, const MaterialPtr &material);
 
 private:
 	SwapChainPtr m_swap_chain;
@@ -52,14 +53,25 @@ private:
 	ConstantBufferPtr m_cb;
 	ConstantBufferPtr m_sky_cb;
 	IndexBufferPtr m_ib;
-	TexturePtr m_earth_day_tex;
+
+	TexturePtr m_earth_color_tex;
 	TexturePtr m_earth_night_tex;
 	TexturePtr m_earth_spec_tex;
 	TexturePtr m_sky_tex;
 	TexturePtr m_cloud_tex;
 	TexturePtr m_wall_tex;
+	TexturePtr m_bricks_tex;
+
 	MeshPtr m_mesh;
 	MeshPtr m_sky_mesh;
+	MeshPtr m_torus_mesh;
+	MeshPtr m_suzanne_mesh;
+	MeshPtr m_plane_mesh;
+
+	MaterialPtr m_mat;
+	MaterialPtr m_bricks_mat;
+	MaterialPtr m_earth_mat;
+	MaterialPtr m_sky_mat;
 
 private:
 	float zNear = 0.1f;
@@ -76,6 +88,8 @@ private:
 	float m_rot_y = 0.0f;
 
 	float m_light_rot_y = 0.0f;
+	float m_light_radius = 4.0f;
+	Vector4 m_light_pos;
 
 	float m_forward = 0.0f;
 	float m_rightward = 0.0f;
@@ -85,14 +99,12 @@ private:
 	Matrix4x4 m_view_cam;
 	Matrix4x4 m_proj_cam;
 
-	float m_time = 0.0f;
-	float m_light_radius = 4.0f;
-
 	bool m_play_state = true;
 	bool m_fullscreen = false;
 
 	int m_frames = 0;
 	float m_old_time = 0.0f;
+	float m_time = 0.0f;
 };
 
 #endif

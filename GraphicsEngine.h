@@ -2,6 +2,7 @@
 #ifndef PRIMITIVEENGINE_H
 #define PRIMITIVEENGINE_H
 
+#include "Prerequisites.h"
 #include "RenderSystem.h"
 #include "TextureManager.h"
 #include "MeshManager.h"
@@ -23,7 +24,12 @@ public:
 	RenderSystem *getRenderSystem();
 	TextureManager *getTextureManager();
 	MeshManager *getMeshManager();
+
+public:
 	void getVertexLayoutShaderByteCodeAndSize(void **byte_code, size_t *size);
+	void setMaterial(const MaterialPtr &material);
+	MaterialPtr createMaterial(const wchar_t *vertex_shader_path, const wchar_t *pixel_shader_path);
+	MaterialPtr createMaterial(const MaterialPtr &material);
 
 private:
 	RenderSystem *m_render_system = nullptr;
