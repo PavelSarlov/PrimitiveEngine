@@ -32,6 +32,8 @@ public:
 	virtual void onLeftMouseUp(const POINT &mouse_pos) override;
 	virtual void onRightMouseDown(const POINT &mouse_pos) override;
 	virtual void onRightMouseUp(const POINT &mouse_pos) override;
+	virtual void onMouseWheelUp(const POINT &mouse_pos, const  short &wheel_delta) override;
+	virtual void onMouseWheelDown(const POINT &mouse_pos, const short &wheel_delta) override;
 
 public:
 	void render();
@@ -55,6 +57,7 @@ private:
 	TexturePtr m_earth_spec_tex;
 	TexturePtr m_sky_tex;
 	TexturePtr m_cloud_tex;
+	TexturePtr m_wall_tex;
 	MeshPtr m_mesh;
 	MeshPtr m_sky_mesh;
 
@@ -83,6 +86,7 @@ private:
 	Matrix4x4 m_proj_cam;
 
 	float m_time = 0.0f;
+	float m_light_radius = 4.0f;
 
 	bool m_play_state = true;
 	bool m_fullscreen = false;

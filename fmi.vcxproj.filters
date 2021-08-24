@@ -56,6 +56,12 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{1c4a2beb-c3aa-44d0-96a6-f9053a8cab61}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\EarthShaders">
+      <UniqueIdentifier>{0cf3e6d8-d381-49b6-8f53-c4713f71c483}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\PointLightShaders">
+      <UniqueIdentifier>{08f4208b-862b-4f46-868e-68b7ab5dc173}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -182,17 +188,23 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="PixelShader.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="SkyBoxShader.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="VertexShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="VertexMeshLayoutShader.hlsl">
       <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="EarthPixelShader.hlsl">
+      <Filter>Shaders\EarthShaders</Filter>
+    </FxCompile>
+    <FxCompile Include="EarthVertexShader.hlsl">
+      <Filter>Shaders\EarthShaders</Filter>
+    </FxCompile>
+    <FxCompile Include="PointLightVertexShader.hlsl">
+      <Filter>Shaders\PointLightShaders</Filter>
+    </FxCompile>
+    <FxCompile Include="PointLightPixelShader.hlsl">
+      <Filter>Shaders\PointLightShaders</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

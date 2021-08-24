@@ -1163,14 +1163,3 @@ public:
 	Vector2 m_texcoord;
 	Vector3 m_normal;
 };
-
-__declspec(align(16))
-struct Constant
-{
-	Matrix4x4 m_world;
-	Matrix4x4 m_view;
-	Matrix4x4 m_proj;
-	Vector4 m_light_dir;
-	Vector4 m_cam_pos;
-	float m_time = 0.0f;
-};

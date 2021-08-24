@@ -10,6 +10,19 @@
 #include "InputSystem.h"
 #include "Mesh.h"
 
+__declspec(align(16))
+struct Constant
+{
+	Matrix4x4 m_world;
+	Matrix4x4 m_view;
+	Matrix4x4 m_proj;
+	Vector4 m_cam_pos;
+	Vector4 m_light_dir;
+	Vector4 m_light_pos = Vector4(0, 1, 0, 0);
+	float m_light_radius = 4.0f;
+	float m_time = 0.0f;
+};
+
 AppWindow::AppWindow() : Window()
 {}
 
@@ -24,14 +37,11 @@ void AppWindow::onCreate()
 	InputSystem::get()->showCursor(!this->m_play_state);
 
 	// create textures
-	this->m_earth_day_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\earth_color.jpg");
-	this->m_earth_night_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\earth_night.jpg");
-	this->m_earth_spec_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\earth_spec.jpg");
+	this->m_wall_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\wall.jpg");
 	this->m_sky_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\stars_map.jpg");
-	this->m_cloud_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\clouds.jpg");
 
 	// create meshes
-	this->m_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\sphere_hq.obj");
+	this->m_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\scene.obj");
 	this->m_sky_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\sphere.obj");
 
 	// create swap chain
@@ -46,12 +56,12 @@ void AppWindow::onCreate()
 	size_t size_shader = 0;
 
 	// create vertex shader
-	GraphicsEngine::get()->getRenderSystem()->compileVertexShader(L"VertexShader.hlsl", "vsmain", &shader_byte_code, &size_shader);
+	GraphicsEngine::get()->getRenderSystem()->compileVertexShader(L"PointLightVertexShader.hlsl", "vsmain", &shader_byte_code, &size_shader);
 	this->m_vs = GraphicsEngine::get()->getRenderSystem()->createVertexShader(shader_byte_code, size_shader);
 	GraphicsEngine::get()->getRenderSystem()->releaseCompiledShader();
 
 	// create pixel shader
-	GraphicsEngine::get()->getRenderSystem()->compilePixelShader(L"PixelShader.hlsl", "psmain", &shader_byte_code, &size_shader);
+	GraphicsEngine::get()->getRenderSystem()->compilePixelShader(L"PointLightPixelShader.hlsl", "psmain", &shader_byte_code, &size_shader);
 	this->m_ps = GraphicsEngine::get()->getRenderSystem()->createPixelShader(shader_byte_code, size_shader);
 	GraphicsEngine::get()->getRenderSystem()->releaseCompiledShader();
 
@@ -103,7 +113,6 @@ void AppWindow::onKeyDown(USHORT key)
 	case 'W':
 	{
 		this->m_forward = 1.0f;
-
 		break;
 	}
 	case 'S':
@@ -197,6 +206,16 @@ void AppWindow::onRightMouseDown(const POINT &mouse_pos)
 void AppWindow::onRightMouseUp(const POINT &mouse_pos)
 {}
 
+void AppWindow::onMouseWheelUp(const POINT &mouse_pos, const short &wheel_delta)
+{
+	this->m_light_radius += this->m_delta_time * wheel_delta * 0.1f;
+}
+
+void AppWindow::onMouseWheelDown(const POINT &mouse_pos, const short &wheel_delta)
+{
+	this->m_light_radius += this->m_delta_time * wheel_delta * 0.1f;
+}
+
 void AppWindow::render()
 {
 	// clear render target
@@ -214,10 +233,7 @@ void AppWindow::render()
 
 	TexturePtr list_tex[] =
 	{
-		this->m_earth_day_tex,
-		this->m_earth_spec_tex,
-		this->m_cloud_tex,
-		this->m_earth_night_tex
+		this->m_wall_tex
 	};
 
 	this->drawMesh(this->m_mesh, this->m_vs, this->m_ps, this->m_cb, list_tex, ARRAYSIZE(list_tex));
@@ -251,13 +267,17 @@ void AppWindow::updateModel()
 	Constant cc = {};
 
 	Matrix4x4 m_light_rot_matrix = Matrix4x4::rotationY(this->m_light_rot_y);
-	this->m_light_rot_y += 0.707f * this->m_delta_time;
+	this->m_light_rot_y += 1.57f * this->m_delta_time;
+
+	float dist_from_origin = 1.0f;
 
 	cc.m_world = Matrix4x4::identityMatrix();
 	cc.m_view = this->m_view_cam;
 	cc.m_proj = this->m_proj_cam;
 	cc.m_cam_pos = this->m_world_cam.getTranslation();
 	cc.m_light_dir = m_light_rot_matrix.getDirectionZ();
+	cc.m_light_pos = Vector4(cosf(m_light_rot_y) * dist_from_origin, 1.0f, sinf(m_light_rot_y) * dist_from_origin);
+	cc.m_light_radius = this->m_light_radius;
 	cc.m_time = this->m_time;
 
 	this->m_cb->update(GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext(), &cc);

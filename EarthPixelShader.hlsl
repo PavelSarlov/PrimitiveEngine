@@ -23,11 +23,12 @@ cbuffer constant: register(b0)
 	row_major float4x4 m_world;
 	row_major float4x4 m_view;
 	row_major float4x4 m_proj;
-	float4 m_light_dir;
 	float4 m_cam_pos;
+	float4 m_light_dir;
+	float4 m_light_pos;
+	float m_light_radius;
 	float m_time;
 };
-
 float4 psmain(PS_INPUT input) : SV_TARGET
 {
 	float4 earth_day = EarthDay.Sample(EarthDaySampler, 1.0f - input.texcoord);
