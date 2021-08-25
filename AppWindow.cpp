@@ -11,8 +11,6 @@
 #include "Mesh.h"
 #include "Material.h"
 
-#include <future>
-
 __declspec(align(16))
 struct Constant
 {
@@ -40,17 +38,25 @@ void AppWindow::onCreate()
 	InputSystem::get()->showCursor(!this->m_play_state);
 
 	// create textures
-	this->m_wall_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\wall.jpg");
-	this->m_bricks_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\brick.png");
-	this->m_sky_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\stars_map.jpg");
-	this->m_earth_color_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\earth_color.jpg");
+	this->m_sky_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\sky.jpg");
+	this->m_sand_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\sand.jpg");
+	this->m_barrel_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\barrel.jpg");
+	this->m_brick_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\house_brick.jpg");
+	this->m_windows_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\house_windows.jpg");
+	this->m_wood_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\house_wood.jpg");
+
+	//this->m_wall_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\wall.jpg");
+	//this->m_earth_color_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\earth_color.jpg");
 
 	// create meshes
-	this->m_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\scene.obj");
 	this->m_sky_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\sphere.obj");
+	this->m_terrain_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\terrain.obj");
+	this->m_house_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\house.obj");
+
+	/*this->m_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\scene.obj");
 	this->m_torus_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\torus.obj");
 	this->m_suzanne_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\suzanne.obj");
-	this->m_plane_mesh= GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\plane.obj");
+	this->m_plane_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\plane.obj");*/
 
 	// create swap chain
 	RECT rect = this->getClientWindowRect();
@@ -60,15 +66,30 @@ void AppWindow::onCreate()
 	this->m_mat->addTexture(this->m_wall_tex);
 	this->m_mat->setCullMode(CULL_MODE_BACK);
 
-	this->m_earth_mat = GraphicsEngine::get()->createMaterial(m_mat);
-	this->m_earth_mat->removeTexture(0);
-	this->m_earth_mat->addTexture(this->m_earth_color_tex);
-	this->m_earth_mat->setCullMode(CULL_MODE_BACK);
+	this->m_terrain_mat = GraphicsEngine::get()->createMaterial(m_mat);
+	this->m_terrain_mat->removeTexture(0);
+	this->m_terrain_mat->addTexture(this->m_sand_tex);
+	this->m_terrain_mat->setCullMode(CULL_MODE_BACK);
 
-	this->m_bricks_mat = GraphicsEngine::get()->createMaterial(m_mat);
-	this->m_bricks_mat->removeTexture(0);
-	this->m_bricks_mat->addTexture(this->m_bricks_tex);
-	this->m_bricks_mat->setCullMode(CULL_MODE_BACK);
+	this->m_barrel_mat = GraphicsEngine::get()->createMaterial(m_mat);
+	this->m_barrel_mat->removeTexture(0);
+	this->m_barrel_mat->addTexture(this->m_barrel_tex);
+	this->m_barrel_mat->setCullMode(CULL_MODE_BACK);
+
+	this->m_brick_mat = GraphicsEngine::get()->createMaterial(m_mat);
+	this->m_brick_mat->removeTexture(0);
+	this->m_brick_mat->addTexture(this->m_brick_tex);
+	this->m_brick_mat->setCullMode(CULL_MODE_BACK);
+
+	this->m_windows_mat = GraphicsEngine::get()->createMaterial(m_mat);
+	this->m_windows_mat->removeTexture(0);
+	this->m_windows_mat->addTexture(this->m_windows_tex);
+	this->m_windows_mat->setCullMode(CULL_MODE_BACK);
+
+	this->m_wood_mat = GraphicsEngine::get()->createMaterial(m_mat);
+	this->m_wood_mat->removeTexture(0);
+	this->m_wood_mat->addTexture(this->m_wood_tex);
+	this->m_wood_mat->setCullMode(CULL_MODE_BACK);
 
 	this->m_sky_mat = GraphicsEngine::get()->createMaterial(L"PointLightVertexShader.hlsl", L"SkyBoxShader.hlsl");
 	this->m_sky_mat->addTexture(this->m_sky_tex);
@@ -76,6 +97,8 @@ void AppWindow::onCreate()
 
 	// init cam pos
 	this->m_world_cam = Matrix4x4::translationMatrix(0, 0, -2);
+
+	this->m_list_materials.reserve(32);
 }
 
 void AppWindow::onUpdate()
@@ -230,23 +253,44 @@ void AppWindow::render()
 	// compute transform matrices
 	this->update();
 
-	// render model
-	this->updateModel(Vector3(0, 0, 0), this->m_mat);
-	this->drawMesh(this->m_torus_mesh, this->m_mat);
+	//// render model
+	//this->updateModel(Vector3(0, 0, 0), this->m_mat);
+	//this->drawMesh(this->m_torus_mesh, this->m_mat);
 
-	// render model
-	this->updateModel(Vector3(4, 0, 0), this->m_earth_mat);
-	this->drawMesh(this->m_sky_mesh, this->m_earth_mat);
+	//// render model
+	//this->updateModel(Vector3(4, 0, 0), this->m_earth_mat);
+	//this->drawMesh(this->m_sky_mesh, this->m_earth_mat);
 
-	// render model
-	this->updateModel(Vector3(-4, 0, 0), this->m_bricks_mat);
-	this->drawMesh(this->m_suzanne_mesh, this->m_bricks_mat);
+	//// render model
+	//this->updateModel(Vector3(-4, 0, 0), this->m_bricks_mat);
+	//this->drawMesh(this->m_suzanne_mesh, this->m_bricks_mat);
 
-	this->updateModel(Vector3(0, -2, 0), this->m_mat);
-	this->drawMesh(this->m_plane_mesh, this->m_mat);
+	//this->updateModel(Vector3(0, -2, 0), this->m_mat);
+	//this->drawMesh(this->m_plane_mesh, this->m_mat);
 
-	// render skybox
-	this->drawMesh(this->m_sky_mesh, this->m_sky_mat);
+	this->m_list_materials.clear();
+	this->m_list_materials.push_back(m_barrel_mat);
+	this->m_list_materials.push_back(m_brick_mat);
+	this->m_list_materials.push_back(m_windows_mat);
+	this->m_list_materials.push_back(m_wood_mat);
+
+	for(int i = 0; i < 3; i++)
+	{
+		for(int j = 0; j < 3; j++)
+		{
+			this->updateModel(Vector3(-14.0f + 14.0f * i, 0, -14.0f + 14.0f * j), this->m_list_materials);
+			this->drawMesh(this->m_house_mesh, this->m_list_materials);
+		}
+	}
+
+	this->m_list_materials.clear();
+	this->m_list_materials.push_back(m_terrain_mat);
+	this->updateModel(Vector3(0, 0, 0), this->m_list_materials);
+	this->drawMesh(this->m_terrain_mesh, this->m_list_materials);
+
+	this->m_list_materials.clear();
+	this->m_list_materials.push_back(m_sky_mat);
+	this->drawMesh(this->m_sky_mesh, this->m_list_materials);
 
 	// swap back and front buffers
 	this->m_swap_chain->present(true);
@@ -276,7 +320,7 @@ void AppWindow::update()
 	this->updateSkyBox();
 }
 
-void AppWindow::updateModel(const Vector3 &position, const MaterialPtr &material)
+void AppWindow::updateModel(const Vector3 &position, const std::vector<MaterialPtr> &list_materials)
 {
 	Constant cc = {};
 
@@ -293,7 +337,10 @@ void AppWindow::updateModel(const Vector3 &position, const MaterialPtr &material
 	cc.m_light_radius = this->m_light_radius;
 	cc.m_time = this->m_time;
 
-	material->setData(&cc, sizeof(cc));
+	for(auto &m : list_materials)
+	{
+		m->setData(&cc, sizeof(cc));
+	}
 }
 
 void AppWindow::updateCamera()
@@ -338,18 +385,24 @@ void AppWindow::updateLight()
 	this->m_light_rot_y += 1.57f * this->m_delta_time;
 	float dist_from_origin = 3.0f;
 
-	this->m_light_pos = Vector4(cosf(m_light_rot_y) * dist_from_origin, 2.0f, sinf(m_light_rot_y) * dist_from_origin);
+	//this->m_light_pos = Vector4(cosf(m_light_rot_y) * dist_from_origin, 2.0f, sinf(m_light_rot_y) * dist_from_origin);
+	this->m_light_pos = Vector4(180, 140, 70, 1);
 }
 
-void AppWindow::drawMesh(const MeshPtr &mesh, const MaterialPtr &material)
+void AppWindow::drawMesh(const MeshPtr &mesh, const std::vector<MaterialPtr> &list_materials)
 {
-	GraphicsEngine::get()->setMaterial(material);
-
 	// set the list of vertices
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(mesh->getVertexBuffer());
 	// set the list of indices
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setIndexBuffer(mesh->getIndexBuffer());
 
-	// draw the object
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->drawIndexedTriangleList(mesh->getIndexBuffer()->getSizeIndexList(), 0, 0);
+	for(size_t m = 0; m < mesh->getNumMaterialSlots() && m < list_materials.size(); m++)
+	{
+		MaterialSlot mat = mesh->getMaterialSlot(m);
+
+		GraphicsEngine::get()->setMaterial(list_materials[m]);
+
+		// draw the object
+		GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->drawIndexedTriangleList((UINT)mat.num_indices, 0, (UINT)mat.start_index);
+	}
 }

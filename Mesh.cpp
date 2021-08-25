@@ -20,9 +20,10 @@ Mesh::Mesh(const wchar_t *full_path) : Resource(full_path)
 	std::string inputFile(size_needed, 0);
 	::WideCharToMultiByte(CP_UTF8, 0, &full_path[0], (int)wcslen(full_path), &inputFile[0], size_needed, NULL, NULL);
 
-	if(!tinyobj::LoadObj(&attribs, &shapes, &materials, &warn, &err, inputFile.c_str()) ||
-		!err.empty() ||
-		shapes.size() > 1)
+	std::string mtldir = inputFile.substr(0, inputFile.find_last_of("\\/"));
+
+	if(!tinyobj::LoadObj(&attribs, &shapes, &materials, &warn, &err, inputFile.c_str(), mtldir.c_str()) ||
+		!err.empty())
 	{
 		throw std::exception("Mesh failed to load");
 	}
@@ -30,39 +31,62 @@ Mesh::Mesh(const wchar_t *full_path) : Resource(full_path)
 	std::vector<VertexMesh> list_vertices;
 	std::vector<UINT> list_indices;
 
+	size_t size_vertex_index_lists = 0;
+
 	for(size_t s = 0; s < shapes.size(); s++)
 	{
-		size_t index_offset = 0;
-		list_vertices.reserve(shapes[s].mesh.indices.size());
-		list_indices.reserve(shapes[s].mesh.indices.size());
+		size_vertex_index_lists += shapes[s].mesh.indices.size();
+	}
 
-		for(size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
+	list_vertices.reserve(size_vertex_index_lists);
+	list_indices.reserve(size_vertex_index_lists);
+
+	this->m_material_slots.resize(materials.size());
+
+	size_t index_global_offset = 0;
+
+	for(size_t m = 0; m < materials.size(); m++)
+	{
+		this->m_material_slots[m].start_index = index_global_offset;
+		this->m_material_slots[m].material_id = m;
+
+		for(size_t s = 0; s < shapes.size(); s++)
 		{
-			UCHAR num_face_verts = shapes[s].mesh.num_face_vertices[f];
+			size_t index_offset = 0;
 
-			for(UCHAR v = 0; v < num_face_verts; v++)
+			for(size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++)
 			{
-				tinyobj::index_t index = shapes[s].mesh.indices[index_offset + v];
+				if(shapes[s].mesh.material_ids[f] != m) continue;
 
-				tinyobj::real_t vx = attribs.vertices[(ULONGLONG)index.vertex_index * 3];
-				tinyobj::real_t vy = attribs.vertices[(ULONGLONG)index.vertex_index * 3 + 1];
-				tinyobj::real_t vz = attribs.vertices[(ULONGLONG)index.vertex_index * 3 + 2];
+				UCHAR num_face_verts = shapes[s].mesh.num_face_vertices[f];
 
-				tinyobj::real_t tx = attribs.texcoords[(ULONGLONG)index.texcoord_index * 2];
-				tinyobj::real_t ty = attribs.texcoords[(ULONGLONG)index.texcoord_index * 2 + 1];
+				for(UCHAR v = 0; v < num_face_verts; v++)
+				{
+					tinyobj::index_t index = shapes[s].mesh.indices[index_offset + v];
 
-				tinyobj::real_t nx = attribs.normals[(ULONGLONG)index.normal_index * 3];
-				tinyobj::real_t ny = attribs.normals[(ULONGLONG)index.normal_index * 3 + 1];
-				tinyobj::real_t nz = attribs.normals[(ULONGLONG)index.normal_index * 3 + 2];
+					tinyobj::real_t vx = attribs.vertices[(ULONGLONG)index.vertex_index * 3];
+					tinyobj::real_t vy = attribs.vertices[(ULONGLONG)index.vertex_index * 3 + 1];
+					tinyobj::real_t vz = attribs.vertices[(ULONGLONG)index.vertex_index * 3 + 2];
 
-				VertexMesh vertex(Vector3(vx, vy, vz), Vector2(tx, ty), Vector3(nx, ny, nz));
-				list_vertices.push_back(vertex);
+					tinyobj::real_t tx = attribs.texcoords[(ULONGLONG)index.texcoord_index * 2];
+					tinyobj::real_t ty = attribs.texcoords[(ULONGLONG)index.texcoord_index * 2 + 1];
 
-				list_indices.push_back((UINT)index_offset + v);
+					tinyobj::real_t nx = attribs.normals[(ULONGLONG)index.normal_index * 3];
+					tinyobj::real_t ny = attribs.normals[(ULONGLONG)index.normal_index * 3 + 1];
+					tinyobj::real_t nz = attribs.normals[(ULONGLONG)index.normal_index * 3 + 2];
+
+					VertexMesh vertex(Vector3(vx, vy, vz), Vector2(tx, ty), Vector3(nx, ny, nz));
+					list_vertices.push_back(vertex);
+
+					list_indices.push_back((UINT)index_global_offset + v);
+				}
+
+				index_offset += num_face_verts;
+				index_global_offset += num_face_verts;
 			}
-
-			index_offset += num_face_verts;
 		}
+
+		this->m_material_slots[m].num_indices = index_global_offset - this->m_material_slots[m].start_index;
 	}
 
 	void *shader_byte_code = nullptr;
@@ -84,4 +108,14 @@ const VertexBufferPtr &Mesh::getVertexBuffer()
 const IndexBufferPtr &Mesh::getIndexBuffer()
 {
 	return this->m_index_buffer;
+}
+
+const MaterialSlot &Mesh::getMaterialSlot(size_t slot)
+{
+	return (slot >= this->m_material_slots.size()) ? MaterialSlot() : this->m_material_slots[slot];
+}
+
+size_t Mesh::getNumMaterialSlots()
+{
+	return this->m_material_slots.size();
 }

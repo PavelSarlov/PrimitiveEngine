@@ -38,11 +38,12 @@ public:
 public:
 	void render();
 	void update();
-	void updateModel(const Vector3 &position, const MaterialPtr &material);
+	void updateModel(const Vector3 &position, const std::vector<MaterialPtr> &list_materials);
 	void updateCamera();
 	void updateSkyBox();
 	void updateLight();
-	void drawMesh(const MeshPtr &mesh, const MaterialPtr &material);
+
+	void drawMesh(const MeshPtr &mesh, const std::vector<MaterialPtr> &list_materials);
 
 private:
 	SwapChainPtr m_swap_chain;
@@ -60,18 +61,30 @@ private:
 	TexturePtr m_sky_tex;
 	TexturePtr m_cloud_tex;
 	TexturePtr m_wall_tex;
-	TexturePtr m_bricks_tex;
+	TexturePtr m_sand_tex;
+	TexturePtr m_barrel_tex;
+	TexturePtr m_brick_tex;
+	TexturePtr m_windows_tex;
+	TexturePtr m_wood_tex;
 
 	MeshPtr m_mesh;
 	MeshPtr m_sky_mesh;
 	MeshPtr m_torus_mesh;
 	MeshPtr m_suzanne_mesh;
 	MeshPtr m_plane_mesh;
+	MeshPtr m_terrain_mesh;
+	MeshPtr m_house_mesh;
 
 	MaterialPtr m_mat;
-	MaterialPtr m_bricks_mat;
 	MaterialPtr m_earth_mat;
 	MaterialPtr m_sky_mat;
+	MaterialPtr m_terrain_mat;
+	MaterialPtr m_barrel_mat;
+	MaterialPtr m_brick_mat;
+	MaterialPtr m_windows_mat;
+	MaterialPtr m_wood_mat;
+
+	std::vector<MaterialPtr> m_list_materials;
 
 private:
 	float zNear = 0.1f;
@@ -88,7 +101,8 @@ private:
 	float m_rot_y = 0.0f;
 
 	float m_light_rot_y = 0.0f;
-	float m_light_radius = 4.0f;
+	float m_light_radius = 500.0f;
+	float m_attenuation = 2.0f;
 	Vector4 m_light_pos;
 
 	float m_forward = 0.0f;
