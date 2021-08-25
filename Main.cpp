@@ -1,4 +1,4 @@
-#include "AppWindow.h"
+#include "SpaceShooterGame.h"
 #include "GraphicsEngine.h"
 #include "InputSystem.h"
 
@@ -9,7 +9,7 @@ int main()
 		GraphicsEngine::create();
 		InputSystem::create();
 
-		AppWindow app;
+		SpaceShooterGame app;
 		while(app.isRunning());
 
 		InputSystem::release();
