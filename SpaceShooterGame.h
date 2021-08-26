@@ -67,22 +67,11 @@ private:
 
 private:
 	float zNear = 0.1f;
-	float zFar = 100.0f;
+	float zFar = 5000.0f;
 
 	ULONG m_old_delta = 0;
 	ULONG m_new_delta = 0;
 	float m_delta_time = 0.0f;
-
-	Matrix4x4 m_world_cam;
-	Matrix4x4 m_view_cam;
-	Matrix4x4 m_proj_cam;
-	Vector3 m_cam_rot;
-	Vector3 m_cam_pos;
-	float m_cam_distance = 14.0f;
-
-	Vector3 m_spaceship_pos;
-	Vector3 m_spaceship_rot;
-	float m_spaceship_speed = 125.0f;
 
 	float m_delta_mouse_x = 0.0f;
 	float m_delta_mouse_y = 0.0f;
@@ -99,6 +88,26 @@ private:
 	UINT m_frames = 0;
 	float m_old_time = 0.0f;
 	float m_time = 0.0f;
+
+	Matrix4x4 m_world_cam;
+	Matrix4x4 m_view_cam;
+	Matrix4x4 m_proj_cam;
+	Vector3 m_current_cam_rot;
+	Vector3 m_cam_rot;
+	Vector3 m_cam_pos;
+	float m_current_cam_distance = 14.0f;
+	float m_cam_distance = 14.0f;
+
+	Vector3 m_current_spaceship_pos;
+	Vector3 m_current_spaceship_rot;
+	Vector3 m_spaceship_pos;
+	Vector3 m_spaceship_rot;
+	float m_spaceship_speed = 125.0f;
+	bool m_spaceship_turbo_mode = false;
+
+	Vector3 m_asteroids_pos[200];
+	Vector3 m_asteroids_rot[200];
+	Vector3 m_asteroids_scale[200];
 };
 
 

@@ -68,9 +68,6 @@
     <Filter Include="App\SpaceShooterGame">
       <UniqueIdentifier>{326d6423-6970-43bc-8c76-7991c692761a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="App\SpaceShooterGame\Shaders">
-      <UniqueIdentifier>{76d2a6b3-0397-41a3-afdd-f1fb4ef14342}</UniqueIdentifier>
-    </Filter>
     <Filter Include="App\GlobalShaders">
       <UniqueIdentifier>{30212996-b374-48f8-b49d-4498ec21c2cb}</UniqueIdentifier>
     </Filter>
@@ -218,6 +215,9 @@
     </ClInclude>
     <ClInclude Include="SpaceShooterGame.h">
       <Filter>App\SpaceShooterGame</Filter>
+    </ClInclude>
+    <ClInclude Include="MathUtils.h">
+      <Filter>GameEngine\Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,4 +1,7 @@
 #pragma once
+#ifndef GEOMETRY_H
+#define GEOMETRY_H
+
 #include <math.h>
 #include <vector>
 #include <iostream>
@@ -10,7 +13,6 @@ class Matrix3x3;
 class Matrix4x4;
 struct Vertex;
 class VertexMesh;
-struct Constant;
 
 class Vector2
 {
@@ -1163,3 +1165,5 @@ public:
 	Vector2 m_texcoord;
 	Vector3 m_normal;
 };
+
+#endif // !GEOMETRY_H
