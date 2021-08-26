@@ -5,6 +5,8 @@
 #include "Resource.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "Geometry.h"
+
 #include <vector>
 
 struct MaterialSlot
@@ -27,6 +29,13 @@ public:
 public:
 	const MaterialSlot &getMaterialSlot(size_t slot);
 	size_t getNumMaterialSlots();
+
+public:
+	void computeTangents(
+		const Vector3 &v0, const Vector3 &v1, const Vector3 &v2,
+		const Vector2 &t0, const Vector2 &t1, const Vector2 &t2,
+		Vector3 &tangent, Vector3 &binormal
+	);
 
 private:
 	VertexBufferPtr m_vertex_buffer;

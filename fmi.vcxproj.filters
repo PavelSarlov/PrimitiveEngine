@@ -80,6 +80,12 @@
     <Filter Include="App\GlobalShaders\PointLightShaders">
       <UniqueIdentifier>{08f4208b-862b-4f46-868e-68b7ab5dc173}</UniqueIdentifier>
     </Filter>
+    <Filter Include="App\BumpMappingDemo">
+      <UniqueIdentifier>{67047222-628d-4a5a-8103-8e6447d0017f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\GlobalShaders\DirLightBumpMapping">
+      <UniqueIdentifier>{7e3fee61-6149-4858-b6f7-2831c21b5898}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -144,6 +150,9 @@
     </ClCompile>
     <ClCompile Include="SpaceShooterGame.cpp">
       <Filter>App\SpaceShooterGame</Filter>
+    </ClCompile>
+    <ClCompile Include="BumpMappingDemo.cpp">
+      <Filter>App\BumpMappingDemo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -219,6 +228,9 @@
     <ClInclude Include="MathUtils.h">
       <Filter>GameEngine\Math</Filter>
     </ClInclude>
+    <ClInclude Include="BumpMappingDemo.h">
+      <Filter>App\BumpMappingDemo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="EarthPixelShader.hlsl">
@@ -247,6 +259,12 @@
     </FxCompile>
     <FxCompile Include="VertexMeshLayoutShader.hlsl">
       <Filter>GameEngine\GraphicsEngine</Filter>
+    </FxCompile>
+    <FxCompile Include="DirLightBumpPS.hlsl">
+      <Filter>App\GlobalShaders\DirLightBumpMapping</Filter>
+    </FxCompile>
+    <FxCompile Include="DirLightBumpVS.hlsl">
+      <Filter>App\GlobalShaders\DirLightBumpMapping</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

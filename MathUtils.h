@@ -2,7 +2,7 @@
 #ifndef MATHUTILS_H
 #define MATHUTILS_H
 
-float lerp(float start, float end, float delta)
+static float lerp(float start, float end, float delta)
 {
 	return start * (1.0f - delta) + end * (delta);
 }

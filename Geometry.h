@@ -6,13 +6,15 @@
 #include <vector>
 #include <iostream>
 
+#pragma region Declarations
 class Vector2;
 class Vector3;
 class Vector4;
+class Matrix2x2;
 class Matrix3x3;
 class Matrix4x4;
-struct Vertex;
 class VertexMesh;
+#pragma endregion
 
 class Vector2
 {
@@ -69,27 +71,27 @@ public:
 		return in;
 	}
 
-	inline Vector2 operator+(const Vector2 &other)
+	inline Vector2 operator+(const Vector2 &other) const
 	{
 		return { m_x + other.m_x, m_y + other.m_y };
 	}
 
-	inline Vector2 operator-(const Vector2 &other)
+	inline Vector2 operator-(const Vector2 &other) const
 	{
 		return { m_x - other.m_x, m_y - other.m_y };
 	}
 
-	inline float operator*(const Vector2 &other)
+	inline float operator*(const Vector2 &other) const
 	{
 		return m_x * other.m_x + m_y * other.m_y;
 	}
 
-	inline Vector2 operator*(float a)
+	inline Vector2 operator*(float a) const
 	{
 		return { m_x * a, m_y * a };
 	}
 
-	inline Vector2 operator/(float a)
+	inline Vector2 operator/(float a) const
 	{
 		if(a != 0.0f)
 		{
@@ -119,6 +121,18 @@ public:
 		{
 			m_x /= a; m_y /= a;
 		}
+	}
+
+public:
+	inline float length()
+	{
+		return sqrt(m_x * m_x + m_y * m_y);
+	}
+
+	inline Vector2 normalized()
+	{
+		float len = this->length();
+		return len ? Vector2(*this / len) : *this;
 	}
 
 public:
@@ -183,27 +197,27 @@ public:
 		return in;
 	}
 
-	inline Vector3 operator+(const Vector3 &other)
+	inline Vector3 operator+(const Vector3 &other) const
 	{
 		return { m_x + other.m_x, m_y + other.m_y, m_z + other.m_z };
 	}
 
-	inline Vector3 operator-(const Vector3 &other)
+	inline Vector3 operator-(const Vector3 &other) const
 	{
 		return { m_x - other.m_x, m_y - other.m_y, m_z - other.m_z };
 	}
 
-	inline float operator*(const Vector3 &other)
+	inline float operator*(const Vector3 &other) const
 	{
 		return m_x * other.m_x + m_y * other.m_y + m_z * other.m_z;
 	}
 
-	inline Vector3 operator*(float a)
+	inline Vector3 operator*(float a) const
 	{
 		return { m_x * a, m_y * a, m_z * a };
 	}
 
-	inline Vector3 operator/(float a)
+	inline Vector3 operator/(float a) const
 	{
 		if(a != 0.0f)
 		{
@@ -243,12 +257,13 @@ public:
 
 	inline Vector3 normalized()
 	{
-		return Vector3(*this / this->length());
+		float len = this->length();
+		return len ? Vector3(*this / len) : *this;
 	}
 
-	inline Vector3 crossProduct(const Vector3 &other)
+	inline static Vector3 crossProduct(const Vector3 &v1, const Vector3 &v2)
 	{
-		return { m_y * other.m_z - m_z * other.m_y, m_z * other.m_x - m_x * other.m_z, m_x * other.m_y - m_y * other.m_x };
+		return { v1.m_y * v2.m_z - v1.m_z * v2.m_y, v1.m_z * v2.m_x - v1.m_x * v2.m_z, v1.m_x * v2.m_y - v1.m_y * v2.m_x };
 	}
 
 	inline static Vector3 lerp(const Vector3 &start, const Vector3 &end, float delta)
@@ -329,27 +344,27 @@ public:
 		return in;
 	}
 
-	inline Vector4 operator+(const Vector4 &other)
+	inline Vector4 operator+(const Vector4 &other) const
 	{
 		return { m_x + other.m_x, m_y + other.m_y, m_z + other.m_z };
 	}
 
-	inline Vector4 operator-(const Vector4 &other)
+	inline Vector4 operator-(const Vector4 &other) const
 	{
 		return { m_x - other.m_x, m_y - other.m_y, m_z - other.m_z };
 	}
 
-	inline Vector4 operator*(float a)
+	inline Vector4 operator*(float a) const
 	{
 		return { m_x * a, m_y * a, m_z * a };
 	}
 
-	inline float operator*(const Vector4 &other)
+	inline float operator*(const Vector4 &other) const
 	{
 		return m_x * other.m_x + m_y * other.m_y + m_z * other.m_z;
 	}
 
-	inline Vector4 operator/(float a)
+	inline Vector4 operator/(float a) const
 	{
 		if(a != 0.0f)
 			return { m_x / a, m_y / a, m_z / a };
@@ -396,20 +411,189 @@ public:
 
 	inline Vector4 normalized()
 	{
-		this->dehomogenize();
-		float length = this->length();
-		if(length != 0.0f)
-			return *this / length;
-		return *this;
+		float len = this->length();
+		return len ? Vector4(*this / len) : *this;
 	}
 
-	inline Vector4 crossProduct(const Vector4 &other)
+	inline static Vector4 crossProduct(const Vector4 &v1, const Vector4 &v2)
 	{
-		return { m_y * other.m_z - m_z * other.m_y, m_z * other.m_x - m_x * other.m_z, m_x * other.m_y - m_y * other.m_x };
+		return Vector4(Vector3::crossProduct(Vector3(v1.m_x, v1.m_y, v1.m_z), Vector3(v2.m_x, v2.m_y, v2.m_z)));
 	}
 
 public:
 	float m_x, m_y, m_z, m_t;
+};
+
+class Matrix2x2
+{
+public:
+	Matrix2x2()
+	{}
+
+	Matrix2x2(float matrix[2][2])
+	{
+		for(int i = 0; i < 2; i++)
+		{
+			for(int j = 0; j < 2; j++)
+			{
+				this->m_mat[i][j] = matrix[i][j];
+			}
+		}
+	}
+
+	Matrix2x2(const Matrix2x2 &other)
+	{
+		*this = other;
+	}
+
+	inline Matrix2x2 &operator=(const Matrix2x2 &other)
+	{
+		if(this != &other)
+		{
+			for(int i = 0; i < 2; i++)
+			{
+				for(int j = 0; j < 2; j++)
+				{
+					this->m_mat[i][j] = other.m_mat[i][j];
+				}
+			}
+		}
+		return *this;
+	}
+
+	inline friend std::ostream &operator<<(std::ostream &out, const Matrix2x2 &matrix)
+	{
+		for(int i = 0; i < 2; i++)
+		{
+			for(int j = 0; j < 2; j++)
+			{
+				out << ' ' << matrix.m_mat[i][j];
+			}
+			out << std::endl;
+		}
+		return out;
+	}
+
+	inline friend std::istream &operator>>(std::istream &in, Matrix2x2 &matrix)
+	{
+		for(int i = 0; i < 2; i++)
+		{
+			for(int j = 0; j < 2; j++)
+			{
+				in >> matrix.m_mat[i][j];
+			}
+		}
+		return in;
+	}
+
+	inline float *operator[](int row)
+	{
+		if(row >= 0 && row < 2)
+			return this->m_mat[row];
+		return nullptr;
+	}
+
+	inline Matrix2x2 operator+(const Matrix2x2 &other) const
+	{
+		Matrix2x2 result;
+		for(int i = 0; i < 2; i++)
+		{
+			for(int j = 0; j < 2; j++)
+			{
+				result[i][j] = m_mat[i][j] + other.m_mat[i][j];
+			}
+		}
+		return result;
+	}
+
+	inline Matrix2x2 operator-(const Matrix2x2 &other) const
+	{
+		Matrix2x2 result;
+		for(int i = 0; i < 2; i++)
+		{
+			for(int j = 0; j < 2; j++)
+			{
+				result[i][j] = m_mat[i][j] - other.m_mat[i][j];
+			}
+		}
+		return result;
+	}
+
+	inline Matrix2x2 operator*(float a) const
+	{
+		Matrix2x2 result;
+		for(int i = 0; i < 2; i++)
+		{
+			for(int j = 0; j < 2; j++)
+			{
+				result[i][j] = m_mat[i][j] * a;
+			}
+		}
+		return result;
+	}
+
+	inline Matrix2x2 operator*(const Matrix2x2 &other) const
+	{
+		Matrix2x2 result;
+		for(int i = 0; i < 2; i++)
+		{
+			for(int j = 0; j < 2; j++)
+			{
+				result[i][j] = m_mat[i][0] * other.m_mat[0][j] + m_mat[i][1] * other.m_mat[1][j];
+			}
+		}
+		return result;
+	}
+
+	inline Matrix2x2 operator/(float a) const
+	{
+		Matrix2x2 result;
+		for(int i = 0; i < 2; i++)
+		{
+			for(int j = 0; j < 2; j++)
+			{
+				result[i][j] = m_mat[i][j] / a;
+			}
+		}
+		return result;
+	}
+
+	inline void operator*=(float a)
+	{
+		*this = *this * a;
+	}
+
+	inline void operator*=(const Matrix2x2 &other)
+	{
+		*this = *this * other;
+	}
+
+	inline void operator/=(float a)
+	{
+		*this = *this / a;
+	}
+
+public:
+	inline Matrix2x2 transposed()
+	{
+		Matrix2x2 result;
+		for(int i = 0; i < 2; i++)
+		{
+			for(int j = 0; j < 2; j++)
+			{
+				result[i][j] = m_mat[j][i];
+			}
+		}
+		return result;
+	}
+
+	inline float determinant()
+	{
+		return m_mat[0][0] * m_mat[1][1] - m_mat[0][1] * m_mat[1][0];
+	}
+
+public:
+	float m_mat[2][2] = { 0 };
 };
 
 class Matrix3x3
@@ -481,7 +665,7 @@ public:
 		return nullptr;
 	}
 
-	inline Matrix3x3 operator+(const Matrix3x3 &other)
+	inline Matrix3x3 operator+(const Matrix3x3 &other) const
 	{
 		Matrix3x3 result;
 		for(int i = 0; i < 3; i++)
@@ -494,7 +678,7 @@ public:
 		return result;
 	}
 
-	inline Matrix3x3 operator-(const Matrix3x3 &other)
+	inline Matrix3x3 operator-(const Matrix3x3 &other) const
 	{
 		Matrix3x3 result;
 		for(int i = 0; i < 3; i++)
@@ -507,7 +691,7 @@ public:
 		return result;
 	}
 
-	inline Matrix3x3 operator*(float a)
+	inline Matrix3x3 operator*(float a) const
 	{
 		Matrix3x3 result;
 		for(int i = 0; i < 3; i++)
@@ -520,7 +704,7 @@ public:
 		return result;
 	}
 
-	inline Matrix3x3 operator*(const Matrix3x3 &other)
+	inline Matrix3x3 operator*(const Matrix3x3 &other) const
 	{
 		Matrix3x3 result;
 		for(int i = 0; i < 3; i++)
@@ -533,7 +717,7 @@ public:
 		return result;
 	}
 
-	inline Matrix3x3 operator/(float a)
+	inline Matrix3x3 operator/(float a) const
 	{
 		Matrix3x3 result;
 		for(int i = 0; i < 3; i++)
@@ -707,7 +891,7 @@ public:
 		return this->m_mat[row];
 	}
 
-	inline Matrix4x4 operator+(const Matrix4x4 &other)
+	inline Matrix4x4 operator+(const Matrix4x4 &other) const
 	{
 		Matrix4x4 result;
 		for(int i = 0; i < 4; i++)
@@ -720,7 +904,7 @@ public:
 		return result;
 	}
 
-	inline Matrix4x4 operator-(const Matrix4x4 &other)
+	inline Matrix4x4 operator-(const Matrix4x4 &other) const
 	{
 		Matrix4x4 result;
 		for(int i = 0; i < 4; i++)
@@ -733,7 +917,7 @@ public:
 		return result;
 	}
 
-	inline Matrix4x4 operator*(float a)
+	inline Matrix4x4 operator*(float a) const
 	{
 		Matrix4x4 result;
 		for(int i = 0; i < 4; i++)
@@ -746,7 +930,7 @@ public:
 		return result;
 	}
 
-	inline Matrix4x4 operator*(const Matrix4x4 &other)
+	inline Matrix4x4 operator*(const Matrix4x4 &other) const
 	{
 		Matrix4x4 result;
 		for(int i = 0; i < 4; i++)
@@ -759,7 +943,7 @@ public:
 		return result;
 	}
 
-	inline Vector4 operator*(const Vector4 &v)
+	inline Vector4 operator*(const Vector4 &v) const
 	{
 		Vector4 result;
 		for(int i = 0; i < 4; i++)
@@ -769,7 +953,7 @@ public:
 		return result;
 	}
 
-	inline Matrix4x4 operator/(float a)
+	inline Matrix4x4 operator/(float a) const
 	{
 		Matrix4x4 result;
 		for(int i = 0; i < 4; i++)
@@ -1129,19 +1313,14 @@ public:
 	float m_mat[4][4] = { 0 };
 };
 
-struct Vertex
-{
-	Vector3 position;
-	Vector2 texcoord;
-};
-
 class VertexMesh
 {
 public:
-	VertexMesh() : VertexMesh(Vector3(), Vector2(), Vector3())
+	VertexMesh() : VertexMesh(Vector3(), Vector2(), Vector3(), Vector3(), Vector3())
 	{}
 
-	VertexMesh(const Vector3 &position, const Vector2 &texcoord, const Vector3 &normal) : m_position(position), m_texcoord(texcoord), m_normal(normal)
+	VertexMesh(const Vector3 &position, const Vector2 &texcoord, const Vector3 &normal, const Vector3 &tangent, const Vector3 &binormal) :
+		m_position(position), m_texcoord(texcoord), m_normal(normal), m_tangent(tangent), m_binormal(binormal)
 	{}
 
 	VertexMesh(const VertexMesh &other)
@@ -1156,6 +1335,8 @@ public:
 			this->m_position = other.m_position;
 			this->m_texcoord = other.m_texcoord;
 			this->m_normal = other.m_normal;
+			this->m_tangent = other.m_tangent;
+			this->m_binormal = other.m_binormal;
 		}
 		return *this;
 	}
@@ -1164,6 +1345,8 @@ public:
 	Vector3 m_position;
 	Vector2 m_texcoord;
 	Vector3 m_normal;
+	Vector3 m_tangent;
+	Vector3 m_binormal;
 };
 
 #endif // !GEOMETRY_H
