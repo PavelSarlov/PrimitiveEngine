@@ -75,18 +75,24 @@ void GraphicsEngine::getVertexLayoutShaderByteCodeAndSize(void **byte_code, size
 
 void GraphicsEngine::setMaterial(const MaterialPtr &material)
 {
-	GraphicsEngine::get()->getRenderSystem()->setRasterizerState(material->m_cull_mode == CULL_MODE_FRONT);
+	GraphicsEngine::get()->getRenderSystem()->setRasterizerState(material->m_cull_mode == CULL_MODE::CULL_MODE_FRONT);
 
 	// bind the constant buffer to the graphics pipeline for each shader
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setConstantBuffer(material->m_vertex_shader, material->m_constant_buffer);
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setConstantBuffer(material->m_pixel_shader, material->m_constant_buffer);
+	if(material->m_constant_buffer)
+	{
+		GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setConstantBuffer(material->m_vertex_shader, material->m_constant_buffer);
+		GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setConstantBuffer(material->m_pixel_shader, material->m_constant_buffer);
+	}
 
 	// set default shader in the graphics pipeline
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexShader(material->m_vertex_shader);
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setPixelShader(material->m_pixel_shader);
 
 	// set texture
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setTexture(material->m_pixel_shader, material->m_vec_textures.data(), (UINT)material->m_vec_textures.size());
+	if(material->m_vec_textures.size())
+	{
+		GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setTexture(material->m_pixel_shader, material->m_vec_textures.data(), (UINT)material->m_vec_textures.size());
+	}
 }
 
 MaterialPtr GraphicsEngine::createMaterial(const wchar_t *vertex_shader_path, const wchar_t *pixel_shader_path)

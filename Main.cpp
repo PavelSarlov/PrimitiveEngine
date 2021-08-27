@@ -1,5 +1,4 @@
-#include "FrameBufferDemo.h"
-#include "SpaceShooterGame.h"
+#include "PostProcessingDemo.h"
 #include "GraphicsEngine.h"
 #include "InputSystem.h"
 
@@ -12,8 +11,9 @@ int main()
 
 		//SpaceShooterGame app;
 		//BumpMappingDemo app;
-		FrameBufferDemo app;
+		//FrameBufferDemo app;
 		//MiniGame app;
+		PostProcessingDemo app;
 		while(app.isRunning());
 
 		InputSystem::release();

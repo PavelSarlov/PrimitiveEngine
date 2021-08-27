@@ -26,8 +26,8 @@ public:
 
 private:
 	std::unordered_set<InputListener *> m_listeners;
-	UCHAR m_keys_state[256] = { 0 };
-	UCHAR m_old_keys_state[256] = { 0 };
+	short m_keys_state[256] = { 0 };
+	short m_old_keys_state[256] = { 0 };
 	POINT m_old_mouse_pos = {};
 	bool m_first_time = true;
 	static InputSystem *m_system;

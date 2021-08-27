@@ -193,8 +193,8 @@ void BumpMappingDemo::onMouseMove(const POINT &mouse_pos)
 	int width = (win_size.right - win_size.left);
 	int height = (win_size.bottom - win_size.top);
 
-	this->m_delta_mouse_x = (int)(mouse_pos.x - (win_size.left + (width / 2.0f)));
-	this->m_delta_mouse_y = (int)(mouse_pos.y - (win_size.top + (height / 2.0f)));
+	this->m_delta_mouse_x = (float)(mouse_pos.x - (win_size.left + (width / 2.0f)));
+	this->m_delta_mouse_y = (float)(mouse_pos.y - (win_size.top + (height / 2.0f)));
 
 	InputSystem::get()->setCursorPos({ win_size.left + (LONG)(width / 2.0f), win_size.top + (LONG)(height / 2.0f) });
 }

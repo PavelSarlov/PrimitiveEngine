@@ -1,4 +1,4 @@
-#include "MiniGame.h"
+#include "PostProcessingDemo.h"
 #include "GraphicsEngine.h"
 #include "SwapChain.h"
 #include "DeviceContext.h"
@@ -27,24 +27,30 @@ struct Constant
 	float m_time = 0.0f;
 };
 
-MiniGame::MiniGame()
+__declspec(align(16))
+struct DistortionEffectData
+{
+	float m_distortion_level = 0.0f;
+};
+
+PostProcessingDemo::PostProcessingDemo() : Window()
 {}
 
-MiniGame::~MiniGame()
+PostProcessingDemo::~PostProcessingDemo()
 {}
 
-void MiniGame::setWindowSize(const Rect &size)
+void PostProcessingDemo::onCreate()
 {
-	this->m_window_size = size;
-}
+	Window::onCreate();
 
-TexturePtr &MiniGame::getRenderTarget()
-{
-	return this->m_render_target;
-}
+	// subscribe for input events
+	InputSystem::get()->addListener(this);
+	InputSystem::get()->showCursor(!this->m_play_state);
 
-void MiniGame::onCreate()
-{
+	// create swap chain
+	RECT rect = this->getClientWindowRect();
+	this->m_swap_chain = GraphicsEngine::get()->getRenderSystem()->createSwapChain(this->m_hwnd, rect.right - rect.left, rect.bottom - rect.top);
+
 	srand((UINT)time(NULL));
 
 	for(UINT i = 0; i < 200; i++)
@@ -65,6 +71,27 @@ void MiniGame::onCreate()
 	this->m_spaceship_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\spaceship.obj");
 	this->m_asteroid_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\asteroid.obj");
 
+	VertexMesh quad_vertex_list[] =
+	{
+		VertexMesh(Vector3(-1,-1,0), Vector2(0,1), Vector3(), Vector3(),Vector3()),
+		VertexMesh(Vector3(-1, 1,0), Vector2(0,0), Vector3(), Vector3(),Vector3()),
+		VertexMesh(Vector3(1, 1,0), Vector2(1,0), Vector3(), Vector3(),Vector3()),
+		VertexMesh(Vector3(1,-1,0), Vector2(1,1), Vector3(), Vector3(),Vector3()),
+	};
+
+	unsigned int quad_index_list[] =
+	{
+		0,1,2,
+		2,3,0
+	};
+
+	MaterialSlot quad_mat_slots[] =
+	{
+		{0, 6, 0}
+	};
+
+	this->m_quad_mesh = GraphicsEngine::get()->getMeshManager()->createMesh(quad_vertex_list, 4, quad_index_list, 6, quad_mat_slots, 1);
+
 	// create materials
 	this->m_base_mat = GraphicsEngine::get()->createMaterial(L"DirectionalLightVertexShader.hlsl", L"DirectionalLightPixelShader.hlsl");
 	this->m_base_mat->setCullMode(CULL_MODE_BACK);
@@ -81,19 +108,25 @@ void MiniGame::onCreate()
 	this->m_asteroid_mat->addTexture(this->m_asteroid_tex);
 	this->m_asteroid_mat->setCullMode(CULL_MODE_BACK);
 
+	this->m_post_process_mat = GraphicsEngine::get()->createMaterial(L"PostProcessVS.hlsl", L"DistortionEffect.hlsl");
+	this->m_post_process_mat->setCullMode(CULL_MODE_BACK);
+
 	// init cam pos
 	this->m_world_cam = Matrix4x4::translationMatrix(0, 0, -2);
 
 	this->m_list_materials.reserve(32);
 
-	this->m_render_target = GraphicsEngine::get()->getTextureManager()->createTexture(Rect(1280, 720), Texture::Type::RENDER_TARGET);
-	this->m_depth_stencil = GraphicsEngine::get()->getTextureManager()->createTexture(Rect(1280, 720), Texture::Type::DEPTH_STENCIL);
+	this->m_render_target = GraphicsEngine::get()->getTextureManager()->createTexture(Rect(rect.right - rect.left, rect.bottom - rect.top), Texture::Type::RENDER_TARGET);
+	this->m_depth_stencil = GraphicsEngine::get()->getTextureManager()->createTexture(Rect(rect.right - rect.left, rect.bottom - rect.top), Texture::Type::DEPTH_STENCIL);
 
-	this->m_proj_cam.setPerspectiveFovPH(1.57f, ((float)1280 / (float)720), zNear, zFar);
+	this->m_post_process_mat->addTexture(this->m_render_target);
 }
 
-void MiniGame::onUpdate()
+void PostProcessingDemo::onUpdate()
 {
+	Window::onUpdate();
+	InputSystem::get()->update();
+
 	this->update();
 	this->render();
 
@@ -101,21 +134,38 @@ void MiniGame::onUpdate()
 	this->m_delta_mouse_y = 0.0f;
 }
 
-void MiniGame::onDestroy()
+void PostProcessingDemo::onDestroy()
 {
+	Window::onDestroy();
 	this->m_swap_chain->setFullScreen(false, 1, 1);
 }
 
-void MiniGame::onFocus()
-{}
+void PostProcessingDemo::onFocus()
+{
+	InputSystem::get()->addListener(this);
+}
 
-void MiniGame::onKillFocus()
-{}
+void PostProcessingDemo::onKillFocus()
+{
+	InputSystem::get()->removeListener(this);
+}
 
-void MiniGame::onResize()
-{}
+void PostProcessingDemo::onResize()
+{
+	RECT rc = this->getClientWindowRect();
+	this->m_swap_chain->resize(rc.right - rc.left, rc.bottom - rc.top);
 
-void MiniGame::onKeyDown(USHORT key)
+	this->m_render_target = GraphicsEngine::get()->getTextureManager()->createTexture(Rect(rc.right - rc.left, rc.bottom - rc.top), Texture::Type::RENDER_TARGET);
+	this->m_depth_stencil = GraphicsEngine::get()->getTextureManager()->createTexture(Rect(rc.right - rc.left, rc.bottom - rc.top), Texture::Type::DEPTH_STENCIL);
+
+	this->m_post_process_mat->removeTexture(0);
+	this->m_post_process_mat->addTexture(this->m_render_target);
+
+	this->update();
+	this->render();
+}
+
+void PostProcessingDemo::onKeyDown(USHORT key)
 {
 	switch(key)
 	{
@@ -157,7 +207,7 @@ void MiniGame::onKeyDown(USHORT key)
 	}
 }
 
-void MiniGame::onKeyUp(USHORT key)
+void PostProcessingDemo::onKeyUp(USHORT key)
 {
 	switch(key)
 	{
@@ -179,6 +229,19 @@ void MiniGame::onKeyUp(USHORT key)
 		this->m_upward = 0.0f;
 		break;
 	}
+	case VK_ESCAPE:
+	{
+		this->m_play_state = !this->m_play_state;
+		InputSystem::get()->showCursor(!this->m_play_state);
+		break;
+	}
+	case 'F':
+	{
+		this->m_fullscreen = !this->m_fullscreen;
+		RECT size_screen = this->getSizeScreen();
+		this->m_swap_chain->setFullScreen(this->m_fullscreen, size_screen.right, size_screen.bottom);
+		break;
+	}
 	case VK_SHIFT:
 	{
 		this->m_spaceship_turbo_mode = false;
@@ -187,37 +250,44 @@ void MiniGame::onKeyUp(USHORT key)
 	}
 }
 
-void MiniGame::onMouseMove(const POINT &mouse_pos)
+void PostProcessingDemo::onMouseMove(const POINT &mouse_pos)
 {
-	int width = this->m_window_size.m_width;
-	int height = this->m_window_size.m_height;
+	if(!this->m_play_state) return;
 
-	this->m_delta_mouse_x = (float)(mouse_pos.x - (m_window_size.m_left + (width / 2.0f)));
-	this->m_delta_mouse_y = (float)(mouse_pos.y - (m_window_size.m_top + (height / 2.0f)));
+	RECT win_size = this->getClientWindowRect();
+
+	int width = (win_size.right - win_size.left);
+	int height = (win_size.bottom - win_size.top);
+
+	this->m_delta_mouse_x = (float)(mouse_pos.x - (win_size.left + (width / 2.0f)));
+	this->m_delta_mouse_y = (float)(mouse_pos.y - (win_size.top + (height / 2.0f)));
+
+	InputSystem::get()->setCursorPos({ win_size.left + (LONG)(width / 2.0f), win_size.top + (LONG)(height / 2.0f) });
 }
 
-void MiniGame::onLeftMouseDown(const POINT &mouse_pos)
+void PostProcessingDemo::onLeftMouseDown(const POINT &mouse_pos)
 {}
 
-void MiniGame::onLeftMouseUp(const POINT &mouse_pos)
+void PostProcessingDemo::onLeftMouseUp(const POINT &mouse_pos)
 {}
 
-void MiniGame::onRightMouseDown(const POINT &mouse_pos)
+void PostProcessingDemo::onRightMouseDown(const POINT &mouse_pos)
 {}
 
-void MiniGame::onRightMouseUp(const POINT &mouse_pos)
+void PostProcessingDemo::onRightMouseUp(const POINT &mouse_pos)
 {}
 
-void MiniGame::onMouseWheelUp(const POINT &mouse_pos, const short &wheel_delta)
+void PostProcessingDemo::onMouseWheelUp(const POINT &mouse_pos, const short &wheel_delta)
 {}
 
-void MiniGame::onMouseWheelDown(const POINT &mouse_pos, const short &wheel_delta)
+void PostProcessingDemo::onMouseWheelDown(const POINT &mouse_pos, const short &wheel_delta)
 {}
 
-void MiniGame::render()
+void PostProcessingDemo::render()
 {
-	// clear render target
-	//GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain, 0, 0.3f, 0.4f, 1);
+	// render scene to render target
+	//------------------------------------------
+
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_render_target, 0, 0.3f, 0.4f, 1);
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->clearDepthStencil(this->m_depth_stencil);
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setRenderTarget(this->m_render_target, this->m_depth_stencil);
@@ -246,6 +316,27 @@ void MiniGame::render()
 	this->m_list_materials.push_back(this->m_sky_mat);
 	this->drawMesh(this->m_sky_mesh, this->m_list_materials);
 
+	//------------------------------------------
+	//------------------------------------------
+
+	// clear render target
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain, 0, 0.3f, 0.4f, 1);
+
+	// set viewport of render target in which we will draw
+	RECT rect = this->getClientWindowRect();
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setViewPortSize(rect.right - rect.left, rect.bottom - rect.top);
+
+	DistortionEffectData effect_data;
+	effect_data.m_distortion_level = this->m_distortion_level;
+
+	this->m_list_materials.clear();
+	this->m_list_materials.push_back(this->m_post_process_mat);
+	this->m_post_process_mat->setData(&effect_data, sizeof(effect_data));
+	this->drawMesh(this->m_quad_mesh, this->m_list_materials);
+
+	// swap back and front buffers
+	this->m_swap_chain->present(true);
+
 	// timing
 	this->m_old_delta = this->m_new_delta;
 	this->m_new_delta = (ULONG)::GetTickCount64();
@@ -254,26 +345,27 @@ void MiniGame::render()
 	this->m_time += this->m_delta_time;
 
 	// fps
-	//this->m_frames++;
-	//if(this->m_time - this->m_old_time >= 1.0f)
-	//{
-	//	wchar_t title[256];
-	//	swprintf_s(title, 256, L"FPS: %d", (int)(this->m_frames / (this->m_time - this->m_old_time)));
-	//	::SetWindowTextW(this->m_hwnd, title);
-	//	this->m_old_time = this->m_time;
-	//	this->m_frames = 0;
-	//}
+	this->m_frames++;
+	if(this->m_time - this->m_old_time >= 1.0f)
+	{
+		wchar_t title[256];
+		swprintf_s(title, 256, L"FPS: %d", (int)(this->m_frames / (this->m_time - this->m_old_time)));
+		::SetWindowTextW(this->m_hwnd, title);
+		this->m_old_time = this->m_time;
+		this->m_frames = 0;
+	}
 }
 
-void MiniGame::update()
+void PostProcessingDemo::update()
 {
 	this->updateSpaceship();
 	this->updateThirdPersonCamera();
+	this->updateViewportProjection();
 	this->updateLight();
 	this->updateSkyBox();
 }
 
-void MiniGame::updateModel(const Vector3 &position, const Vector3 &rotation, const Vector3 &scale, const std::vector<MaterialPtr> &list_materials)
+void PostProcessingDemo::updateModel(const Vector3 &position, const Vector3 &rotation, const Vector3 &scale, const std::vector<MaterialPtr> &list_materials)
 {
 	Constant cc = {};
 	cc.m_world = Matrix4x4::identityMatrix() *
@@ -297,7 +389,7 @@ void MiniGame::updateModel(const Vector3 &position, const Vector3 &rotation, con
 	}
 }
 
-void MiniGame::updateCamera()
+void PostProcessingDemo::updateCamera()
 {
 	this->m_cam_rot.m_x += this->m_delta_mouse_y * this->m_delta_time * 0.1f;
 	this->m_cam_rot.m_y += this->m_delta_mouse_x * this->m_delta_time * 0.1f;
@@ -317,7 +409,7 @@ void MiniGame::updateCamera()
 	this->m_view_cam = world_cam.inversedMatrix();
 }
 
-void MiniGame::updateThirdPersonCamera()
+void PostProcessingDemo::updateThirdPersonCamera()
 {
 	this->m_cam_rot.m_x += this->m_delta_mouse_y * this->m_delta_time * 0.1f;
 	this->m_cam_rot.m_y += this->m_delta_mouse_x * this->m_delta_time * 0.1f;
@@ -332,7 +424,7 @@ void MiniGame::updateThirdPersonCamera()
 
 	if(this->m_forward > 0.0f)
 	{
-		this->m_cam_distance = this->m_spaceship_turbo_mode ? 25.0f : 16.0f;
+		this->m_cam_distance = this->m_spaceship_turbo_mode ? 19.0f : 16.0f;
 	}
 	else if(this->m_forward < 0.0f)
 	{
@@ -357,7 +449,7 @@ void MiniGame::updateThirdPersonCamera()
 	this->m_view_cam = world_cam.inversedMatrix();
 }
 
-void MiniGame::updateSkyBox()
+void PostProcessingDemo::updateSkyBox()
 {
 	Constant cc = {};
 
@@ -370,7 +462,7 @@ void MiniGame::updateSkyBox()
 	this->m_sky_mat->setData(&cc, sizeof(cc));
 }
 
-void MiniGame::updateLight()
+void PostProcessingDemo::updateLight()
 {
 	this->m_light_rot_matrix = Matrix4x4::identityMatrix();
 
@@ -378,7 +470,7 @@ void MiniGame::updateLight()
 	this->m_light_rot_matrix *= Matrix4x4::rotationY(0.707f);
 }
 
-void MiniGame::updateSpaceship()
+void PostProcessingDemo::updateSpaceship()
 {
 	this->m_spaceship_rot.m_x += this->m_delta_mouse_y * this->m_delta_time * 0.1f;
 	this->m_spaceship_rot.m_y += this->m_delta_mouse_x * this->m_delta_time * 0.1f;
@@ -393,9 +485,14 @@ void MiniGame::updateSpaceship()
 
 	this->m_spaceship_speed = 125.0f;
 
-	if(this->m_spaceship_turbo_mode)
+	if(this->m_spaceship_turbo_mode && this->m_forward != 0.0f)
 	{
-		this->m_spaceship_speed = 305.0f;
+		this->m_spaceship_speed = 1000.0f;
+		this->m_distortion_level = lerp(this->m_distortion_level, 0.6f, this->m_delta_time * 2.0f);
+	}
+	else
+	{
+		this->m_distortion_level = lerp(this->m_distortion_level, 1.0f, this->m_delta_time * 2.0f);
 	}
 
 	this->m_spaceship_pos = this->m_spaceship_pos +
@@ -406,15 +503,15 @@ void MiniGame::updateSpaceship()
 	this->m_current_spaceship_pos = Vector3::lerp(this->m_current_spaceship_pos, this->m_spaceship_pos, 3.0f * this->m_delta_time);
 }
 
-void MiniGame::updateViewportProjection()
+void PostProcessingDemo::updateViewportProjection()
 {
-	/*int width = (this->getClientWindowRect().right - this->getClientWindowRect().left);
+	int width = (this->getClientWindowRect().right - this->getClientWindowRect().left);
 	int height = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
 
-	this->m_proj_cam.setPerspectiveFovPH(1.57f, ((float)width / (float)height), zNear, zFar);*/
+	this->m_proj_cam.setPerspectiveFovPH(1.57f, ((float)width / (float)height), zNear, zFar);
 }
 
-void MiniGame::drawMesh(const MeshPtr &mesh, const std::vector<MaterialPtr> &list_materials)
+void PostProcessingDemo::drawMesh(const MeshPtr &mesh, const std::vector<MaterialPtr> &list_materials)
 {
 	// set the list of vertices
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(mesh->getVertexBuffer());
