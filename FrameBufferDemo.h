@@ -1,19 +1,20 @@
 #pragma once
-#ifndef SPACESHOOTERGAME_H
-#define SPACESHOOTERGAME_H
+#ifndef FRAMEBUFFERDEMO_H
+#define FRAMEBUFFERDEMO_H
 
 #include "Prerequisites.h"
 #include "Window.h"
 #include "InputListener.h"
 #include "Geometry.h"
+#include "MiniGame.h"
 
 #include <Windows.h>
 
-class SpaceShooterGame : public Window, public InputListener
+class FrameBufferDemo : public Window, public InputListener
 {
 public:
-	SpaceShooterGame();
-	~SpaceShooterGame();
+	FrameBufferDemo();
+	~FrameBufferDemo();
 
 public:
 	virtual void onCreate() override;
@@ -43,8 +44,6 @@ public:
 	void updateThirdPersonCamera();
 	void updateSkyBox();
 	void updateLight();
-	void updateSpaceship();
-	void updateViewportProjection();
 
 	void drawMesh(const MeshPtr &mesh, const std::vector<MaterialPtr> &list_materials);
 
@@ -52,17 +51,17 @@ private:
 	SwapChainPtr m_swap_chain;
 
 	TexturePtr m_sky_tex;
-	TexturePtr m_spaceship_tex;
-	TexturePtr m_asteroid_tex;
+	TexturePtr m_brick_tex;
+	TexturePtr m_brick_normal_tex;
 
-	MeshPtr m_sky_mesh;
-	MeshPtr m_spaceship_mesh;
-	MeshPtr m_asteroid_mesh;
+	MeshPtr m_sphere_mesh;
+	MeshPtr m_monitor_mesh;
 
 	MaterialPtr m_base_mat;
 	MaterialPtr m_sky_mat;
-	MaterialPtr m_spaceship_mat;
-	MaterialPtr m_asteroid_mat;
+	MaterialPtr m_brick_mat;
+	MaterialPtr m_monitor_mat;
+	MaterialPtr m_screen_mat;
 
 	std::vector<MaterialPtr> m_list_materials;
 
@@ -83,7 +82,7 @@ private:
 	float m_rightward = 0.0f;
 	float m_upward = 0.0f;
 
-	bool m_play_state = true;
+	bool m_play_state = false;
 	bool m_fullscreen = false;
 
 	UINT m_frames = 0;
@@ -96,20 +95,10 @@ private:
 	Vector3 m_current_cam_rot;
 	Vector3 m_cam_rot;
 	Vector3 m_cam_pos;
-	float m_current_cam_distance = 14.0f;
-	float m_cam_distance = 14.0f;
+	float m_current_cam_distance = 2.4f;
+	float m_cam_distance = 2.4f;
 
-	Vector3 m_current_spaceship_pos;
-	Vector3 m_current_spaceship_rot;
-	Vector3 m_spaceship_pos;
-	Vector3 m_spaceship_rot;
-	float m_spaceship_speed = 125.0f;
-	bool m_spaceship_turbo_mode = false;
-
-	Vector3 m_asteroids_pos[200];
-	Vector3 m_asteroids_rot[200];
-	Vector3 m_asteroids_scale[200];
+	MiniGame m_mini_game;
 };
 
-
-#endif // !SPACESHOOTERGAME_H
+#endif // !FRAMEBUFFERDEMO_H

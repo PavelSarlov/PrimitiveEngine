@@ -1,39 +1,44 @@
 #pragma once
-#ifndef SPACESHOOTERGAME_H
-#define SPACESHOOTERGAME_H
+#ifndef MINIGAME_H
+#define MINIGAME_H
 
 #include "Prerequisites.h"
 #include "Window.h"
 #include "InputListener.h"
 #include "Geometry.h"
+#include "Texture.h"
 
 #include <Windows.h>
 
-class SpaceShooterGame : public Window, public InputListener
+class MiniGame
 {
 public:
-	SpaceShooterGame();
-	~SpaceShooterGame();
+	MiniGame();
+	~MiniGame();
 
 public:
-	virtual void onCreate() override;
-	virtual void onUpdate() override;
-	virtual void onDestroy() override;
-	virtual void onFocus() override;
-	virtual void onKillFocus() override;
-	virtual void onResize() override;
+	void setWindowSize(const Rect &size);
+	TexturePtr& getRenderTarget();
 
 public:
-	virtual void onKeyDown(USHORT key) override;
-	virtual void onKeyUp(USHORT key) override;
+	virtual void onCreate();
+	virtual void onUpdate();
+	virtual void onDestroy();
+	virtual void onFocus();
+	virtual void onKillFocus();
+	virtual void onResize();
 
-	virtual void onMouseMove(const POINT &mouse_pos) override;
-	virtual void onLeftMouseDown(const POINT &mouse_pos) override;
-	virtual void onLeftMouseUp(const POINT &mouse_pos) override;
-	virtual void onRightMouseDown(const POINT &mouse_pos) override;
-	virtual void onRightMouseUp(const POINT &mouse_pos) override;
-	virtual void onMouseWheelUp(const POINT &mouse_pos, const  short &wheel_delta) override;
-	virtual void onMouseWheelDown(const POINT &mouse_pos, const short &wheel_delta) override;
+public:
+	virtual void onKeyDown(USHORT key);
+	virtual void onKeyUp(USHORT key);
+
+	virtual void onMouseMove(const POINT &mouse_pos);
+	virtual void onLeftMouseDown(const POINT &mouse_pos);
+	virtual void onLeftMouseUp(const POINT &mouse_pos);
+	virtual void onRightMouseDown(const POINT &mouse_pos);
+	virtual void onRightMouseUp(const POINT &mouse_pos);
+	virtual void onMouseWheelUp(const POINT &mouse_pos, const  short &wheel_delta);
+	virtual void onMouseWheelDown(const POINT &mouse_pos, const short &wheel_delta);
 
 public:
 	void render();
@@ -54,6 +59,8 @@ private:
 	TexturePtr m_sky_tex;
 	TexturePtr m_spaceship_tex;
 	TexturePtr m_asteroid_tex;
+	TexturePtr m_render_target;
+	TexturePtr m_depth_stencil;
 
 	MeshPtr m_sky_mesh;
 	MeshPtr m_spaceship_mesh;
@@ -109,7 +116,9 @@ private:
 	Vector3 m_asteroids_pos[200];
 	Vector3 m_asteroids_rot[200];
 	Vector3 m_asteroids_scale[200];
+
+	Rect m_window_size;
 };
 
 
-#endif // !SPACESHOOTERGAME_H
+#endif // !MiniGame_H

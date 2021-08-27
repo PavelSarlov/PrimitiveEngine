@@ -23,12 +23,14 @@
     <ClCompile Include="BumpMappingDemo.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="DeviceContext.cpp" />
+    <ClCompile Include="FrameBufferDemo.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshManager.cpp" />
+    <ClCompile Include="MiniGame.cpp" />
     <ClCompile Include="PixelShader.cpp" />
     <ClCompile Include="GraphicsEngine.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
@@ -47,6 +49,7 @@
     <ClInclude Include="BumpMappingDemo.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="DeviceContext.h" />
+    <ClInclude Include="FrameBufferDemo.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="InputListener.h" />
     <ClInclude Include="InputSystem.h" />
@@ -54,6 +57,7 @@
     <ClInclude Include="MathUtils.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshManager.h" />
+    <ClInclude Include="MiniGame.h" />
     <ClInclude Include="PixelShader.h" />
     <ClInclude Include="Prerequisites.h" />
     <ClInclude Include="GraphicsEngine.h" />

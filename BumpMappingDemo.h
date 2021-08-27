@@ -2,9 +2,6 @@
 #ifndef BUMPMAPPINGDEMO_H
 #define BUMPMAPPINGDEMO_H
 
-
-
-
 #include "Prerequisites.h"
 #include "Window.h"
 #include "InputListener.h"
@@ -97,6 +94,5 @@ private:
 	float m_current_cam_distance = 14.0f;
 	float m_cam_distance = 14.0f;
 };
-
 
 #endif // !BUMPMAPPINGDEMO_H

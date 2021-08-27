@@ -91,6 +91,7 @@ void SwapChain::reloadBuffers(UINT width, UINT height)
 	tex_desc.MipLevels = 1;
 	tex_desc.SampleDesc.Count = 1;
 	tex_desc.SampleDesc.Quality = 0;
+	tex_desc.MiscFlags = 0;
 	tex_desc.ArraySize = 1;
 	tex_desc.CPUAccessFlags = 0;
 

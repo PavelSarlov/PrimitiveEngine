@@ -36,6 +36,14 @@ void DeviceContext::setViewPortSize(UINT width, UINT height)
 	this->m_device_context->RSSetViewports(1, &vp);
 }
 
+void DeviceContext::setRenderTarget(const TexturePtr &render_target, const TexturePtr &depth_stencil)
+{
+	if(render_target->m_type != Texture::Type::RENDER_TARGET) return;
+	if(depth_stencil->m_type != Texture::Type::DEPTH_STENCIL) return;
+
+	this->m_device_context->OMSetRenderTargets(1, &render_target->m_render_target_view, depth_stencil->m_depth_stencil_view);
+}
+
 void DeviceContext::setVertexShader(const VertexShaderPtr &vertex_shader)
 {
 	this->m_device_context->VSSetShader(vertex_shader->m_vs, nullptr, 0);
@@ -95,6 +103,24 @@ void DeviceContext::clearRenderTargetColor(const SwapChainPtr &swap_chain, float
 	this->m_device_context->ClearRenderTargetView(swap_chain->m_rtv, clear_color);
 	this->m_device_context->ClearDepthStencilView(swap_chain->m_dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 	this->m_device_context->OMSetRenderTargets(1, &swap_chain->m_rtv, swap_chain->m_dsv);
+}
+
+void DeviceContext::clearDepthStencil(const SwapChainPtr &swap_chain)
+{
+	this->m_device_context->ClearDepthStencilView(swap_chain->m_dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
+}
+
+void DeviceContext::clearRenderTargetColor(const TexturePtr &render_target, float red, float green, float blue, float alpha)
+{
+	if(render_target->m_type != Texture::Type::RENDER_TARGET) return;
+	FLOAT clear_color[] = { red,green,blue,alpha };
+	this->m_device_context->ClearRenderTargetView(render_target->m_render_target_view, clear_color);
+}
+
+void DeviceContext::clearDepthStencil(const TexturePtr &depth_stencil)
+{
+	if(depth_stencil->m_type != Texture::Type::DEPTH_STENCIL) return;
+	this->m_device_context->ClearDepthStencilView(depth_stencil->m_depth_stencil_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 }
 
 void DeviceContext::drawTriangleList(UINT vertex_count, UINT start_vertex_index)

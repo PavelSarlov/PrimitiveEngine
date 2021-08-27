@@ -14,6 +14,7 @@ class Matrix2x2;
 class Matrix3x3;
 class Matrix4x4;
 class VertexMesh;
+class Rect;
 #pragma endregion
 
 class Vector2
@@ -1347,6 +1348,37 @@ public:
 	Vector3 m_normal;
 	Vector3 m_tangent;
 	Vector3 m_binormal;
+};
+
+class Rect
+{
+public:
+	Rect() : Rect(0, 0)
+	{}
+	Rect(int width, int height) : Rect(0, 0, width, height)
+	{}
+	Rect(int left, int top, int width, int height) : m_left(left), m_top(top), m_width(width), m_height(height)
+	{}
+	Rect(const Rect &other)
+	{
+		*this = other;
+	}
+	Rect &operator=(const Rect &other)
+	{
+		if(this != &other)
+		{
+			this->m_left = other.m_left;
+			this->m_top = other.m_top;
+			this->m_width = other.m_width;
+			this->m_height = other.m_height;
+		}
+		return *this;
+	}
+	~Rect()
+	{}
+
+public:
+	int m_left, m_top, m_width, m_height;
 };
 
 #endif // !GEOMETRY_H

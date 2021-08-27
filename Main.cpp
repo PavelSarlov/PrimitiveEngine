@@ -1,4 +1,5 @@
-#include "BumpMappingDemo.h"
+#include "FrameBufferDemo.h"
+#include "SpaceShooterGame.h"
 #include "GraphicsEngine.h"
 #include "InputSystem.h"
 
@@ -9,10 +10,10 @@ int main()
 		GraphicsEngine::create();
 		InputSystem::create();
 
-		/*SpaceShooterGame app;
-		while(app.isRunning());*/
-
-		BumpMappingDemo app;
+		//SpaceShooterGame app;
+		//BumpMappingDemo app;
+		FrameBufferDemo app;
+		//MiniGame app;
 		while(app.isRunning());
 
 		InputSystem::release();

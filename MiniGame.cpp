@@ -1,4 +1,4 @@
-#include "SpaceShooterGame.h"
+#include "MiniGame.h"
 #include "GraphicsEngine.h"
 #include "SwapChain.h"
 #include "DeviceContext.h"
@@ -27,24 +27,24 @@ struct Constant
 	float m_time = 0.0f;
 };
 
-SpaceShooterGame::SpaceShooterGame() : Window()
+MiniGame::MiniGame()
 {}
 
-SpaceShooterGame::~SpaceShooterGame()
+MiniGame::~MiniGame()
 {}
 
-void SpaceShooterGame::onCreate()
+void MiniGame::setWindowSize(const Rect & size)
 {
-	Window::onCreate();
+	this->m_window_size = size;
+}
 
-	// subscribe for input events
-	InputSystem::get()->addListener(this);
-	InputSystem::get()->showCursor(!this->m_play_state);
+TexturePtr &MiniGame::getRenderTarget()
+{
+	return this->m_render_target;
+}
 
-	// create swap chain
-	RECT rect = this->getClientWindowRect();
-	this->m_swap_chain = GraphicsEngine::get()->getRenderSystem()->createSwapChain(this->m_hwnd, rect.right - rect.left, rect.bottom - rect.top);
-
+void MiniGame::onCreate()
+{
 	srand((UINT)time(NULL));
 
 	for(UINT i = 0; i < 200; i++)
@@ -85,13 +85,16 @@ void SpaceShooterGame::onCreate()
 	this->m_world_cam = Matrix4x4::translationMatrix(0, 0, -2);
 
 	this->m_list_materials.reserve(32);
+
+	this->m_render_target = GraphicsEngine::get()->getTextureManager()->createTexture(Rect(1280, 720), Texture::Type::RENDER_TARGET);
+	this->m_depth_stencil = GraphicsEngine::get()->getTextureManager()->createTexture(Rect(1280, 720), Texture::Type::DEPTH_STENCIL);
+
+
+	this->m_proj_cam.setPerspectiveFovPH(1.57f, ((float)1280 / (float)720), zNear, zFar);
 }
 
-void SpaceShooterGame::onUpdate()
+void MiniGame::onUpdate()
 {
-	Window::onUpdate();
-	InputSystem::get()->update();
-
 	this->update();
 	this->render();
 
@@ -99,32 +102,21 @@ void SpaceShooterGame::onUpdate()
 	this->m_delta_mouse_y = 0.0f;
 }
 
-void SpaceShooterGame::onDestroy()
+void MiniGame::onDestroy()
 {
-	Window::onDestroy();
 	this->m_swap_chain->setFullScreen(false, 1, 1);
 }
 
-void SpaceShooterGame::onFocus()
-{
-	InputSystem::get()->addListener(this);
-}
+void MiniGame::onFocus()
+{}
 
-void SpaceShooterGame::onKillFocus()
-{
-	InputSystem::get()->removeListener(this);
-}
+void MiniGame::onKillFocus()
+{}
 
-void SpaceShooterGame::onResize()
-{
-	RECT rc = this->getClientWindowRect();
-	this->m_swap_chain->resize(rc.right - rc.left, rc.bottom - rc.top);
+void MiniGame::onResize()
+{}
 
-	this->update();
-	this->render();
-}
-
-void SpaceShooterGame::onKeyDown(USHORT key)
+void MiniGame::onKeyDown(USHORT key)
 {
 	switch(key)
 	{
@@ -166,7 +158,7 @@ void SpaceShooterGame::onKeyDown(USHORT key)
 	}
 }
 
-void SpaceShooterGame::onKeyUp(USHORT key)
+void MiniGame::onKeyUp(USHORT key)
 {
 	switch(key)
 	{
@@ -188,19 +180,6 @@ void SpaceShooterGame::onKeyUp(USHORT key)
 		this->m_upward = 0.0f;
 		break;
 	}
-	case VK_ESCAPE:
-	{
-		this->m_play_state = !this->m_play_state;
-		InputSystem::get()->showCursor(!this->m_play_state);
-		break;
-	}
-	case 'F':
-	{
-		this->m_fullscreen = !this->m_fullscreen;
-		RECT size_screen = this->getSizeScreen();
-		this->m_swap_chain->setFullScreen(this->m_fullscreen, size_screen.right, size_screen.bottom);
-		break;
-	}
 	case VK_SHIFT:
 	{
 		this->m_spaceship_turbo_mode = false;
@@ -209,47 +188,44 @@ void SpaceShooterGame::onKeyUp(USHORT key)
 	}
 }
 
-void SpaceShooterGame::onMouseMove(const POINT &mouse_pos)
+void MiniGame::onMouseMove(const POINT &mouse_pos)
 {
-	if(!this->m_play_state) return;
+	int width = this->m_window_size.m_width;
+	int height = this->m_window_size.m_height;
 
-	RECT win_size = this->getClientWindowRect();
-
-	int width = (win_size.right - win_size.left);
-	int height = (win_size.bottom - win_size.top);
-
-	this->m_delta_mouse_x = (int)(mouse_pos.x - (win_size.left + (width / 2.0f)));
-	this->m_delta_mouse_y = (int)(mouse_pos.y - (win_size.top + (height / 2.0f)));
-
-	InputSystem::get()->setCursorPos({ win_size.left + (LONG)(width / 2.0f), win_size.top + (LONG)(height / 2.0f) });
+	this->m_delta_mouse_x = (float)(mouse_pos.x - (m_window_size.m_left + (width / 2.0f)));
+	this->m_delta_mouse_y = (float)(mouse_pos.y - (m_window_size.m_top + (height / 2.0f)));
 }
 
-void SpaceShooterGame::onLeftMouseDown(const POINT &mouse_pos)
+void MiniGame::onLeftMouseDown(const POINT &mouse_pos)
 {}
 
-void SpaceShooterGame::onLeftMouseUp(const POINT &mouse_pos)
+void MiniGame::onLeftMouseUp(const POINT &mouse_pos)
 {}
 
-void SpaceShooterGame::onRightMouseDown(const POINT &mouse_pos)
+void MiniGame::onRightMouseDown(const POINT &mouse_pos)
 {}
 
-void SpaceShooterGame::onRightMouseUp(const POINT &mouse_pos)
+void MiniGame::onRightMouseUp(const POINT &mouse_pos)
 {}
 
-void SpaceShooterGame::onMouseWheelUp(const POINT &mouse_pos, const short &wheel_delta)
+void MiniGame::onMouseWheelUp(const POINT &mouse_pos, const short &wheel_delta)
 {}
 
-void SpaceShooterGame::onMouseWheelDown(const POINT &mouse_pos, const short &wheel_delta)
+void MiniGame::onMouseWheelDown(const POINT &mouse_pos, const short &wheel_delta)
 {}
 
-void SpaceShooterGame::render()
+void MiniGame::render()
 {
 	// clear render target
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain, 0, 0.3f, 0.4f, 1);
+	//GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_swap_chain, 0, 0.3f, 0.4f, 1);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->clearRenderTargetColor(this->m_render_target, 0, 0.3f, 0.4f, 1);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->clearDepthStencil(this->m_depth_stencil);
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setRenderTarget(this->m_render_target, this->m_depth_stencil);
 
 	// set viewport of render target in which we will draw
-	RECT rect = this->getClientWindowRect();
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setViewPortSize(rect.right - rect.left, rect.bottom - rect.top);
+	Rect viewport_size = this->m_render_target->getSize();
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setViewPortSize(viewport_size.m_width, viewport_size.m_height);
 
 	// draw spaceship
 	this->m_list_materials.clear();
@@ -271,11 +247,6 @@ void SpaceShooterGame::render()
 	this->m_list_materials.push_back(this->m_sky_mat);
 	this->drawMesh(this->m_sky_mesh, this->m_list_materials);
 
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->clearDepthStencil(this->m_swap_chain);
-
-	// swap back and front buffers
-	this->m_swap_chain->present(true);
-
 	// timing
 	this->m_old_delta = this->m_new_delta;
 	this->m_new_delta = (ULONG)::GetTickCount64();
@@ -284,27 +255,26 @@ void SpaceShooterGame::render()
 	this->m_time += this->m_delta_time;
 
 	// fps
-	this->m_frames++;
-	if(this->m_time - this->m_old_time >= 1.0f)
-	{
-		wchar_t title[256];
-		swprintf_s(title, 256, L"FPS: %d", (int)(this->m_frames / (this->m_time - this->m_old_time)));
-		::SetWindowTextW(this->m_hwnd, title);
-		this->m_old_time = this->m_time;
-		this->m_frames = 0;
-	}
+	//this->m_frames++;
+	//if(this->m_time - this->m_old_time >= 1.0f)
+	//{
+	//	wchar_t title[256];
+	//	swprintf_s(title, 256, L"FPS: %d", (int)(this->m_frames / (this->m_time - this->m_old_time)));
+	//	::SetWindowTextW(this->m_hwnd, title);
+	//	this->m_old_time = this->m_time;
+	//	this->m_frames = 0;
+	//}
 }
 
-void SpaceShooterGame::update()
+void MiniGame::update()
 {
 	this->updateSpaceship();
 	this->updateThirdPersonCamera();
-	this->updateViewportProjection();
 	this->updateLight();
 	this->updateSkyBox();
 }
 
-void SpaceShooterGame::updateModel(const Vector3 &position, const Vector3 &rotation, const Vector3 &scale, const std::vector<MaterialPtr> &list_materials)
+void MiniGame::updateModel(const Vector3 &position, const Vector3 &rotation, const Vector3 &scale, const std::vector<MaterialPtr> &list_materials)
 {
 	Constant cc = {};
 	cc.m_world = Matrix4x4::identityMatrix() *
@@ -328,7 +298,7 @@ void SpaceShooterGame::updateModel(const Vector3 &position, const Vector3 &rotat
 	}
 }
 
-void SpaceShooterGame::updateCamera()
+void MiniGame::updateCamera()
 {
 	this->m_cam_rot.m_x += this->m_delta_mouse_y * this->m_delta_time * 0.1f;
 	this->m_cam_rot.m_y += this->m_delta_mouse_x * this->m_delta_time * 0.1f;
@@ -348,7 +318,7 @@ void SpaceShooterGame::updateCamera()
 	this->m_view_cam = world_cam.inversedMatrix();
 }
 
-void SpaceShooterGame::updateThirdPersonCamera()
+void MiniGame::updateThirdPersonCamera()
 {
 	this->m_cam_rot.m_x += this->m_delta_mouse_y * this->m_delta_time * 0.1f;
 	this->m_cam_rot.m_y += this->m_delta_mouse_x * this->m_delta_time * 0.1f;
@@ -388,7 +358,7 @@ void SpaceShooterGame::updateThirdPersonCamera()
 	this->m_view_cam = world_cam.inversedMatrix();
 }
 
-void SpaceShooterGame::updateSkyBox()
+void MiniGame::updateSkyBox()
 {
 	Constant cc = {};
 
@@ -401,7 +371,7 @@ void SpaceShooterGame::updateSkyBox()
 	this->m_sky_mat->setData(&cc, sizeof(cc));
 }
 
-void SpaceShooterGame::updateLight()
+void MiniGame::updateLight()
 {
 	this->m_light_rot_matrix = Matrix4x4::identityMatrix();
 
@@ -409,7 +379,7 @@ void SpaceShooterGame::updateLight()
 	this->m_light_rot_matrix *= Matrix4x4::rotationY(0.707f);
 }
 
-void SpaceShooterGame::updateSpaceship()
+void MiniGame::updateSpaceship()
 {
 	this->m_spaceship_rot.m_x += this->m_delta_mouse_y * this->m_delta_time * 0.1f;
 	this->m_spaceship_rot.m_y += this->m_delta_mouse_x * this->m_delta_time * 0.1f;
@@ -437,15 +407,15 @@ void SpaceShooterGame::updateSpaceship()
 	this->m_current_spaceship_pos = Vector3::lerp(this->m_current_spaceship_pos, this->m_spaceship_pos, 3.0f * this->m_delta_time);
 }
 
-void SpaceShooterGame::updateViewportProjection()
+void MiniGame::updateViewportProjection()
 {
-	int width = (this->getClientWindowRect().right - this->getClientWindowRect().left);
+	/*int width = (this->getClientWindowRect().right - this->getClientWindowRect().left);
 	int height = (this->getClientWindowRect().bottom - this->getClientWindowRect().top);
 
-	this->m_proj_cam.setPerspectiveFovPH(1.57f, ((float)width / (float)height), zNear, zFar);
+	this->m_proj_cam.setPerspectiveFovPH(1.57f, ((float)width / (float)height), zNear, zFar);*/
 }
 
-void SpaceShooterGame::drawMesh(const MeshPtr &mesh, const std::vector<MaterialPtr> &list_materials)
+void MiniGame::drawMesh(const MeshPtr &mesh, const std::vector<MaterialPtr> &list_materials)
 {
 	// set the list of vertices
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(mesh->getVertexBuffer());
