@@ -93,10 +93,10 @@ void PostProcessingDemo::onCreate()
 	this->m_quad_mesh = GraphicsEngine::get()->getMeshManager()->createMesh(quad_vertex_list, 4, quad_index_list, 6, quad_mat_slots, 1);
 
 	// create materials
-	this->m_base_mat = GraphicsEngine::get()->createMaterial(L"DirectionalLightVertexShader.hlsl", L"DirectionalLightPixelShader.hlsl");
+	this->m_base_mat = GraphicsEngine::get()->createMaterial(L"shaders\\DirectionalLightVertexShader.hlsl", L"shaders\\DirectionalLightPixelShader.hlsl");
 	this->m_base_mat->setCullMode(CULL_MODE_BACK);
 
-	this->m_sky_mat = GraphicsEngine::get()->createMaterial(L"SkyBoxVertexShader.hlsl", L"SkyBoxPixelShader.hlsl");
+	this->m_sky_mat = GraphicsEngine::get()->createMaterial(L"shaders\\SkyBoxVertexShader.hlsl", L"shaders\\SkyBoxPixelShader.hlsl");
 	this->m_sky_mat->addTexture(this->m_sky_tex);
 	this->m_sky_mat->setCullMode(CULL_MODE_FRONT);
 
@@ -108,7 +108,7 @@ void PostProcessingDemo::onCreate()
 	this->m_asteroid_mat->addTexture(this->m_asteroid_tex);
 	this->m_asteroid_mat->setCullMode(CULL_MODE_BACK);
 
-	this->m_post_process_mat = GraphicsEngine::get()->createMaterial(L"PostProcessVS.hlsl", L"DistortionEffect.hlsl");
+	this->m_post_process_mat = GraphicsEngine::get()->createMaterial(L"shaders\\PostProcessVS.hlsl", L"shaders\\DistortionEffect.hlsl");
 	this->m_post_process_mat->setCullMode(CULL_MODE_BACK);
 
 	// init cam pos
