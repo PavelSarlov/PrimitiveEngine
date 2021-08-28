@@ -26,10 +26,10 @@
 #ifndef PRIMITIVEENGINE_H
 #define PRIMITIVEENGINE_H
 
-#include "Prerequisites.h"
-#include "RenderSystem.h"
-#include "TextureManager.h"
-#include "MeshManager.h"
+#include <Prerequisites.h>
+#include <RenderSystem.h>
+#include <TextureManager.h>
+#include <MeshManager.h>
 
 class GraphicsEngine
 {

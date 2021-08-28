@@ -26,7 +26,7 @@
 #ifndef INPUTSYSTEM_H
 #define INPUTSYSTEM_H
 
-#include "InputListener.h"
+#include <InputListener.h>
 
 #include <unordered_set>
 

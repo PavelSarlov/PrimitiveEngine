@@ -26,7 +26,7 @@
 #ifndef RESOURCEMANAGER_H
 #define RESOURCEMANAGER_H
 
-#include "Prerequisites.h"
+#include <Prerequisites.h>
 
 #include <unordered_map>
 

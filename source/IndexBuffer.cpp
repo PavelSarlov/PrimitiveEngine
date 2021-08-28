@@ -22,8 +22,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "IndexBuffer.h"
-#include "RenderSystem.h"
+#include <IndexBuffer.h>
+#include <RenderSystem.h>
 
 #include <exception>
 

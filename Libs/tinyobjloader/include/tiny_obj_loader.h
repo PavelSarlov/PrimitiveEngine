@@ -51,7 +51,7 @@ THE SOFTWARE.
 //
 // Use this in *one* .cc
 //   #define TINYOBJLOADER_IMPLEMENTATION
-//   #include "tiny_obj_loader.h"
+//   #include <tiny_obj_loader.h>
 //
 
 #ifndef TINY_OBJ_LOADER_H_

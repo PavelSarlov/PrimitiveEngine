@@ -22,18 +22,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "AppWindow.h"
-#include "GraphicsEngine.h"
-#include "SwapChain.h"
-#include "DeviceContext.h"
-#include "VertexBuffer.h"
-#include "ConstantBuffer.h"
-#include "IndexBuffer.h"
-#include "PixelShader.h"
-#include "VertexShader.h"
-#include "InputSystem.h"
-#include "Mesh.h"
-#include "Material.h"
+#include <AppWindow.h>
+#include <GraphicsEngine.h>
+#include <SwapChain.h>
+#include <DeviceContext.h>
+#include <VertexBuffer.h>
+#include <ConstantBuffer.h>
+#include <IndexBuffer.h>
+#include <PixelShader.h>
+#include <VertexShader.h>
+#include <InputSystem.h>
+#include <Mesh.h>
+#include <Material.h>
 
 __declspec(align(16))
 struct Constant

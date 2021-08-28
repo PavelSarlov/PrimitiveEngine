@@ -26,7 +26,7 @@
 #ifndef DEVICECONTEXT_H
 #define DEVICECONTEXT_H
 
-#include "Prerequisites.h"
+#include <Prerequisites.h>
 
 #include <d3d11.h>
 

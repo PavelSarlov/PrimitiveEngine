@@ -22,8 +22,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "VertexShader.h"
-#include "RenderSystem.h"
+#include <VertexShader.h>
+#include <RenderSystem.h>
 
 #include <exception>
 

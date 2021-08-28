@@ -27,7 +27,7 @@
 #ifndef VERTEXSHADER_H
 #define VERTEXSHADER_H
 
-#include "Prerequisites.h"
+#include <Prerequisites.h>
 
 #include <d3d11.h>
 

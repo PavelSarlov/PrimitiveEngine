@@ -22,8 +22,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "ResourceManager.h"
-#include "Resource.h"
+#include <ResourceManager.h>
+#include <Resource.h>
 
 #if __cplusplus <= 201402L 
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING

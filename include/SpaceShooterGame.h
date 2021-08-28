@@ -26,11 +26,10 @@
 #ifndef SPACESHOOTERGAME_H
 #define SPACESHOOTERGAME_H
 
-#include "Prerequisites.h"
-#include "Window.h"
-#include "InputListener.h"
-#include "Geometry.h"
-
+#include <Prerequisites.h>
+#include <Window.h>
+#include <InputListener.h>
+#include <Geometry.h>
 #include <Windows.h>
 
 class SpaceShooterGame : public Window, public InputListener
@@ -62,15 +61,16 @@ public:
 public:
 	void render();
 	void update();
-	void updateModel(const Vector3 &position, const Vector3 &rotation, const Vector3 &scale, const std::vector<MaterialPtr> &list_materials);
+	void updateModel(const GameObjectPtr &obj);
 	void updateCamera();
 	void updateThirdPersonCamera();
 	void updateSkyBox();
 	void updateLight();
 	void updateSpaceship();
 	void updateViewportProjection();
+	void updateFixed();
 
-	void drawMesh(const MeshPtr &mesh, const std::vector<MaterialPtr> &list_materials);
+	void drawMesh(const GameObjectPtr &obj);
 
 private:
 	SwapChainPtr m_swap_chain;
@@ -89,6 +89,11 @@ private:
 	MaterialPtr m_asteroid_mat;
 
 	std::vector<MaterialPtr> m_list_materials;
+
+	std::vector<GameObjectPtr> m_objects;
+
+	GameObjectPtr m_spaceship_obj;
+	GameObjectPtr m_skybox_obj;
 
 private:
 	float zNear = 0.1f;
@@ -133,6 +138,7 @@ private:
 	Vector3 m_asteroids_pos[200];
 	Vector3 m_asteroids_rot[200];
 	Vector3 m_asteroids_scale[200];
+
 };
 
 

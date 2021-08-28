@@ -26,11 +26,10 @@
 #ifndef MESH_H
 #define MESH_H
 
-#include "Resource.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
-#include "Geometry.h"
-
+#include <Resource.h>
+#include <VertexBuffer.h>
+#include <IndexBuffer.h>
+#include <Geometry.h>
 #include <vector>
 
 struct MaterialSlot
@@ -52,6 +51,8 @@ public:
 public:
 	const VertexBufferPtr &getVertexBuffer();
 	const IndexBufferPtr &getIndexBuffer();
+	const BoundingBox &getBoundingBox();
+	const BoundingSphere &getBoundingSphere();
 
 public:
 	const MaterialSlot &getMaterialSlot(size_t slot);
@@ -68,6 +69,8 @@ private:
 	VertexBufferPtr m_vertex_buffer;
 	IndexBufferPtr m_index_buffer;
 	std::vector<MaterialSlot> m_material_slots;
+	BoundingBox m_bounding_box;
+	BoundingSphere m_bounding_sphere;
 
 private:
 	friend class DeviceContext;

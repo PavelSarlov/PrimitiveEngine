@@ -22,9 +22,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "PostProcessingDemo.h"
-#include "GraphicsEngine.h"
-#include "InputSystem.h"
+#include <SpaceShooterGame.h>
+#include <GraphicsEngine.h>
+#include <InputSystem.h>
+#include <PhysicsEngine.h>
 
 int main()
 {
@@ -32,20 +33,23 @@ int main()
 	{
 		GraphicsEngine::create();
 		InputSystem::create();
+		PhysicsEngine::create();
 
-		//SpaceShooterGame app;
+		SpaceShooterGame app;
 		//BumpMappingDemo app;
 		//FrameBufferDemo app;
 		//MiniGame app;
-		PostProcessingDemo app;
+		//PostProcessingDemo app;
 		while(app.isRunning());
 
+		PhysicsEngine::release();
 		InputSystem::release();
 		GraphicsEngine::release();
 	}
 	catch(std::exception e)
 	{
 		std::cout << e.what() << std::endl;
+		PhysicsEngine::release();
 		InputSystem::release();
 		GraphicsEngine::release();
 		return -1;

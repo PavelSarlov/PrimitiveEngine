@@ -26,7 +26,7 @@
 #ifndef RENDERSYSTEM_H
 #define RENDERSYSTEM_H
 
-#include "Prerequisites.h"
+#include <Prerequisites.h>
 
 #include <Windows.h>
 #include <algorithm>

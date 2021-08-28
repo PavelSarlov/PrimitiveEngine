@@ -22,19 +22,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "SpaceShooterGame.h"
-#include "GraphicsEngine.h"
-#include "SwapChain.h"
-#include "DeviceContext.h"
-#include "VertexBuffer.h"
-#include "ConstantBuffer.h"
-#include "IndexBuffer.h"
-#include "PixelShader.h"
-#include "VertexShader.h"
-#include "InputSystem.h"
-#include "Mesh.h"
-#include "Material.h"
-#include "MathUtils.h"
+#include <SpaceShooterGame.h>
+#include <GraphicsEngine.h>
+#include <SwapChain.h>
+#include <DeviceContext.h>
+#include <VertexBuffer.h>
+#include <ConstantBuffer.h>
+#include <IndexBuffer.h>
+#include <PixelShader.h>
+#include <VertexShader.h>
+#include <InputSystem.h>
+#include <Mesh.h>
+#include <Material.h>
+#include <MathUtils.h>
+#include <PhysicsEngine.h>
+#include <GameObject.h>
 
 #include <time.h>
 
@@ -69,16 +71,6 @@ void SpaceShooterGame::onCreate()
 	RECT rect = this->getClientWindowRect();
 	this->m_swap_chain = GraphicsEngine::get()->getRenderSystem()->createSwapChain(this->m_hwnd, rect.right - rect.left, rect.bottom - rect.top);
 
-	srand((UINT)time(NULL));
-
-	for(UINT i = 0; i < 200; i++)
-	{
-		this->m_asteroids_pos[i] = Vector3((float)(rand() % 4000 + (-2000)), (float)(rand() % 4000 + (-2000)), (float)(rand() % 4000 + (-2000)));
-		this->m_asteroids_rot[i] = Vector3((rand() % 628) / 100.0f, (rand() % 628) / 100.0f, (rand() % 628) / 100.0f);
-		float scale = (float)(rand() % 20 + (6));
-		this->m_asteroids_scale[i] = Vector3(scale, scale, scale);
-	}
-
 	// create textures
 	this->m_sky_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\stars_map.jpg");
 	this->m_spaceship_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\spaceship.jpg");
@@ -90,10 +82,10 @@ void SpaceShooterGame::onCreate()
 	this->m_asteroid_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\asteroid.obj");
 
 	// create materials
-	this->m_base_mat = GraphicsEngine::get()->createMaterial(L"DirectionalLightVertexShader.hlsl", L"DirectionalLightPixelShader.hlsl");
+	this->m_base_mat = GraphicsEngine::get()->createMaterial(L"shaders\\DirectionalLightVertexShader.hlsl", L"shaders\\DirectionalLightPixelShader.hlsl");
 	this->m_base_mat->setCullMode(CULL_MODE_BACK);
 
-	this->m_sky_mat = GraphicsEngine::get()->createMaterial(L"SkyBoxVertexShader.hlsl", L"SkyBoxPixelShader.hlsl");
+	this->m_sky_mat = GraphicsEngine::get()->createMaterial(L"shaders\\SkyBoxVertexShader.hlsl", L"shaders\\SkyBoxPixelShader.hlsl");
 	this->m_sky_mat->addTexture(this->m_sky_tex);
 	this->m_sky_mat->setCullMode(CULL_MODE_FRONT);
 
@@ -109,6 +101,22 @@ void SpaceShooterGame::onCreate()
 	this->m_world_cam = Matrix4x4::translationMatrix(0, 0, -2);
 
 	this->m_list_materials.reserve(32);
+	this->m_objects.reserve(200);
+
+	srand((UINT)time(NULL));
+
+	for(UINT i = 0; i < 200; i++)
+	{
+		Vector3 asteroid_pos = Vector3((float)(rand() % 4000 + (-2000)), (float)(rand() % 4000 + (-2000)), (float)(rand() % 4000 + (-2000)));
+		Vector3 asteroid_rot = Vector3((rand() % 628) / 100.0f, (rand() % 628) / 100.0f, (rand() % 628) / 100.0f);
+		float scale = (float)(rand() % 20 + (6));
+		Vector3 asteroid_scale = Vector3(scale, scale, scale);
+
+		this->m_objects.push_back(PhysicsEngine::get()->createGameObject(std::vector<MaterialPtr>{this->m_asteroid_mat}, this->m_asteroid_mesh, asteroid_pos, asteroid_rot, asteroid_scale, true));
+	}
+
+	this->m_spaceship_obj = PhysicsEngine::get()->createGameObject(std::vector<MaterialPtr>{this->m_spaceship_mat}, this->m_spaceship_mesh, this->m_spaceship_pos, this->m_spaceship_rot, Vector3(1.0f, 1.0f, 1.0f), false);
+	this->m_skybox_obj = PhysicsEngine::get()->createGameObject(std::vector<MaterialPtr>{this->m_sky_mat}, this->m_sky_mesh, this->m_cam_pos, Vector3(zFar, zFar, zFar), Vector3(1.0f, 1.0f, 1.0f), false);
 }
 
 void SpaceShooterGame::onUpdate()
@@ -275,25 +283,20 @@ void SpaceShooterGame::render()
 	RECT rect = this->getClientWindowRect();
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setViewPortSize(rect.right - rect.left, rect.bottom - rect.top);
 
-	// draw spaceship
-	this->m_list_materials.clear();
-	this->m_list_materials.push_back(this->m_spaceship_mat);
-	this->updateModel(this->m_current_spaceship_pos, this->m_current_spaceship_rot, Vector3(1, 1, 1), this->m_list_materials);
-	this->drawMesh(this->m_spaceship_mesh, this->m_list_materials);
-
-	// draw asteroids
-	this->m_list_materials.clear();
-	this->m_list_materials.push_back(this->m_asteroid_mat);
-	for(UINT i = 0; i < 200; i++)
+	// draw objects
+	for(UINT i = 0; i < this->m_objects.size(); i++)
 	{
-		this->updateModel(this->m_asteroids_pos[i], this->m_asteroids_rot[i], this->m_asteroids_scale[i], this->m_list_materials);
-		this->drawMesh(this->m_asteroid_mesh, this->m_list_materials);
+		this->updateModel(this->m_objects[i]);
+		this->drawMesh(this->m_objects[i]);
 	}
 
-	// draw skybox
-	this->m_list_materials.clear();
-	this->m_list_materials.push_back(this->m_sky_mat);
-	this->drawMesh(this->m_sky_mesh, this->m_list_materials);
+	// draw spaceship
+	this->updateModel(this->m_spaceship_obj);
+	this->drawMesh(this->m_spaceship_obj);
+
+	//draw skybox
+	this->drawMesh(this->m_skybox_obj);
+
 
 	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->clearDepthStencil(this->m_swap_chain);
 
@@ -321,6 +324,7 @@ void SpaceShooterGame::render()
 
 void SpaceShooterGame::update()
 {
+	this->updateFixed();
 	this->updateSpaceship();
 	this->updateThirdPersonCamera();
 	this->updateViewportProjection();
@@ -328,15 +332,15 @@ void SpaceShooterGame::update()
 	this->updateSkyBox();
 }
 
-void SpaceShooterGame::updateModel(const Vector3 &position, const Vector3 &rotation, const Vector3 &scale, const std::vector<MaterialPtr> &list_materials)
+void SpaceShooterGame::updateModel(const GameObjectPtr &obj)
 {
 	Constant cc = {};
 	cc.m_world = Matrix4x4::identityMatrix() *
-		Matrix4x4::scaleMatrix(scale) *
-		Matrix4x4::rotationX(rotation.m_x) *
-		Matrix4x4::rotationY(rotation.m_y) *
-		Matrix4x4::rotationZ(rotation.m_z) *
-		Matrix4x4::translationMatrix(position);
+		Matrix4x4::scaleMatrix(obj->getScale()) *
+		Matrix4x4::rotationX(obj->getRotation().m_x) *
+		Matrix4x4::rotationY(obj->getRotation().m_y) *
+		Matrix4x4::rotationZ(obj->getRotation().m_z) *
+		Matrix4x4::translationMatrix(obj->getPosition());
 	cc.m_view = this->m_view_cam;
 	cc.m_proj = this->m_proj_cam;
 	cc.m_cam_pos = this->m_world_cam.getTranslation();
@@ -346,7 +350,7 @@ void SpaceShooterGame::updateModel(const Vector3 &position, const Vector3 &rotat
 	cc.m_light_radius = 0.0f;
 	cc.m_time = this->m_time;
 
-	for(auto &m : list_materials)
+	for(auto &m : obj->getMaterials())
 	{
 		m->setData(&cc, sizeof(cc));
 	}
@@ -459,6 +463,9 @@ void SpaceShooterGame::updateSpaceship()
 		world_model.getDirectionY() * this->m_upward * this->m_spaceship_speed * this->m_delta_time;
 
 	this->m_current_spaceship_pos = Vector3::lerp(this->m_current_spaceship_pos, this->m_spaceship_pos, 3.0f * this->m_delta_time);
+
+	this->m_spaceship_obj->setPosition(this->m_current_spaceship_pos);
+	this->m_spaceship_obj->setRotation(this->m_current_spaceship_rot);
 }
 
 void SpaceShooterGame::updateViewportProjection()
@@ -469,18 +476,33 @@ void SpaceShooterGame::updateViewportProjection()
 	this->m_proj_cam.setPerspectiveFovPH(1.57f, ((float)width / (float)height), zNear, zFar);
 }
 
-void SpaceShooterGame::drawMesh(const MeshPtr &mesh, const std::vector<MaterialPtr> &list_materials)
+void SpaceShooterGame::updateFixed()
+{
+	/*float spaceship_dx = this->m_spaceship_mesh->getBoundingBox().m_dx;
+	float spaceship_dy = this->m_spaceship_mesh->getBoundingBox().m_dy;
+	float spaceship_dz = this->m_spaceship_mesh->getBoundingBox().m_dz;
+
+	float spaceship_radius = this->m_spaceship_mesh->getBoundingSphere().m_radius;
+
+	for(const auto &obs : this->m_objects)
+	{
+		Vector3 obs_pos = obs->getPosition();
+
+	}*/
+}
+
+void SpaceShooterGame::drawMesh(const GameObjectPtr &obj)
 {
 	// set the list of vertices
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(mesh->getVertexBuffer());
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(obj->getMesh()->getVertexBuffer());
 	// set the list of indices
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setIndexBuffer(mesh->getIndexBuffer());
+	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setIndexBuffer(obj->getMesh()->getIndexBuffer());
 
-	for(size_t m = 0; m < mesh->getNumMaterialSlots() && m < list_materials.size(); m++)
+	for(size_t m = 0; m < obj->getMesh()->getNumMaterialSlots() && m < obj->getMaterials().size(); m++)
 	{
-		MaterialSlot mat = mesh->getMaterialSlot(m);
+		MaterialSlot mat = obj->getMesh()->getMaterialSlot(m);
 
-		GraphicsEngine::get()->setMaterial(list_materials[m]);
+		GraphicsEngine::get()->setMaterial(obj->getMaterials()[m]);
 
 		// draw the object
 		GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->drawIndexedTriangleList((UINT)mat.num_indices, 0, (UINT)mat.start_index);

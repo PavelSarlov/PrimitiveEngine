@@ -22,7 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "Resource.h"
+#include <Resource.h>
 
 Resource::Resource(const wchar_t *full_path) : m_full_path(full_path)
 {}

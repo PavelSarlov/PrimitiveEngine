@@ -27,7 +27,7 @@
 #ifndef SWAPCHAIN_H
 #define SWAPCHAIN_H
 
-#include "Prerequisites.h"
+#include <Prerequisites.h>
 
 #include <d3d11.h>
 

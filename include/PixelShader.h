@@ -29,7 +29,7 @@
 
 #include <d3d11.h>
 
-#include "Prerequisites.h"
+#include <Prerequisites.h>
 
 class PixelShader
 {

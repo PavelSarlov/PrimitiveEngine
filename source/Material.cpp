@@ -22,11 +22,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "Material.h"
-#include "VertexShader.h"
-#include "PixelShader.h"
-#include "GraphicsEngine.h"
-#include "ConstantBuffer.h"
+#include <Material.h>
+#include <VertexShader.h>
+#include <PixelShader.h>
+#include <GraphicsEngine.h>
+#include <ConstantBuffer.h>
 
 #include <exception>
 

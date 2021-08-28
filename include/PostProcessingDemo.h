@@ -26,10 +26,10 @@
 #ifndef POSTPROCESSINGDEMO_H
 #define POSTPROCESSINGDEMO_H
 
-#include "Prerequisites.h"
-#include "Window.h"
-#include "InputListener.h"
-#include "Geometry.h"
+#include <Prerequisites.h>
+#include <Window.h>
+#include <InputListener.h>
+#include <Geometry.h>
 
 #include <Windows.h>
 

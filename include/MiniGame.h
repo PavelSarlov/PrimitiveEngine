@@ -26,11 +26,11 @@
 #ifndef MINIGAME_H
 #define MINIGAME_H
 
-#include "Prerequisites.h"
-#include "Window.h"
-#include "InputListener.h"
-#include "Geometry.h"
-#include "Texture.h"
+#include <Prerequisites.h>
+#include <Window.h>
+#include <InputListener.h>
+#include <Geometry.h>
+#include <Texture.h>
 
 #include <Windows.h>
 

@@ -39,6 +39,8 @@ class Matrix3x3;
 class Matrix4x4;
 class VertexMesh;
 class Rect;
+class BoundingBox;
+class BoundingSphere;
 #pragma endregion
 
 class Vector2
@@ -1403,6 +1405,88 @@ public:
 
 public:
 	int m_left, m_top, m_width, m_height;
+};
+
+class BoundingBox
+{
+public:
+	BoundingBox()
+	{}
+
+	BoundingBox(float xMax, float xMin, float yMax, float yMin, float zMax, float zMin) :
+		m_xMax(xMax), m_xMin(xMin), m_yMax(yMax), m_yMin(yMin), m_zMax(zMax), m_zMin(zMin)
+	{}
+
+	BoundingBox(const BoundingBox &other)
+	{
+		*this = other;
+	}
+
+	BoundingBox &operator=(const BoundingBox &other)
+	{
+		if(this != &other)
+		{
+			this->m_xMax = other.m_xMax;
+			this->m_xMin = other.m_xMin;
+			this->m_yMax = other.m_yMax;
+			this->m_yMin = other.m_yMin;
+			this->m_zMax = other.m_zMax;
+			this->m_zMin = other.m_zMin;
+
+			this->m_dx = other.m_dx;
+			this->m_dy = other.m_dy;
+			this->m_dz = other.m_dz;
+		}
+		return *this;
+	}
+
+	~BoundingBox()
+	{}
+
+public:
+	float m_xMax = 0.0f;
+	float m_xMin = 0.0f;
+	float m_yMax = 0.0f;
+	float m_yMin = 0.0f;
+	float m_zMax = 0.0f;
+	float m_zMin = 0.0f;
+
+	float m_dx = 0.0f;
+	float m_dy = 0.0f;
+	float m_dz = 0.0f;
+};
+
+class BoundingSphere
+{
+public:
+	BoundingSphere()
+	{}
+
+	BoundingSphere(const Vector3 &center, float radius) :
+		m_center(center), m_radius(radius)
+	{}
+
+	BoundingSphere(const BoundingSphere &other)
+	{
+		*this = other;
+	}
+
+	BoundingSphere &operator=(const BoundingSphere &other)
+	{
+		if(this != &other)
+		{
+			this->m_center = other.m_center;
+			this->m_radius = other.m_radius;
+		}
+		return *this;
+	}
+
+	~BoundingSphere()
+	{}
+
+public:
+	Vector3 m_center;
+	float m_radius = 0.0f;
 };
 
 #endif // !GEOMETRY_H

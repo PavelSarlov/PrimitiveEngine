@@ -26,7 +26,7 @@
 #ifndef INDEXBUFFER_H
 #define INDEXBUFFER_H
 
-#include "Prerequisites.h"
+#include <Prerequisites.h>
 
 #include <d3d11.h>
 

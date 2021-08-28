@@ -22,17 +22,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-
-#include "TemplateApp.h"
+#include <TemplateApp.h>
 #include <Windows.h>
-#include "Vector3D.h"
-#include "Vector2D.h"
-#include "Matrix4x4.h"
-#include "InputSystem.h"
-#include "Mesh.h"
-#include "MathUtils.h"
+#include <Vector3D.h>
+#include <Vector2D.h>
+#include <Matrix4x4.h>
+#include <InputSystem.h>
+#include <Mesh.h>
+#include <MathUtils.h>
 #include <time.h>
-
 
 __declspec(align(16))
 struct constant

@@ -26,8 +26,8 @@
 #ifndef MESHMANAGER_H
 #define MESHMANAGER_H
 
-#include "ResourceManager.h"
-#include "Mesh.h"
+#include <ResourceManager.h>
+#include <Mesh.h>
 
 class MeshManager : public ResourceManager
 {

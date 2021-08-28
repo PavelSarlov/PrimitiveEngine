@@ -22,9 +22,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "Mesh.h"
-#include "GraphicsEngine.h"
-#include "Geometry.h"
+#include <Mesh.h>
+#include <GraphicsEngine.h>
+#include <Geometry.h>
 
 #ifndef TINYOBJLOADER_IMPLEMENTATION
 #define TINYOBJLOADER_IMPLEMENTATION
@@ -155,6 +155,13 @@ Mesh::Mesh(const wchar_t *full_path) : Resource(full_path)
 					list_vertices.push_back(vertex);
 
 					list_indices.push_back((UINT)index_global_offset + v);
+
+					this->m_bounding_box.m_xMax = max(this->m_bounding_box.m_xMax, vertex.m_position.m_x);
+					this->m_bounding_box.m_xMin = min(this->m_bounding_box.m_xMin, vertex.m_position.m_x);
+					this->m_bounding_box.m_yMax = max(this->m_bounding_box.m_yMax, vertex.m_position.m_y);
+					this->m_bounding_box.m_yMin = min(this->m_bounding_box.m_yMin, vertex.m_position.m_y);
+					this->m_bounding_box.m_zMax = max(this->m_bounding_box.m_zMax, vertex.m_position.m_z);
+					this->m_bounding_box.m_zMin = min(this->m_bounding_box.m_zMin, vertex.m_position.m_z);
 				}
 
 				index_offset += num_face_verts;
@@ -169,8 +176,13 @@ Mesh::Mesh(const wchar_t *full_path) : Resource(full_path)
 	size_t size_shader = 0;
 	GraphicsEngine::get()->getVertexLayoutShaderByteCodeAndSize(&shader_byte_code, &size_shader);
 	this->m_vertex_buffer = GraphicsEngine::get()->getRenderSystem()->createVertexBuffer(&list_vertices[0], sizeof(VertexMesh), (UINT)list_vertices.size(), shader_byte_code, size_shader);
-
 	this->m_index_buffer = GraphicsEngine::get()->getRenderSystem()->createIndexBuffer(&list_indices[0], (UINT)list_indices.size());
+
+	this->m_bounding_box.m_dx = (this->m_bounding_box.m_xMax - this->m_bounding_box.m_xMin) / 2.0f;
+	this->m_bounding_box.m_dy = (this->m_bounding_box.m_yMax - this->m_bounding_box.m_yMin) / 2.0f;
+	this->m_bounding_box.m_dz = (this->m_bounding_box.m_zMax - this->m_bounding_box.m_zMin) / 2.0f;
+
+	this->m_bounding_sphere.m_radius = max(this->m_bounding_box.m_dx, max(this->m_bounding_box.m_dy, this->m_bounding_box.m_dz));
 }
 
 Mesh::Mesh(
@@ -199,6 +211,16 @@ const VertexBufferPtr &Mesh::getVertexBuffer()
 const IndexBufferPtr &Mesh::getIndexBuffer()
 {
 	return this->m_index_buffer;
+}
+
+const BoundingBox &Mesh::getBoundingBox()
+{
+	return this->m_bounding_box;
+}
+
+const BoundingSphere &Mesh::getBoundingSphere()
+{
+	return this->m_bounding_sphere;
 }
 
 const MaterialSlot &Mesh::getMaterialSlot(size_t slot)

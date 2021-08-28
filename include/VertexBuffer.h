@@ -26,7 +26,7 @@
 #ifndef VERTEXBUFFER_H
 #define VERTEXBUFFER_H
 
-#include "Prerequisites.h"
+#include <Prerequisites.h>
 
 #include <d3d11.h>
 

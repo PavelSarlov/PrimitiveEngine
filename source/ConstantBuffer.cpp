@@ -22,9 +22,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "ConstantBuffer.h"
-#include "RenderSystem.h"
-#include "DeviceContext.h"
+#include <ConstantBuffer.h>
+#include <RenderSystem.h>
+#include <DeviceContext.h>
 
 #include <exception>
 

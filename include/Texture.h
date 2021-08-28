@@ -26,8 +26,8 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
-#include "Resource.h"
-#include "Geometry.h"
+#include <Resource.h>
+#include <Geometry.h>
 
 #include <d3d11.h>
 

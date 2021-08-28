@@ -26,8 +26,8 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
-#include "Prerequisites.h"
-#include "GraphicsEngine.h"
+#include <Prerequisites.h>
+#include <GraphicsEngine.h>
 
 #include <vector>
 

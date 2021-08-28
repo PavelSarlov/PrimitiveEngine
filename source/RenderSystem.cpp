@@ -22,15 +22,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "RenderSystem.h"
+#include <RenderSystem.h>
 
-#include "SwapChain.h"
-#include "DeviceContext.h"
-#include "VertexBuffer.h"
-#include "ConstantBuffer.h"
-#include "IndexBuffer.h"
-#include "VertexShader.h"
-#include "PixelShader.h"
+#include <SwapChain.h>
+#include <DeviceContext.h>
+#include <VertexBuffer.h>
+#include <ConstantBuffer.h>
+#include <IndexBuffer.h>
+#include <VertexShader.h>
+#include <PixelShader.h>
 
 RenderSystem::RenderSystem()
 {
