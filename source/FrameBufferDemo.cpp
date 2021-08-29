@@ -75,8 +75,8 @@ void FrameBufferDemo::onCreate()
 	this->m_brick_normal_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\brick_n.jpg");
 
 	// create meshes
-	this->m_sphere_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\sphere.obj");
-	this->m_monitor_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\monitor.obj");
+	this->m_sphere_mesh = GraphicsEngine::get()->getModelManager()->createMeshFromFile(L"Assets\\Meshes\\sphere.obj");
+	this->m_monitor_mesh = GraphicsEngine::get()->getModelManager()->createMeshFromFile(L"Assets\\Meshes\\monitor.obj");
 
 	// create materials
 	this->m_base_mat = GraphicsEngine::get()->createMaterial(L"DirectionalLightVertexShader.hlsl", L"DirectionalLightPixelShader.hlsl");

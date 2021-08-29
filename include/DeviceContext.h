@@ -60,6 +60,7 @@ public:
 	void clearRenderTargetColor(const TexturePtr &render_target, float red, float green, float blue, float alpha);
 	void clearDepthStencil(const TexturePtr &depth_stencil);
 
+	void drawLineStrip(UINT vertex_count, UINT start_vertex_index);
 	void drawTriangleList(UINT vertex_count, UINT start_vertex_index);
 	void drawIndexedTriangleList(UINT index_count, UINT start_index_location, UINT start_vertex_index);
 	void drawTriangleStrip(UINT vertex_count, UINT start_vertex_index);

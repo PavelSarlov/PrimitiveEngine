@@ -91,9 +91,9 @@ void PostProcessingDemo::onCreate()
 	this->m_asteroid_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\asteroid.jpg");
 
 	// create meshes
-	this->m_sky_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\sphere.obj");
-	this->m_spaceship_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\spaceship.obj");
-	this->m_asteroid_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\asteroid.obj");
+	this->m_sky_mesh = GraphicsEngine::get()->getModelManager()->createMeshFromFile(L"Assets\\Meshes\\sphere.obj");
+	this->m_spaceship_mesh = GraphicsEngine::get()->getModelManager()->createMeshFromFile(L"Assets\\Meshes\\spaceship.obj");
+	this->m_asteroid_mesh = GraphicsEngine::get()->getModelManager()->createMeshFromFile(L"Assets\\Meshes\\asteroid.obj");
 
 	VertexMesh quad_vertex_list[] =
 	{
@@ -114,7 +114,7 @@ void PostProcessingDemo::onCreate()
 		{0, 6, 0}
 	};
 
-	this->m_quad_mesh = GraphicsEngine::get()->getMeshManager()->createMesh(quad_vertex_list, 4, quad_index_list, 6, quad_mat_slots, 1);
+	this->m_quad_mesh = GraphicsEngine::get()->getModelManager()->createMesh(quad_vertex_list, 4, quad_index_list, 6, quad_mat_slots, 1);
 
 	// create materials
 	this->m_base_mat = GraphicsEngine::get()->createMaterial(L"shaders\\DirectionalLightVertexShader.hlsl", L"shaders\\DirectionalLightPixelShader.hlsl");

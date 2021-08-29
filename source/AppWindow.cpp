@@ -73,14 +73,14 @@ void AppWindow::onCreate()
 	//this->m_earth_color_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\earth_color.jpg");
 
 	// create meshes
-	this->m_sky_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\sphere.obj");
-	this->m_terrain_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\terrain.obj");
-	this->m_house_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\house.obj");
+	this->m_sky_mesh = GraphicsEngine::get()->getModelManager()->createMeshFromFile(L"Assets\\Meshes\\sphere.obj");
+	this->m_terrain_mesh = GraphicsEngine::get()->getModelManager()->createMeshFromFile(L"Assets\\Meshes\\terrain.obj");
+	this->m_house_mesh = GraphicsEngine::get()->getModelManager()->createMeshFromFile(L"Assets\\Meshes\\house.obj");
 
-	/*this->m_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\scene.obj");
-	this->m_torus_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\torus.obj");
-	this->m_suzanne_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\suzanne.obj");
-	this->m_plane_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\plane.obj");*/
+	/*this->m_mesh = GraphicsEngine::get()->getModelManager()->createMeshFromFile(L"Assets\\Meshes\\scene.obj");
+	this->m_torus_mesh = GraphicsEngine::get()->getModelManager()->createMeshFromFile(L"Assets\\Meshes\\torus.obj");
+	this->m_suzanne_mesh = GraphicsEngine::get()->getModelManager()->createMeshFromFile(L"Assets\\Meshes\\suzanne.obj");
+	this->m_plane_mesh = GraphicsEngine::get()->getModelManager()->createMeshFromFile(L"Assets\\Meshes\\plane.obj");*/
 
 	// create swap chain
 	RECT rect = this->getClientWindowRect();

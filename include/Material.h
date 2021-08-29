@@ -28,7 +28,6 @@
 
 #include <Prerequisites.h>
 #include <GraphicsEngine.h>
-
 #include <vector>
 
 enum CULL_MODE
@@ -44,6 +43,8 @@ public:
 	Material(const Material &other);
 	Material &operator=(const Material &other);
 	~Material();
+
+public:
 
 public:
 	void addTexture(const TexturePtr &texture);

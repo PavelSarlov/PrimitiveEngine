@@ -85,9 +85,9 @@ void MiniGame::onCreate()
 	this->m_asteroid_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\asteroid.jpg");
 
 	// create meshes
-	this->m_sky_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\sphere.obj");
-	this->m_spaceship_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\spaceship.obj");
-	this->m_asteroid_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\asteroid.obj");
+	this->m_sky_mesh = GraphicsEngine::get()->getModelManager()->createMeshFromFile(L"Assets\\Meshes\\sphere.obj");
+	this->m_spaceship_mesh = GraphicsEngine::get()->getModelManager()->createMeshFromFile(L"Assets\\Meshes\\spaceship.obj");
+	this->m_asteroid_mesh = GraphicsEngine::get()->getModelManager()->createMeshFromFile(L"Assets\\Meshes\\asteroid.obj");
 
 	// create materials
 	this->m_base_mat = GraphicsEngine::get()->createMaterial(L"DirectionalLightVertexShader.hlsl", L"DirectionalLightPixelShader.hlsl");

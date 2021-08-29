@@ -26,6 +26,7 @@
 #include <GraphicsEngine.h>
 #include <InputSystem.h>
 #include <PhysicsEngine.h>
+#include <ErrorLogger.h>
 
 int main()
 {
@@ -48,7 +49,7 @@ int main()
 	}
 	catch(std::exception e)
 	{
-		std::cout << e.what() << std::endl;
+		ErrorLogger::log(e.what());
 		PhysicsEngine::release();
 		InputSystem::release();
 		GraphicsEngine::release();

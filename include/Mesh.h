@@ -39,13 +39,10 @@ struct MaterialSlot
 	size_t material_id = 0;
 };
 
-class Mesh : public Resource
+class Mesh
 {
 public:
-	Mesh(const wchar_t *full_path);
-	Mesh(VertexMesh *vertex_list_data, unsigned int vertex_list_size,
-		unsigned int *index_list_data, unsigned int index_list_size,
-		MaterialSlot *material_slot_list, unsigned int material_slot_list_size);
+	Mesh(const VertexBufferPtr &vertex_buffer, const IndexBufferPtr &index_buffer, UINT material_id);
 	~Mesh();
 
 public:
@@ -53,24 +50,14 @@ public:
 	const IndexBufferPtr &getIndexBuffer();
 	const BoundingBox &getBoundingBox();
 	const BoundingSphere &getBoundingSphere();
-
-public:
-	const MaterialSlot &getMaterialSlot(size_t slot);
-	size_t getNumMaterialSlots();
-
-public:
-	void computeTangents(
-		const Vector3 &v0, const Vector3 &v1, const Vector3 &v2,
-		const Vector2 &t0, const Vector2 &t1, const Vector2 &t2,
-		Vector3 &tangent, Vector3 &binormal
-	);
+	UINT getMaterialId();
 
 private:
 	VertexBufferPtr m_vertex_buffer;
 	IndexBufferPtr m_index_buffer;
-	std::vector<MaterialSlot> m_material_slots;
 	BoundingBox m_bounding_box;
 	BoundingSphere m_bounding_sphere;
+	UINT m_material_id;
 
 private:
 	friend class DeviceContext;

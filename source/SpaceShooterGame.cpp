@@ -32,12 +32,12 @@
 #include <PixelShader.h>
 #include <VertexShader.h>
 #include <InputSystem.h>
-#include <Mesh.h>
 #include <Material.h>
 #include <MathUtils.h>
 #include <PhysicsEngine.h>
-#include <GameObject.h>
-
+#include <Mesh.h>
+#include <Model.h>
+#include <Object.h>
 #include <time.h>
 
 __declspec(align(16))
@@ -76,10 +76,10 @@ void SpaceShooterGame::onCreate()
 	this->m_spaceship_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\spaceship.jpg");
 	this->m_asteroid_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"Assets\\Textures\\asteroid.jpg");
 
-	// create meshes
-	this->m_sky_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\sphere.obj");
-	this->m_spaceship_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\spaceship.obj");
-	this->m_asteroid_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"Assets\\Meshes\\asteroid.obj");
+	// create models
+	this->m_sky_model = GraphicsEngine::get()->getModelManager()->createModelFromFile(L"Assets\\Meshes\\sphere.obj");
+	this->m_spaceship_model = GraphicsEngine::get()->getModelManager()->createModelFromFile(L"Assets\\Meshes\\spaceship.obj");
+	this->m_asteroid_model = GraphicsEngine::get()->getModelManager()->createModelFromFile(L"Assets\\Meshes\\asteroid.obj");
 
 	// create materials
 	this->m_base_mat = GraphicsEngine::get()->createMaterial(L"shaders\\DirectionalLightVertexShader.hlsl", L"shaders\\DirectionalLightPixelShader.hlsl");
@@ -112,11 +112,11 @@ void SpaceShooterGame::onCreate()
 		float scale = (float)(rand() % 20 + (6));
 		Vector3 asteroid_scale = Vector3(scale, scale, scale);
 
-		this->m_objects.push_back(PhysicsEngine::get()->createGameObject(std::vector<MaterialPtr>{this->m_asteroid_mat}, this->m_asteroid_mesh, asteroid_pos, asteroid_rot, asteroid_scale, true));
+		this->m_objects.push_back(PhysicsEngine::get()->createObject(this->m_asteroid_model, std::vector<MaterialPtr>{this->m_asteroid_mat}, asteroid_pos, asteroid_rot, asteroid_scale, true));
 	}
 
-	this->m_spaceship_obj = PhysicsEngine::get()->createGameObject(std::vector<MaterialPtr>{this->m_spaceship_mat}, this->m_spaceship_mesh, this->m_spaceship_pos, this->m_spaceship_rot, Vector3(1.0f, 1.0f, 1.0f), false);
-	this->m_skybox_obj = PhysicsEngine::get()->createGameObject(std::vector<MaterialPtr>{this->m_sky_mat}, this->m_sky_mesh, this->m_cam_pos, Vector3(zFar, zFar, zFar), Vector3(1.0f, 1.0f, 1.0f), false);
+	this->m_spaceship_obj = PhysicsEngine::get()->createObject(this->m_spaceship_model, std::vector<MaterialPtr>{this->m_spaceship_mat}, this->m_spaceship_pos, this->m_spaceship_rot, Vector3(1.0f, 1.0f, 1.0f), false);
+	this->m_skybox_obj = PhysicsEngine::get()->createObject(this->m_sky_model, std::vector<MaterialPtr>{this->m_sky_mat}, this->m_cam_pos, Vector3(zFar, zFar, zFar), Vector3(1.0f, 1.0f, 1.0f), false);
 }
 
 void SpaceShooterGame::onUpdate()
@@ -286,12 +286,12 @@ void SpaceShooterGame::render()
 	// draw objects
 	for(UINT i = 0; i < this->m_objects.size(); i++)
 	{
-		this->updateModel(this->m_objects[i]);
+		this->updateObject(this->m_objects[i]);
 		this->drawMesh(this->m_objects[i]);
 	}
 
 	// draw spaceship
-	this->updateModel(this->m_spaceship_obj);
+	this->updateObject(this->m_spaceship_obj);
 	this->drawMesh(this->m_spaceship_obj);
 
 	//draw skybox
@@ -332,7 +332,7 @@ void SpaceShooterGame::update()
 	this->updateSkyBox();
 }
 
-void SpaceShooterGame::updateModel(const GameObjectPtr &obj)
+void SpaceShooterGame::updateObject(const ObjectPtr &obj)
 {
 	Constant cc = {};
 	cc.m_world = Matrix4x4::identityMatrix() *
@@ -491,20 +491,21 @@ void SpaceShooterGame::updateFixed()
 	}*/
 }
 
-void SpaceShooterGame::drawMesh(const GameObjectPtr &obj)
+void SpaceShooterGame::drawMesh(const ObjectPtr &obj)
 {
-	// set the list of vertices
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(obj->getMesh()->getVertexBuffer());
-	// set the list of indices
-	GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setIndexBuffer(obj->getMesh()->getIndexBuffer());
-
-	for(size_t m = 0; m < obj->getMesh()->getNumMaterialSlots() && m < obj->getMaterials().size(); m++)
+	for(size_t m = 0; m < obj->getModel()->getMeshes().size(); m++)
 	{
-		MaterialSlot mat = obj->getMesh()->getMaterialSlot(m);
+		MeshPtr mesh = obj->getModel()->getMeshes()[m];
 
-		GraphicsEngine::get()->setMaterial(obj->getMaterials()[m]);
+		// set the list of vertices
+		GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setVertexBuffer(mesh->getVertexBuffer());
+		// set the list of indices
+		GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->setIndexBuffer(mesh->getIndexBuffer());
+
+
+		GraphicsEngine::get()->setMaterial(obj->getMaterials()[mesh->getMaterialId()]);
 
 		// draw the object
-		GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->drawIndexedTriangleList((UINT)mat.num_indices, 0, (UINT)mat.start_index);
+		GraphicsEngine::get()->getRenderSystem()->getImmediateDeviceContext()->drawIndexedTriangleList(mesh->getIndexBuffer()->getSizeIndexList(), 0, 0);
 	}
 }

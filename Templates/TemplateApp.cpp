@@ -260,9 +260,9 @@ void TemplateApp::onCreate()
 	m_swap_chain = GraphicsEngine::get()->getRenderSystem()->createSwapChain(this->m_hwnd, rc.right - rc.left, rc.bottom - rc.top);
 
 	m_sky_tex = GraphicsEngine::get()->getTextureManager()->createTextureFromFile(L"..\\Assets\\Textures\\stars_map.jpg");
-	m_sky_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"..\\Assets\\Meshes\\sphere.obj");
+	m_sky_mesh = GraphicsEngine::get()->getModelManager()->createMeshFromFile(L"..\\Assets\\Meshes\\sphere.obj");
 
-	m_sphere_mesh = GraphicsEngine::get()->getMeshManager()->createMeshFromFile(L"..\\Assets\\Meshes\\sphere.obj");
+	m_sphere_mesh = GraphicsEngine::get()->getModelManager()->createMeshFromFile(L"..\\Assets\\Meshes\\sphere.obj");
 
 
 

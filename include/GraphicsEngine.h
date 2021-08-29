@@ -29,7 +29,7 @@
 #include <Prerequisites.h>
 #include <RenderSystem.h>
 #include <TextureManager.h>
-#include <MeshManager.h>
+#include <ModelManager.h>
 
 class GraphicsEngine
 {
@@ -47,7 +47,7 @@ public:
 public:
 	RenderSystem *getRenderSystem();
 	TextureManager *getTextureManager();
-	MeshManager *getMeshManager();
+	ModelManager *getModelManager();
 
 public:
 	void getVertexLayoutShaderByteCodeAndSize(void **byte_code, size_t *size);
@@ -58,7 +58,7 @@ public:
 private:
 	RenderSystem *m_render_system = nullptr;
 	TextureManager *m_tex_manager = nullptr;
-	MeshManager *m_mesh_manager = nullptr;
+	ModelManager *m_model_manager = nullptr;
 	static GraphicsEngine *m_engine;
 
 private:

@@ -61,7 +61,7 @@ public:
 public:
 	void render();
 	void update();
-	void updateModel(const GameObjectPtr &obj);
+	void updateObject(const ObjectPtr &obj);
 	void updateCamera();
 	void updateThirdPersonCamera();
 	void updateSkyBox();
@@ -70,7 +70,7 @@ public:
 	void updateViewportProjection();
 	void updateFixed();
 
-	void drawMesh(const GameObjectPtr &obj);
+	void drawMesh(const ObjectPtr &obj);
 
 private:
 	SwapChainPtr m_swap_chain;
@@ -79,9 +79,9 @@ private:
 	TexturePtr m_spaceship_tex;
 	TexturePtr m_asteroid_tex;
 
-	MeshPtr m_sky_mesh;
-	MeshPtr m_spaceship_mesh;
-	MeshPtr m_asteroid_mesh;
+	ModelPtr m_sky_model;
+	ModelPtr m_spaceship_model;
+	ModelPtr m_asteroid_model;
 
 	MaterialPtr m_base_mat;
 	MaterialPtr m_sky_mat;
@@ -90,10 +90,10 @@ private:
 
 	std::vector<MaterialPtr> m_list_materials;
 
-	std::vector<GameObjectPtr> m_objects;
+	std::vector<ObjectPtr> m_objects;
 
-	GameObjectPtr m_spaceship_obj;
-	GameObjectPtr m_skybox_obj;
+	ObjectPtr m_spaceship_obj;
+	ObjectPtr m_skybox_obj;
 
 private:
 	float zNear = 0.1f;

@@ -25,6 +25,7 @@
 #include <GraphicsEngine.h>
 #include <Material.h>
 #include <DeviceContext.h>
+#include <ErrorLogger.h>
 
 GraphicsEngine *GraphicsEngine::m_engine = nullptr;
 
@@ -34,11 +35,11 @@ GraphicsEngine::GraphicsEngine()
 	{
 		this->m_render_system = new RenderSystem();
 		this->m_tex_manager = new TextureManager();
-		this->m_mesh_manager = new MeshManager();
+		this->m_model_manager = new ModelManager();
 	}
 	catch(std::exception e)
 	{
-		std::cout << e.what() << std::endl;
+		ErrorLogger::log(e.what());
 		throw std::exception("GraphicsEngine initialization failed");
 	}
 
@@ -54,7 +55,7 @@ GraphicsEngine::GraphicsEngine()
 GraphicsEngine::~GraphicsEngine()
 {
 	GraphicsEngine::m_engine = nullptr;
-	delete this->m_mesh_manager;
+	delete this->m_model_manager;
 	delete this->m_tex_manager;
 	delete this->m_render_system;
 }
@@ -86,9 +87,9 @@ TextureManager *GraphicsEngine::getTextureManager()
 	return this->m_tex_manager;
 }
 
-MeshManager *GraphicsEngine::getMeshManager()
+ModelManager *GraphicsEngine::getModelManager()
 {
-	return this->m_mesh_manager;
+	return this->m_model_manager;
 }
 
 void GraphicsEngine::getVertexLayoutShaderByteCodeAndSize(void **byte_code, size_t *size)
@@ -127,7 +128,7 @@ MaterialPtr GraphicsEngine::createMaterial(const wchar_t *vertex_shader_path, co
 	}
 	catch(std::exception e)
 	{
-		std::cout << e.what() << std::endl;
+		ErrorLogger::log(e.what());
 		return nullptr;
 	}
 }
@@ -140,7 +141,7 @@ MaterialPtr GraphicsEngine::createMaterial(const MaterialPtr &material)
 	}
 	catch(std::exception e)
 	{
-		std::cout << e.what() << std::endl;
+		ErrorLogger::log(e.what());
 		return nullptr;
 	}
 }

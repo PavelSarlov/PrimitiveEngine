@@ -23,7 +23,6 @@
 // SOFTWARE.
 
 #include <RenderSystem.h>
-
 #include <SwapChain.h>
 #include <DeviceContext.h>
 #include <VertexBuffer.h>
@@ -31,6 +30,7 @@
 #include <IndexBuffer.h>
 #include <VertexShader.h>
 #include <PixelShader.h>
+#include <ErrorLogger.h>
 
 RenderSystem::RenderSystem()
 {
@@ -92,7 +92,7 @@ SwapChainPtr RenderSystem::createSwapChain(HWND hwnd, UINT width, UINT height)
 	}
 	catch(std::exception e)
 	{
-		std::cout << e.what() << std::endl;
+		ErrorLogger::log(e.what());
 		return nullptr;
 	}
 }
@@ -110,7 +110,7 @@ VertexBufferPtr RenderSystem::createVertexBuffer(void *list_vertices, UINT size_
 	}
 	catch(std::exception e)
 	{
-		std::cout << e.what() << std::endl;
+		ErrorLogger::log(e.what());
 		return nullptr;
 	}
 }
@@ -123,7 +123,7 @@ VertexShaderPtr RenderSystem::createVertexShader(const void *shader_byte_code, s
 	}
 	catch(std::exception e)
 	{
-		std::cout << e.what() << std::endl;
+		ErrorLogger::log(e.what());
 		return nullptr;
 	}
 }
@@ -136,7 +136,7 @@ PixelShaderPtr RenderSystem::createPixelShader(const void *shader_byte_code, siz
 	}
 	catch(std::exception e)
 	{
-		std::cout << e.what() << std::endl;
+		ErrorLogger::log(e.what());
 		return nullptr;
 	}
 }
@@ -149,7 +149,7 @@ ConstantBufferPtr RenderSystem::createConstantBuffer(void *buffer, UINT size_buf
 	}
 	catch(std::exception e)
 	{
-		std::cout << e.what() << std::endl;
+		ErrorLogger::log(e.what());
 		return nullptr;
 	}
 }
@@ -162,7 +162,7 @@ IndexBufferPtr RenderSystem::createIndexBuffer(void *list_indices, UINT size_lis
 	}
 	catch(std::exception e)
 	{
-		std::cout << e.what() << std::endl;
+		ErrorLogger::log(e.what());
 		return nullptr;
 	}
 }

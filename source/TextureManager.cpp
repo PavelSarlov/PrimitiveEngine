@@ -23,8 +23,7 @@
 // SOFTWARE.
 
 #include <TextureManager.h>
-
-#include <iostream>
+#include <ErrorLogger.h>
 
 TextureManager::TextureManager() : ResourceManager()
 {}
@@ -45,7 +44,7 @@ TexturePtr TextureManager::createTexture(const Rect &size, Texture::Type type)
 	}
 	catch(std::exception e)
 	{
-		std::cout << e.what() << std::endl;
+		ErrorLogger::log(e.what());
 	}
 
 	return TexturePtr(nullptr);
@@ -59,7 +58,7 @@ Resource *TextureManager::createResourceFromFileConcrete(const wchar_t *file_pat
 	}
 	catch(std::exception e)
 	{
-		std::cout << e.what() << std::endl;
+		ErrorLogger::log(e.what());
 	}
 
 	return nullptr;

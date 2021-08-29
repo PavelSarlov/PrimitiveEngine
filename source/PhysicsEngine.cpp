@@ -1,5 +1,5 @@
 #include <PhysicsEngine.h>
-#include <GameObject.h>
+#include <Object.h>
 #include <exception>
 
 PhysicsEngine *PhysicsEngine::m_engine = nullptr;
@@ -27,7 +27,12 @@ void PhysicsEngine::release()
 	delete PhysicsEngine::m_engine;
 }
 
-GameObjectPtr PhysicsEngine::createGameObject(const std::vector<MaterialPtr> &materials, const MeshPtr &mesh, const Vector3 &position, const Vector3 &rotation, const Vector3 &scale, bool collisive)
+ObjectPtr PhysicsEngine::createObject(const ModelPtr &model, const std::vector<MaterialPtr> &materials, const Vector3 &position, const Vector3 &rotation, const Vector3 &scale, bool collisive)
 {
-	return std::make_shared<GameObject>(materials, mesh, position, rotation, scale, collisive);
+	return std::make_shared<Object>(model, materials, position, rotation, scale, collisive);
+}
+
+ObjectPtr PhysicsEngine::createObject(const ObjectPtr &object)
+{
+	return std::make_shared<Object>(*(object.get()));
 }

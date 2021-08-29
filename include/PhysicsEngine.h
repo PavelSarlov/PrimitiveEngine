@@ -19,7 +19,8 @@ public:
 	static void release();
 
 public:
-	GameObjectPtr createGameObject(const std::vector<MaterialPtr> &materials, const MeshPtr &mesh, const Vector3 &position, const Vector3 &rotation, const Vector3 &scale, bool collisive);
+	ObjectPtr createObject(const ModelPtr &model, const std::vector<MaterialPtr> &materials, const Vector3 &position, const Vector3 &rotation, const Vector3 &scale, bool collisive);
+	ObjectPtr createObject(const ObjectPtr &object);
 
 private:
 	static PhysicsEngine *m_engine;

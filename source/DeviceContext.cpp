@@ -147,6 +147,12 @@ void DeviceContext::clearDepthStencil(const TexturePtr &depth_stencil)
 	this->m_device_context->ClearDepthStencilView(depth_stencil->m_depth_stencil_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1, 0);
 }
 
+void DeviceContext::drawLineStrip(UINT vertex_count, UINT start_vertex_index)
+{
+	this->m_device_context->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_LINESTRIP);
+	this->m_device_context->Draw(vertex_count, start_vertex_index);
+}
+
 void DeviceContext::drawTriangleList(UINT vertex_count, UINT start_vertex_index)
 {
 	this->m_device_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
